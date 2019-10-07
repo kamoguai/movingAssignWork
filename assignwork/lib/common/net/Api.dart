@@ -32,12 +32,10 @@ class HttpManager {
     }
 
     if (option != null) {
-      // if(url.toString().contains("http://asg.dctv.net.tw:8082")) {
-        option = new Options(method: "post", responseType: ResponseType.plain);
-      // }
+      option = new Options(method: "post", responseType: ResponseType.plain);
       option.headers = headers;
     } else{
-      option = new Options(method: "get");
+      option = new Options(method: "get", responseType: ResponseType.plain);
       option.headers = headers;
     }
 
@@ -85,7 +83,7 @@ class HttpManager {
     try {
      
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.request.path.contains("http://asg.dctv.net.tw:8082")) {
+        if (option.method == "post") {
           var result = AesUtils.aes128Decrypt(response.toString());
           var jsonStr = jsonDecode(result);
           Map<String, dynamic> map = jsonStr;

@@ -74,11 +74,18 @@ class UserInfoDao {
      Map<String, dynamic> mainDataArray = {};
      Map<String, String> header = {};
      Map<String, dynamic> paramsJson = {};
-     var aesData = AesUtils.aes128Encrypt(jsonMap.toString());
+     String str = jsonEncode(jsonMap);
+     print("json request -> $str");
+     var aesData = AesUtils.aes128Encrypt(str);
+     print("aes encode => $aesData");
+     var decode = AesUtils.aes128Decrypt(aesData);
+     print("aes decode => $decode");
      paramsJson["data"] = aesData;
-     header["content-type"] = "application/x-www-form-urlencoded";
-     var res = await HttpManager.netFetch(jsonMap["serverURL"], paramsJson, header, new Options(method: "post"));
-     
+     var serverUrl = jsonMap["serverURL"];
+     var reqUrl = "$serverUrl?data=$aesData";
+    //  header["content-type"] = "application/x-www-form-urlencoded";
+    // header = null;
+     var res = await HttpManager.netFetch(reqUrl, null, null, null);
      if (res != null && res.result) {
         if (Config.DEBUG) {
           print("派裝系統使用者信息resp => "+ res.data.toString());

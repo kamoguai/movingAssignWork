@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pointycastle/pointycastle.dart';
 
 ///
@@ -59,29 +59,37 @@ class AesUtils {
   ///   - encrypted: 壓過碼的字串
   /// - Returns: String
   static String aes128Decrypt(String encrypted) {
-    ///宣告key轉byte[]
-    var raw = utf8.encode(_aeskey_de);
-    ///將壓碼字串作base64解碼
-    var enctypted1 = base64Decode(encrypted);
-    ///宣告iv長度轉byte[]
-    var iv = Uint8List(_iv_size);
-    ///宣告解密規則
-    var msgBytes = Uint8List(enctypted1.length - _iv_size);
-    ///將aes encrypt字串內容長度轉byte丟進msgBytes
-    msgBytes = enctypted1.buffer.asUint8List(0,msgBytes.length);
-    ///將aes encrypt字串內容長度取後iv長度丟進ivByte
-    iv = Uint8List.fromList(enctypted1.skip(msgBytes.length).toList());
-    ///宣告chiper方法及帶入key和iv
-    CipherParameters params = new PaddedBlockCipherParameters(new ParametersWithIV(new KeyParameter(raw), iv), null);
-    ///使用AES/CBC/PKCS7格式
-    BlockCipher decryptionCipher = new PaddedBlockCipher('AES/CBC/PKCS7');
-    ///cipher初始化，false代表descrypt
-    decryptionCipher.init(false, params);
-    ///將msgBytes由cipher執行壓碼
-    var cipherProcess = decryptionCipher.process(msgBytes);
-    ///將結果轉回字串
-    String decyptedResult = utf8.decode(cipherProcess);
+    String decyptedResult = "";
+    try {
+      ///宣告key轉byte[]
+      var raw = utf8.encode(_aeskey_de);
+      ///將壓碼字串作base64解碼
+      var enctypted1 = base64Decode(encrypted);
+      ///宣告iv長度轉byte[]
+      var iv = Uint8List(_iv_size);
+      ///宣告解密規則
+      var msgBytes = Uint8List(enctypted1.length - _iv_size);
+      ///將aes encrypt字串內容長度轉byte丟進msgBytes
+      msgBytes = enctypted1.buffer.asUint8List(0,msgBytes.length);
+      ///將aes encrypt字串內容長度取後iv長度丟進ivByte
+      iv = Uint8List.fromList(enctypted1.skip(msgBytes.length).toList());
+      ///宣告chiper方法及帶入key和iv
+      CipherParameters params = new PaddedBlockCipherParameters(new ParametersWithIV(new KeyParameter(raw), iv), null);
+      ///使用AES/CBC/PKCS7格式
+      BlockCipher decryptionCipher = new PaddedBlockCipher('AES/CBC/PKCS7');
+      ///cipher初始化，false代表descrypt
+      decryptionCipher.init(false, params);
+      ///將msgBytes由cipher執行壓碼
+      var cipherProcess = decryptionCipher.process(msgBytes);
+      ///將結果轉回字串
+      decyptedResult = utf8.decode(cipherProcess);
+    } catch (e) {
+      Fluttertoast.showToast(msg: "AES解析失敗");
+      decyptedResult = "";
+    }
     ///回傳明碼字串
     return decyptedResult;
+    
+   
   }
 }

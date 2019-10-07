@@ -1,3 +1,4 @@
+import 'package:assignwork/common/utils/AesUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:assignwork/common/local/LocalStorage.dart';
 import 'package:assignwork/common/config/Config.dart';
@@ -75,10 +76,11 @@ class _LoginPageState extends State<LoginPage> {
             Map<String, dynamic> jsonMap = {};
             jsonMap["serverURL"] = res.data.serverURL;
             jsonMap["ssoKey"] = res.data.ssoKey;
-            jsonMap["account"] = _account;
-            jsonMap["password"] = _password;
-            jsonMap["deptName"] = res.data.deptName;
-            jsonMap["accName"] = res.data.accName;
+            jsonMap["accNo"] = _account;
+            jsonMap["passWord"] = _password;
+            // jsonMap["deptName"] = res.data.deptName;
+            // jsonMap["accName"] = res.data.accName;
+            jsonMap["sysName"] = "movingAssignment";
             UserInfoDao.getUserInfo(jsonMap, store).then((res) {
               Navigator.pop(context);
               if (res != null && res.result) {

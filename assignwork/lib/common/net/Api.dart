@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:assignwork/common/net/Code.dart';
 
@@ -19,7 +21,7 @@ class HttpManager {
     "authorizationCode": null,
   };
 
-  static netFetch(url, params, Map<String, String> header, Options option, {noTip = false}) async {
+  static netFetch(String url, params, Map<String, String> header, Options option, {noTip = false}) async {
     //沒有網路時
     var conntectivityResult = await (new Connectivity().checkConnectivity());
     if (conntectivityResult ==ConnectivityResult.none) {
@@ -33,7 +35,10 @@ class HttpManager {
 
     if (option != null) {
       option = new Options(method: "post", responseType: ResponseType.plain);
-      option.headers = headers;
+      if (url.contains("getAccPermissions")) {
+        option.contentType =  ContentType.parse(CONTENT_TYPE_FORM);
+        option.headers = headers;
+      }
     } else{
       option = new Options(method: "get", responseType: ResponseType.plain);
       option.headers = headers;
@@ -76,14 +81,17 @@ class HttpManager {
       if (response != null) {
         print("返回參數 => "+ response.toString());
       }
-      if (optionParams["authorizationCode"] != null) {
-        print("authorizationCode => "+ optionParams["authorizationCode"]);
-      }
     }
     try {
      
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (option.method == "post") {
+          var result = AesUtils.aes128Decrypt(response.toString());
+          var jsonStr = jsonDecode(result);
+          Map<String, dynamic> map = jsonStr;
+          return new ResultData(map, true, Code.SUCCESS, headers: response.headers);
+        }
+        if (response.request.path.contains("http://wos.dctv.net.tw:8083/WorkInstall/getAccPermissions")) {
           var result = AesUtils.aes128Decrypt(response.toString());
           var jsonStr = jsonDecode(result);
           Map<String, dynamic> map = jsonStr;

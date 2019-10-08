@@ -74,14 +74,11 @@ class _LoginPageState extends State<LoginPage> {
         else if (res.data.retCode == "00"){
             CommonUtils.showLoadingDialog(context);
             Map<String, dynamic> jsonMap = {};
-            jsonMap["serverURL"] = res.data.serverURL;
             jsonMap["ssoKey"] = res.data.ssoKey;
             jsonMap["accNo"] = _account;
             jsonMap["passWord"] = _password;
-            // jsonMap["deptName"] = res.data.deptName;
-            // jsonMap["accName"] = res.data.accName;
             jsonMap["sysName"] = "movingAssignment";
-            UserInfoDao.getUserInfo(jsonMap, store).then((res) {
+            UserInfoDao.getUserInfo(res.data.serverURL ,jsonMap, store).then((res) {
               Navigator.pop(context);
               if (res != null && res.result) {
                 print('登入成功 res => ${res.data}');

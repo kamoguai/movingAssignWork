@@ -71,7 +71,7 @@ class UserInfoDao {
 
   ///獲取用戶詳細信息
   static getUserInfo(String serverUrl, Map jsonMap, store) async {
-    await LocalStorage.save(Config.PW_KEY, jsonMap["password"]);
+    await LocalStorage.save(Config.PW_KEY, jsonMap["passWord"]);
     Map<String, dynamic> mainDataArray = {};
     ///map轉json
     String str = json.encode(jsonMap);
@@ -86,12 +86,7 @@ class UserInfoDao {
         print("派裝系統使用者信息resp => " + res.data.toString());
       }
       if (res.data['retCode'] == "00") {
-        mainDataArray = res.data;
-
-        ///dart在map添加key,value寫法，如果不存在就添加key,如果存在就給key值
-        mainDataArray.putIfAbsent("accNo", () => jsonMap["account"]);
-        mainDataArray.putIfAbsent("deptName", () => jsonMap["deptName"]);
-        mainDataArray.putIfAbsent("accName", () => jsonMap["accName"]);
+        mainDataArray = res.data['data'];
       }
       if (mainDataArray.length > 0) {
         print("使用者資訊-> $mainDataArray");

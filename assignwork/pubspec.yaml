@@ -44,6 +44,7 @@ dependencies:
   flutter_screenutil: ^0.5.2 #固定字體大小，不被裝置系統字體影響
   pointycastle: ^1.0.1 #加解密機制pacs7 , aes ...
   font_awesome_flutter: #flutter圖案
+  android_intent: #可以取得安卓系統資料
 dev_dependencies:
   json_serializable: ^3.0.0 #json模板
   build_runner: ^1.5.0

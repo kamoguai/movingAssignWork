@@ -1,7 +1,18 @@
+import 'dart:io';
+
+import 'package:android_intent/android_intent.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
-import 'package:assignwork/widget/MyListState.dart';
+import 'package:assignwork/page/bookingStatus/bookingStatusType1Page.dart';
+import 'package:assignwork/page/bookingStatus/bookingStatusType2Page.dart';
+import 'package:assignwork/page/bookingStatus/bookingStatusType3Page.dart';
+import 'package:assignwork/page/bookingStatus/bookingStatusType4Page.dart';
+import 'package:assignwork/widget/BaseWidget.dart';
+import 'package:assignwork/widget/HomeDrawer.dart';
+import 'package:assignwork/widget/MyTabBarWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
+
 
 class HomePage extends StatefulWidget {
   static final String sName = "home";
@@ -9,73 +20,93 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<HomePage>, MyListState<HomePage> {
+class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProviderStateMixin {
   
+  final TarWidgetControl tarBarControl = new TarWidgetControl();
+  ///約裝key
+  GlobalKey<BookingStatusType1PageState> type1Key = new GlobalKey<BookingStatusType1PageState>();
+  ///完工key
+  GlobalKey<BookingStatusType2PageState> type2Key = new GlobalKey<BookingStatusType2PageState>();
+  ///未完工key
+  GlobalKey<BookingStatusType3PageState> type3Key = new GlobalKey<BookingStatusType3PageState>();
+  ///撤銷key
+  GlobalKey<BookingStatusType4PageState> type4Key = new GlobalKey<BookingStatusType4PageState>();
+  ///實體數據
+  final StatusDetailModel statusModel = new StatusDetailModel();
+  ///bottomNavigatorBar index
+  int _bnbIndex = 0;
 
-  var isOpenMenu = false;
+  TabController _tabController;
+  List<Widget> tabItems;
 
   @override
   void initState() {
     super.initState();
-    clearData();
+    _tabController = new TabController(
+      vsync: this,
+      length: 4
+    );
   }
 
   @override
   void dispose() {
     super.dispose();
-    clearData();
+    _tabController.dispose();
   }
-  
-  @override
-  bool get isRefreshFirst => false;
-
-  /// app bar action
-  List<Widget> actions() {
-    List<Widget> list = [
-      Expanded(
-        child: Row(
-          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Flexible(
-              child: GestureDetector(
-                onTap: () {},
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 30,
-                  child: autoTextSize(
-                      '新北全區',
-                      TextStyle(
-                          color: Colors.white,
-                          fontSize: MyScreen.homePageFontSize(context))),
-                ),
-              ),
-            ),
-            Flexible(
-              child: Container(
-                alignment: Alignment.center,
-                height: 30,
-                child: autoTextSize(
-                    '走馬燈',
-                    TextStyle(
-                        color: Colors.white,
-                        fontSize: MyScreen.homePageFontSize(context))),
-              ),
-            ),
-            Flexible(
-              child: Container(),
-            )
-          ],
-        ),
-      )
+  ///渲染 Tab 的 Item
+  _renderTabItem() {
+    var itemList = [
+      "約裝",
+      "完工",
+      "未完工",
+      "撤銷"
     ];
+    renderItem(String item, int i) {
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        alignment: Alignment.center,
+        child: Text(
+          item,
+          style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),
+          maxLines: 1,
+        ),
+      );
+    }
+    List<Widget> list = new List();
+    for (int i = 0; i < itemList.length; i++ ) {
+      list.add(renderItem(itemList[i], i));
+    }
     return list;
   }
+  
+  ///bottomNavigationBar action
+  void _bottomNavBarAction(int index) {
+    
+    setState(() {
+      _bnbIndex = index;
+      if(mounted) {
+        switch (index) {
+          case 0:
 
-  ///body widget
-  Widget bodyView() {
-    return Container(
-      color: Colors.white,
-    );
+          break;
+          case 1:
+
+          break;
+          case 2:
+            NavigatorUtils.goLogin(context);
+          break;
+        }
+      }
+    });
+  }
+
+  ///取得api資料
+  _getApiData() async {
+    Map<String, dynamic> params = {};
+    params["function"] = "queryCustomerWorkOrderInfos";
+    params["type"] = "1";
+    params["employeeCode"] = "";
+    // var res = await 
   }
 
   ///Scaffold bottomBar widget
@@ -93,10 +124,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                     '刷新',
                     TextStyle(
                         color: Colors.white,
-                        fontSize: MyScreen.homePageFontSize(context))),
+                        fontSize: MyScreen.homePageFontSize(context)), context),
               ),
               onTap: () {
-                showRefreshLoading();
               },
             ),
           ),
@@ -109,7 +139,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                     '新增',
                     TextStyle(
                         color: Colors.white,
-                        fontSize: MyScreen.homePageFontSize(context))),
+                        fontSize: MyScreen.homePageFontSize(context)),context),
               ),
               onTap: () {},
             ),
@@ -138,7 +168,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                     '',
                     TextStyle(
                         color: Colors.white,
-                        fontSize: MyScreen.homePageFontSize(context))),
+                        fontSize: MyScreen.homePageFontSize(context)),context),
               ),
               onTap: () {},
             ),
@@ -152,11 +182,10 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                     '返回',
                     TextStyle(
                         color: Colors.white,
-                        fontSize: MyScreen.homePageFontSize(context))),
+                        fontSize: MyScreen.homePageFontSize(context)),context),
               ),
               onTap: () {
                 setState(() {
-                  isOpenMenu = true;
                 });
               },
             ),
@@ -167,57 +196,107 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     return bottom;
   }
 
+  Widget _bottomNavBar() {
+    return BottomNavigationBar(
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          title: Text('首頁',)
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          title: Text('查詢')
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.exit_to_app),
+          title: Text('登出'),
+        ),
+      ],
+      backgroundColor: Color(MyColors.hexFromStr('#f4bf5f')),
+      currentIndex: _bnbIndex,
+      selectedItemColor: Colors.white,
+      unselectedItemColor: Colors.white,
+      onTap: _bottomNavBarAction,
+    );
+  }
+
+  Future<bool> _dialogExitApp(BuildContext context) async {
+    ///如果是安卓，回到桌面
+    if (Platform.isAndroid) {
+      AndroidIntent intent = AndroidIntent(
+        action: 'android.intent.action.MAIN',
+        category: 'android.intent.category.HOME'
+      );
+      await intent.launch();
+    }
+    return Future.value(false);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-          appBar: AppBar(
+
+    return ScopedModel<StatusDetailModel>(
+      model: statusModel,
+      child: ScopedModelDescendant<StatusDetailModel>(
+        builder: (context, child, model) {
+
+          return MyTabBarWidget(
+            drawer: HomeDrawer(),
+            tabItems: _renderTabItem(),
+            tabViews: [
+              BookingStatusType1Page(),
+              BookingStatusType2Page(),
+              BookingStatusType3Page(),
+              BookingStatusType4Page(),
+            ],
             backgroundColor: Theme.of(context).primaryColor,
-            title: Align(alignment: Alignment.center, child: Text('約裝查詢'),),
-            // leading: Container(),
-            // elevation: 0.0,
-            // actions: actions(),
-          ),
-          drawer: Drawer(
-            child: Column(
-              children: <Widget>[
-                UserAccountsDrawerHeader(
-                  accountEmail: Text('帳號：A0623 楊洞維', style: TextStyle(color: Colors.grey[700]),),
-                  accountName: Text('部門：研發處', style: TextStyle(color: Colors.grey[700]),),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: AssetImage('static/images/backGround.png'),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                ),
-                ListTile(
-                  title:Text('<1> 約裝狀態查詢')
-                ),
-                ListTile(
-                  title:Text('<2> 新戶約裝')
-                ),
-                ListTile(
-                  title:Text('<3> 加裝立案')
-                ),
-                Divider(),
-                Expanded(
-                  child: Align(
-                    alignment: FractionalOffset.bottomRight,
-                    child: ListTile(
-                      title: Text('現在時間', style: TextStyle(color: Colors.blue,),textAlign: TextAlign.right,),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          body: bodyView(),
-          bottomNavigationBar: bottomBar()),
+            indicatorColor: Colors.white,
+            title: Text('約裝狀態查詢', style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),),
+            onPageChanged: (index) {
+              statusModel.setCurrentIndex(index);
+            },
+            bottomNavBarChild: _bottomNavBar(),
+          );
+        },
+      ),
     );
+
+
+
+
+    // return SafeArea(
+    //   top: false,
+    //   child: WillPopScope(
+    //     onWillPop: () {
+    //       return _dialogExitApp(context);
+    //     },
+    //     child: Scaffold(
+    //       appBar: AppBar(
+    //         backgroundColor: Theme.of(context).primaryColor,
+    //         title: Align(alignment: Alignment.center, child: Text('約裝查詢'),),
+    //         // leading: Container(),
+    //         // elevation: 0.0,
+    //         // actions: actions(),
+    //       ),
+    //       drawer: HomeDrawer(),
+    //       body: bodyView(),
+    //       bottomNavigationBar: bottomBar()
+    //     ),
+    //   ),
+    // );
+  }
+}
+
+///首頁數據實體，包含當前index
+class StatusDetailModel extends Model {
+  static StatusDetailModel of(BuildContext context) => ScopedModel.of<StatusDetailModel>(context);
+
+  int _currentIndex = 0;
+
+  int get currentIndex => _currentIndex;
+
+  void setCurrentIndex(int index) {
+    _currentIndex = index;
+    notifyListeners();
   }
 }

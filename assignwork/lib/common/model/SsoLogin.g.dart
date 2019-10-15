@@ -8,13 +8,14 @@ part of 'SsoLogin.dart';
 
 Sso _$SsoFromJson(Map<String, dynamic> json) {
   return Sso(
-      json['retCode'] as String,
-      json['retMSG'] as String,
-      json['ssoKey'] as String,
-      json['serverURL'] as String,
-      json['blankURL'] as String,
-      json['deptName'] as String,
-      json['accName'] as String);
+    json['retCode'] as String,
+    json['retMSG'] as String,
+    json['ssoKey'] as String,
+    json['serverURL'] as String,
+    json['blankURL'] as String,
+    json['deptName'] as String,
+    json['accName'] as String,
+  );
 }
 
 Map<String, dynamic> _$SsoToJson(Sso instance) => <String, dynamic>{
@@ -24,5 +25,5 @@ Map<String, dynamic> _$SsoToJson(Sso instance) => <String, dynamic>{
       'serverURL': instance.serverURL,
       'blankURL': instance.blankURL,
       'deptName': instance.deptName,
-      'accName': instance.accName
+      'accName': instance.accName,
     };

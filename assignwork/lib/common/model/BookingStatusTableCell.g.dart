@@ -88,7 +88,7 @@ Map<String, dynamic> _$CancleInfoToJson(CancleInfo instance) =>
 
 PurchaseInfo _$PurchaseInfoFromJson(Map<String, dynamic> json) {
   return PurchaseInfo(
-    json['allowanceMonth'] as String,
+    json['allowanceMonth'] as int,
     json['cmMonth'] as int,
     json['cmCode'] as String,
     json['dtvCode'] as String,
@@ -97,10 +97,11 @@ PurchaseInfo _$PurchaseInfoFromJson(Map<String, dynamic> json) {
     json['networkCableNumber'] as int,
     json['slaveNumber'] as int,
     json['sumMoney'] as int,
-  )..additionalInfos = json['additionalInfos'] == null
-      ? null
-      : AdditionalInfos.fromJson(
-          json['additionalInfos'] as Map<String, dynamic>);
+  )..additionalInfos = (json['additionalInfos'] as List)
+      ?.map((e) => e == null
+          ? null
+          : AdditionalInfos.fromJson(e as Map<String, dynamic>))
+      ?.toList();
 }
 
 Map<String, dynamic> _$PurchaseInfoToJson(PurchaseInfo instance) =>

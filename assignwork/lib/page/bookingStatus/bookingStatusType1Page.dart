@@ -1,10 +1,25 @@
+import 'package:assignwork/common/dao/BookingStatusDao.dart';
 import 'package:assignwork/common/model/BookingStatusTableCell.dart';
+import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
+import 'package:assignwork/page/HomePage.dart';
 import 'package:assignwork/widget/MyListState.dart';
+import 'package:assignwork/widget/MyPullLoadWidget.dart';
 import 'package:assignwork/widget/item/BookingStatusItem.dart';
+import 'package:assignwork/widget/pull/nested/MyNestedPullLoadWiget.dart';
 import 'package:assignwork/widget/pull/nested/nested_refresh.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class BookingStatusType1Page extends StatefulWidget {
+
+  final String accNo;
+
+  final String accName;
+
+  final String deptId;
+
+  BookingStatusType1Page({this.accName, this.accNo, this.deptId});
+
   @override
   BookingStatusType1PageState createState() => BookingStatusType1PageState();
 }
@@ -30,11 +45,27 @@ class BookingStatusType1PageState extends State<BookingStatusType1Page> with Aut
 
   ///渲染item list
   _renderItem(index) {
-    BookingStatusTableCell bstc = pullLoadWidgetControl.dataList[index];
+    prefix0.CustomerWorkOrderInfos bstc = pullLoadWidgetControl.dataList[index];
     BookingItemModel model = BookingItemModel.forMap(bstc);
-    return BookingStatusItem();
+    return BookingStatusItem(model: model);
   }
 
+  ///取得api資料
+  _getApiData() async {
+    Map<String, dynamic> params = {};
+    params["accNo"] = widget.accNo;
+    params["function"] = "queryCustomerWorkOrderInfos";
+    params["type"] = "1";
+    params["employeeCode"] = widget.accNo;
+    params["pageIndex"] = "1";
+    params["pageSize"] = "10";
+    var res = await BookingStatusDao.getQueryCustomerWorkOrderInfos(params);
+    if (res != null && res.result) {
+
+    }
+    
+  }
+ 
   @override
   bool get wantKeepAlive => true;
 
@@ -57,21 +88,33 @@ class BookingStatusType1PageState extends State<BookingStatusType1Page> with Aut
   @override
   void initState() {
     super.initState();
+    _getApiData();
   }
   
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Card(
-        color: Colors.yellow[100],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)
-
-        ),
-      ),
+    // return Container(
+    //   color: Colors.white,
+    // );
+    super.build(context);
+    return ScopedModelDescendant<StatusDetailModel>(
+      builder: (context, child, model) {
+        return MyPullLoadWidget(
+          pullLoadWidgetControl,
+          (BuildContext context, int index) => _renderItem(index),
+          handleRefresh,
+          onLoadMore,
+          refreshKey: refreshIKey,
+          // scrollController: scrollController,
+          // headerSliverBuilder: (context, _) {
+          //   return _sliverBuilder(context, _);
+          // },
+        );
+      },
     );
   }
-
-  
+  ///支持表頭動態調整位置，這裏沒用到，回空
+  List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
+    return <Widget>[];
+  }
 }

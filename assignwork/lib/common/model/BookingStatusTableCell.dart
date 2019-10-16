@@ -94,7 +94,7 @@ class CancleInfo {
 }
 @JsonSerializable()
 class PurchaseInfo {
-  String allowanceMonth;
+  int allowanceMonth;
   int cmMonth;
   String cmCode;
   String dtvCode;
@@ -103,7 +103,7 @@ class PurchaseInfo {
   int networkCableNumber;
   int slaveNumber;
   int sumMoney;
-  AdditionalInfos additionalInfos;
+  List<AdditionalInfos> additionalInfos;
   PurchaseInfo(
     this.allowanceMonth,
     this.cmMonth,

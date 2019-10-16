@@ -1,6 +1,5 @@
-import 'dart:ffi';
 
-import 'package:assignwork/common/model/BookingStatusTableCell.dart';
+import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +43,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                         ),
                         Flexible(
                           flex: 2,
-                          child: autoTextSize(model.customerWorkOrderInfos.name, TextStyle(color: Colors.grey[700]), context),
+                          child: autoTextSize(model.name, TextStyle(color: Colors.grey[700]), context),
                         ),
                       ],
                     ),
@@ -59,7 +58,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                         ),
                         Flexible(
                           flex: 2,
-                          child: autoTextSize(model.customerWorkOrderInfos.code, TextStyle(color: Colors.grey[700]), context)
+                          child: autoTextSize(model.code, TextStyle(color: Colors.grey[700]), context)
                         ),
                       ],
                     ),
@@ -77,39 +76,47 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
 
 class BookingItemModel {
   int rowCount;
-  CustomerWorkOrderInfos customerWorkOrderInfos;
+  String bookingDate;
+  String building;
+  String code;
+  String description;
+  String installAddress;
+  String mobile;
+  String name;
+  String orderTypeCode;
+  String orderTypeName;
+  String slaveInfo;
+  String telephone;
+  String workorderCode;
+  String constructName;
+  // String openTime;
+  PurchaseInfo purchaseInfo;
+  CancleInfo cancleInfo;
   BookingItemModel();
 
-  BookingItemModel.forMap(BookingStatusTableCell data) {
-    customerWorkOrderInfos.bookingDate = data.customerWorkOrderInfos.bookingDate == null ? "" : data.customerWorkOrderInfos.bookingDate;
-    customerWorkOrderInfos.building = data.customerWorkOrderInfos.building == null ? "" : data.customerWorkOrderInfos.building;
-    customerWorkOrderInfos.code = data.customerWorkOrderInfos.code == null ? "" : data.customerWorkOrderInfos.code;
-    customerWorkOrderInfos.constructName = data.customerWorkOrderInfos.constructName == null ? "" : data.customerWorkOrderInfos.constructName;
-    customerWorkOrderInfos.description = data.customerWorkOrderInfos.description == null ? "" : data.customerWorkOrderInfos.description;
-    customerWorkOrderInfos.installAddress = data.customerWorkOrderInfos.installAddress == null ? "" : data.customerWorkOrderInfos.installAddress;
-    customerWorkOrderInfos.mobile = data.customerWorkOrderInfos.mobile == null ? "" : data.customerWorkOrderInfos.mobile;
-    customerWorkOrderInfos.name = data.customerWorkOrderInfos.name == null ? "" : data.customerWorkOrderInfos.name;
-    customerWorkOrderInfos.openTime = data.customerWorkOrderInfos.openTime == null ? "" : data.customerWorkOrderInfos.openTime;
-    customerWorkOrderInfos.orderTypeCode = data.customerWorkOrderInfos.orderTypeCode == null ? "" : data.customerWorkOrderInfos.orderTypeCode;
-    customerWorkOrderInfos.orderTypeName = data.customerWorkOrderInfos.orderTypeName == null ? "" : data.customerWorkOrderInfos.orderTypeName;
-    customerWorkOrderInfos.slaveInfo = data.customerWorkOrderInfos.slaveInfo == null ? "" : data.customerWorkOrderInfos.slaveInfo;
-    customerWorkOrderInfos.telephone = data.customerWorkOrderInfos.telephone == null ? "" : data.customerWorkOrderInfos.telephone;
-    customerWorkOrderInfos.workorderCode = data.customerWorkOrderInfos.workorderCode == null ? "" : data.customerWorkOrderInfos.workorderCode;
-    customerWorkOrderInfos.cancleInfo.operateTime = data.customerWorkOrderInfos.cancleInfo.operateTime == null ? "" : data.customerWorkOrderInfos.cancleInfo.operateTime;
-    customerWorkOrderInfos.cancleInfo.operators = data.customerWorkOrderInfos.cancleInfo.operators == null ? "" : data.customerWorkOrderInfos.cancleInfo.operators;
-    customerWorkOrderInfos.cancleInfo.reason = data.customerWorkOrderInfos.cancleInfo.reason == null ? "" : data.customerWorkOrderInfos.cancleInfo.reason;
-    customerWorkOrderInfos.purchaseInfo.allowanceMonth = data.customerWorkOrderInfos.purchaseInfo.allowanceMonth == null ? "" : data.customerWorkOrderInfos.purchaseInfo.allowanceMonth;
-    customerWorkOrderInfos.purchaseInfo.cmCode = data.customerWorkOrderInfos.purchaseInfo.cmCode == null ? "" : data.customerWorkOrderInfos.purchaseInfo.cmCode;
-    customerWorkOrderInfos.purchaseInfo.cmMonth = data.customerWorkOrderInfos.purchaseInfo.cmMonth == null ? "" : data.customerWorkOrderInfos.purchaseInfo.cmMonth;
-    customerWorkOrderInfos.purchaseInfo.crossFloorNumber = data.customerWorkOrderInfos.purchaseInfo.crossFloorNumber == null ? "" : data.customerWorkOrderInfos.purchaseInfo.crossFloorNumber;
-    customerWorkOrderInfos.purchaseInfo.dtvCode = data.customerWorkOrderInfos.purchaseInfo.dtvCode == null ? "" : data.customerWorkOrderInfos.purchaseInfo.dtvCode;
-    customerWorkOrderInfos.purchaseInfo.dtvMonth = data.customerWorkOrderInfos.purchaseInfo.dtvMonth == null ? "" : data.customerWorkOrderInfos.purchaseInfo.dtvMonth;
-    customerWorkOrderInfos.purchaseInfo.networkCableNumber = data.customerWorkOrderInfos.purchaseInfo.networkCableNumber == null ? "" : data.customerWorkOrderInfos.purchaseInfo.networkCableNumber;
-    customerWorkOrderInfos.purchaseInfo.slaveNumber = data.customerWorkOrderInfos.purchaseInfo.slaveNumber == null ? "" : data.customerWorkOrderInfos.purchaseInfo.slaveNumber;
-    customerWorkOrderInfos.purchaseInfo.sumMoney = data.customerWorkOrderInfos.purchaseInfo.sumMoney == null ? "" : data.customerWorkOrderInfos.purchaseInfo.sumMoney;
-    customerWorkOrderInfos.purchaseInfo.additionalInfos.code = data.customerWorkOrderInfos.purchaseInfo.additionalInfos.code == null ? "" : data.customerWorkOrderInfos.purchaseInfo.additionalInfos.code;
-    customerWorkOrderInfos.purchaseInfo.additionalInfos.month = data.customerWorkOrderInfos.purchaseInfo.additionalInfos.month == null ? "" : data.customerWorkOrderInfos.purchaseInfo.additionalInfos.month;
-    
+  BookingItemModel.forMap(prefix0.CustomerWorkOrderInfos data) {
+    bookingDate = data.bookingDate == null ? "" : data.bookingDate;
+    building = data.building == null ? "" : data.building;
+    code = data.code == null ? "" : data.code;
+    constructName = data.constructName == null ? "" : data.constructName;
+    description = data.description == null ? "" : data.description;
+    installAddress = data.installAddress == null ? "" : data.installAddress;
+    mobile = data.mobile == null ? "" : data.mobile;
+    name = data.name == null ? "" : data.name;
+    orderTypeCode = data.orderTypeCode == null ? "" : data.orderTypeCode;
+    orderTypeName = data.orderTypeName == null ? "" : data.orderTypeName;
+    slaveInfo = data.slaveInfo == null ? "" : data.slaveInfo;
+    telephone = data.telephone == null ? "" : data.telephone;
+    workorderCode = data.workorderCode == null ? "" : data.workorderCode;
+    if (data.cancleInfo != null) {
+      cancleInfo = CancleInfo.forMap(data.cancleInfo);
+    }
+    if (data.purchaseInfo != null) {
+      purchaseInfo = PurchaseInfo.forMap(data.purchaseInfo);
+    }
+    if (data.purchaseInfo.additionalInfos != null) {
+
+    }
   }
 }
 
@@ -127,10 +134,11 @@ class CustomerWorkOrderInfos {
   String telephone;
   String workorderCode;
   String constructName;
-  String openTime;
   PurchaseInfo purchaseInfo;
   CancleInfo cancleInfo;
-  CustomerWorkOrderInfos();
+  CustomerWorkOrderInfos(
+    
+  );
   
 }
 class CancleInfo {
@@ -138,7 +146,11 @@ class CancleInfo {
   String operators;
   String reason;
   CancleInfo();
-
+  CancleInfo.forMap(data) {
+    operateTime = data.operateTime == null ? "" : data.operateTime;
+    operators = data.operators == null ? "" : data.operators;
+    reason = data.reason == null ? "" : data.reason;
+  }
 }
 class PurchaseInfo {
   String allowanceMonth;
@@ -150,11 +162,26 @@ class PurchaseInfo {
   String networkCableNumber;
   String slaveNumber;
   String sumMoney;
-  AdditionalInfos additionalInfos;
+  List<AdditionalInfos> additionalInfos;
   PurchaseInfo();
+  PurchaseInfo.forMap(data) {
+    allowanceMonth = data.allowanceMonth == null ? "" : "${data.allowanceMonth}";
+    cmMonth = data.cmMonth == null ? "" : "${data.cmMonth}";
+    cmCode = data.cmCode == null ? "" : data.cmCode;
+    dtvCode = data.dtvCode == null ? "" : data.dtvCode;
+    dtvMonth = data.dtvMonth == null ? "" : "${data.dtvMonth}";
+    crossFloorNumber = data.crossFloorNumber == null ? "" : "${data.crossFloorNumber}";
+    networkCableNumber = data.networkCableNumber == null ? "" : "${data.networkCableNumber}";
+    slaveNumber = data.slaveNumber == null ? "" : "${data.slaveNumber}";
+    sumMoney = data.sumMoney == null ? "" : "${data.sumMoney}";
+  }
 }
 class AdditionalInfos {
   String code;
   String month;
   AdditionalInfos();
+  AdditionalInfos.forMap(data) {
+    code = data.code == null ? "" : data.code;
+    month = data.month == null ? "" : "${data.month}";
+  }
 }

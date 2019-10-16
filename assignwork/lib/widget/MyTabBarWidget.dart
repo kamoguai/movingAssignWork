@@ -61,7 +61,6 @@ class MyTabBarWidget extends StatefulWidget {
     title,
     floatingActionButton,
     tarWidgetControl,
-    topPageControl,
     onPageChanged,
     bottomNavBarChild,
     getBody,
@@ -85,7 +84,7 @@ class _MyTabBarWidgetState extends State<MyTabBarWidget> with BaseWidget, Single
 
   final TarWidgetControl _tarWidgetControl;
 
-  final PageController _pageController;
+  PageController _pageController;
 
   final ValueChanged<int> _onPageChanged;
 
@@ -103,7 +102,6 @@ class _MyTabBarWidgetState extends State<MyTabBarWidget> with BaseWidget, Single
     this._title,
     this._floatingActionButton,
     this._tarWidgetControl,
-    this._pageController,
     this._onPageChanged,
     this._bottomNavBarChild,
     this._getBody,
@@ -116,6 +114,7 @@ class _MyTabBarWidgetState extends State<MyTabBarWidget> with BaseWidget, Single
   void initState() {
     super.initState();
     _tabController = new TabController(vsync: this, length: widget.tabItems.length);
+    _pageController = new PageController(keepPage: false);
   }
 
   ///整个页面dispose时，记得把控制器也dispose掉，释放内存

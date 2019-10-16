@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
+import 'package:assignwork/common/config/Config.dart';
+import 'package:assignwork/common/local/LocalStorage.dart';
+import 'package:assignwork/common/model/UserInfo.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/page/bookingStatus/bookingStatusType1Page.dart';
@@ -38,6 +42,7 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
 
   TabController _tabController;
   List<Widget> tabItems;
+  UserInfo userInfo;
 
   @override
   void initState() {
@@ -46,6 +51,8 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
       vsync: this,
       length: 4
     );
+    _getUserInfo();
+    
   }
 
   @override
@@ -53,6 +60,22 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
     super.dispose();
     _tabController.dispose();
   }
+
+  _getUserInfo() async {
+    var userText = await LocalStorage.get(Config.USER_INFO);
+    var userMap = json.decode(userText);
+    print("登入者信息->$userMap");
+    if (mounted) {
+      setState(() {
+        userInfo = UserInfo.fromJson(userMap);
+        statusModel.setCurrentAccNo(userInfo.accNo);
+        statusModel.setCurrentAccName(userInfo.empName);
+        statusModel.setCurrentDeptId(userInfo.deptCD);
+      });
+    }
+
+  }
+
   ///渲染 Tab 的 Item
   _renderTabItem() {
     var itemList = [
@@ -244,10 +267,10 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
             drawer: HomeDrawer(),
             tabItems: _renderTabItem(),
             tabViews: [
-              BookingStatusType1Page(),
+              BookingStatusType1Page(accNo: userInfo.accNo, accName: userInfo.empName, deptId: userInfo.deptCD,),
               BookingStatusType2Page(),
               BookingStatusType3Page(),
-              BookingStatusType4Page(),
+              BookingStatusType4Page(accNo: userInfo.accNo, accName: userInfo.empName, deptId: userInfo.deptCD,),
             ],
             backgroundColor: Theme.of(context).primaryColor,
             indicatorColor: Colors.white,
@@ -293,10 +316,37 @@ class StatusDetailModel extends Model {
 
   int _currentIndex = 0;
 
+  String _accNo = "";
+
+  String _accName = "";
+
+  String _deptId = "";
+
   int get currentIndex => _currentIndex;
+
+  String get currentAccNo => _accNo;
+
+  String get currentAccName => _accName;
+
+  String get currentDeptId => _deptId;
 
   void setCurrentIndex(int index) {
     _currentIndex = index;
+    notifyListeners();
+  }
+
+  void setCurrentAccNo(String accno) {
+    _accNo = accno;
+    notifyListeners();
+  }
+
+  void setCurrentAccName(String accname) {
+    _accName = accname;
+    notifyListeners();
+  }
+
+  void setCurrentDeptId(String deptid) {
+    _deptId = deptid;
     notifyListeners();
   }
 }

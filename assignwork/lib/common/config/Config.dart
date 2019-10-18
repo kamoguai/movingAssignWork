@@ -19,4 +19,5 @@ class Config {
   static const NOWDATE = "now-date";
   static const SNR_CONFIG = "snr-config";
   static const USER_SSO_KEY = "user-sso";
+  static const SERVERMODE = "serverMode";
 }

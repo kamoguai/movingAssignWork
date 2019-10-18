@@ -23,43 +23,43 @@ class MyPullLoadWidget extends StatefulWidget {
   MyPullLoadWidget(this.control, this.itemBuilder, this.onRefresh, this.onLoadMore, {this.refreshKey, this.scrollController});
 
   @override
-  _MyPullLoadWidgetState createState() => _MyPullLoadWidgetState(this.control, this.itemBuilder, this.onRefresh, this.onLoadMore, this.refreshKey);
+  _MyPullLoadWidgetState createState() => _MyPullLoadWidgetState();
 }
 
 class _MyPullLoadWidgetState extends State<MyPullLoadWidget> {
-  final IndexedWidgetBuilder itemBuilder;
+  
+  ScrollController _scrollController;
 
-  final RefreshCallback onLoadMore;
+  bool isRefreshing = false;
 
-  final RefreshCallback onRefresh;
+  bool isLoadMoring = false;
 
-  final Key refreshKey;
-
-  MyPullLoadWidgetControl control;
-
-  _MyPullLoadWidgetState(this.control, this.itemBuilder, this.onRefresh, this.onLoadMore, this.refreshKey);
-
-  final ScrollController _scrollController = new ScrollController();
+  @override
+  ValueNotifier<bool> isActive = ValueNotifier<bool>(true);
 
   @override
   void initState() {
-    this.control.needLoadMore?.addListener((){
+    _scrollController = widget.scrollController ?? new ScrollController();
+
+    ///增加滑动监听
+    _scrollController.addListener(() {
+      ///判断当前滑动位置是不是到达底部，触发加载更多回调
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        if (widget.control.needLoadMore) {
+          handleLoadMore();
+        }
+      }
+    });
+
+    widget.control.addListener((){
+      setState(() {});
       try {
-        Future.delayed(const Duration(seconds: 2), () {
+        Future.delayed(Duration(seconds: 2), () {
           _scrollController.notifyListeners();
         });
       }
       catch(e) {
         print(e);
-      }
-    });
-    ///增加滑动监听
-    _scrollController.addListener(() {
-      ///判断当前滑动位置是不是到达底部，触发加载更多回调
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        if (this.control.needLoadMore.value) {
-          this.onLoadMore?.call();
-        }
       }
     });
     super.initState();
@@ -70,46 +70,97 @@ class _MyPullLoadWidgetState extends State<MyPullLoadWidget> {
   ///比如多个头部，是否需要空页面，是否需要显示加载更多。
   _getListCount() {
     ///是否需要头部
-    if (control.needHeader) {
+    if (widget.control.needHeader) {
       ///如果需要头部，用Item 0 的 Widget 作为ListView的头部
       ///列表数量大于0时，因为头部和底部加载更多选项，需要对列表数据总数+2
-      return (control.dataList.length > 0) ? control.dataList.length + 2 : control.dataList.length + 1;
+      return (widget.control.dataList.length > 0) ? widget.control.dataList.length + 2 : widget.control.dataList.length + 1;
     } else {
       ///如果不需要头部，在没有数据时，固定返回数量1用于空页面呈现
-      if (control.dataList.length == 0) {
+      if (widget.control.dataList.length == 0) {
         return 1;
       }
 
       ///如果有数据,因为部加载更多选项，需要对列表数据总数+1
-      return (control.dataList.length > 0) ? control.dataList.length + 1 : control.dataList.length;
+      return (widget.control.dataList.length > 0) ? widget.control.dataList.length + 1 : widget.control.dataList.length;
     }
   }
 
   ///根据配置状态返回实际列表渲染Item
   _getItem(int index) {
-    if (!control.needHeader && index == control.dataList.length && control.dataList.length != 0) {
+    if (!widget.control.needHeader && index == widget.control.dataList.length && widget.control.dataList.length != 0) {
       ///如果不需要头部，并且数据不为0，当index等于数据长度时，渲染加载更多Item（因为index是从0开始）
       return _buildProgressIndicator();
-    } else if (control.needHeader && index == _getListCount() - 1 && control.dataList.length != 0) {
+    } else if (widget.control.needHeader && index == _getListCount() - 1 && widget.control.dataList.length != 0) {
       ///如果需要头部，并且数据不为0，当index等于实际渲染长度 - 1时，渲染加载更多Item（因为index是从0开始）
       return _buildProgressIndicator();
-    } else if (!control.needHeader && control.dataList.length == 0) {
+    } else if (!widget.control.needHeader && widget.control.dataList.length == 0) {
       ///如果不需要头部，并且数据为0，渲染空页面
       return _buildEmpty();
     } else {
       ///回调外部正常渲染Item，如果这里有需要，可以直接返回相对位置的index
-      return itemBuilder(context, index);
+      return widget.itemBuilder(context, index);
     }
+  }
+
+    _lockToAwait() async {
+    ///if loading, lock to await
+    doDelayed() async {
+      await Future.delayed(Duration(seconds: 1)).then((_) async {
+        if (widget.control.isLoading) {
+          return await doDelayed();
+        } else {
+          return null;
+        }
+      });
+    }
+
+    await doDelayed();
+  }
+
+   @protected
+  Future<Null> handleRefresh() async {
+    if (widget.control.isLoading) {
+      if (isRefreshing) {
+        return null;
+      }
+
+      ///if loading, lock to await
+      await _lockToAwait();
+    }
+    widget.control.isLoading = true;
+    isRefreshing = true;
+    await widget.onRefresh?.call();
+    isRefreshing = false;
+    widget.control.isLoading = false;
+    return null;
+  }
+
+  @protected
+  Future<Null> handleLoadMore() async {
+    if (widget.control.isLoading) {
+      if (isLoadMoring) {
+        return null;
+      }
+
+      ///if loading, lock to await
+      await _lockToAwait();
+    }
+    isLoadMoring = true;
+    widget.control.isLoading = true;
+    await widget.onLoadMore?.call();
+    isLoadMoring = false;
+    widget.control.isLoading = false;
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return new RefreshIndicator(
       ///GlobalKey，用户外部获取RefreshIndicator的State，做显示刷新
-      key: refreshKey,
+      key: widget.refreshKey,
 
       ///下拉刷新触发，返回的是一个Future
-      onRefresh: onRefresh,
+      onRefresh: handleRefresh,
       child: new ListView.builder(
         ///保持ListView任何情况都能滚动，解决在RefreshIndicator的兼容问题。
         physics: const AlwaysScrollableScrollPhysics(),
@@ -150,10 +201,11 @@ class _MyPullLoadWidgetState extends State<MyPullLoadWidget> {
   ///上拉加载更多
   Widget _buildProgressIndicator() {
     ///是否需要显示上拉加载更多的loading
-    Widget bottomWidget = (control.needLoadMore.value)
+    Widget bottomWidget = (widget.control.needLoadMore)
         ? new Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
             ///loading框
-            new SpinKitRotatingCircle(color: Theme.of(context).primaryColor),
+            // new SpinKitRotatingCircle(color: Theme.of(context).primaryColor),
+            new SpinKitHourGlass(color: Theme.of(context).primaryColor),
             new Container(
               width: 5.0,
             ),
@@ -180,13 +232,54 @@ class _MyPullLoadWidgetState extends State<MyPullLoadWidget> {
   }
 }
 
-class MyPullLoadWidgetControl {
+bool playAuto = false;
+
+@override
+bool get getPlayAuto => playAuto;
+
+
+
+class MyPullLoadWidgetControl extends ChangeNotifier{
   ///数据，对齐增减，不能替换
-  List dataList = new List();
+  List _dataList = new List();
+
+  get dataList => _dataList;
+
+  set dataList(List value) {
+    _dataList.clear();
+    if (value != null) {
+      _dataList.addAll(value);
+      notifyListeners();
+    }
+  }
+
+  addList(List value) {
+    if (value != null) {
+      _dataList.addAll(value);
+      notifyListeners();
+    }
+  }
 
   ///是否需要加载更多
-  ValueNotifier<bool> needLoadMore = new ValueNotifier(false);
+  bool _needLoadMore = true;
+
+  set needLoadMore(value) {
+    _needLoadMore = value;
+    notifyListeners();
+  }
+
+  get needLoadMore => _needLoadMore;
 
   ///是否需要头部
-  bool needHeader = false;
+  bool _needHeader = false;
+  
+  set needHeader(value) {
+    _needHeader = value;
+    notifyListeners();
+  }
+
+  get needHeader => _needHeader;
+
+  ///是否加載中
+  bool isLoading = false;
 }

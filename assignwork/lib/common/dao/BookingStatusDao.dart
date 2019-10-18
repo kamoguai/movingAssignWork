@@ -17,6 +17,9 @@ class BookingStatusDao {
     Map<String, dynamic> mainDataArray = {};
     ///map轉json
     String str = json.encode(jsonMap);
+    if (Config.DEBUG) {
+      print("約裝查詢request => " + str);
+    }
     ///aesEncode
     var aesData = AesUtils.aes128Encrypt(str);
     Map paramsData = {"data": aesData};

@@ -374,7 +374,7 @@ mixin MyListState<T extends StatefulWidget> on State<T>, AutomaticKeepAliveClien
   resolveDataResult(res) {
     if (isShow) {
       setState(() {
-        pullLoadWidgetControl.needLoadMore = (res != null && res.data != null && res.data.length == Config.PAGE_SIZE);
+        pullLoadWidgetControl.needLoadMore.value = (res != null && res.data != null && res.data.length == Config.PAGE_SIZE);
       });
     }
   }

@@ -5,6 +5,8 @@ import 'package:android_intent/android_intent.dart';
 import 'package:assignwork/common/config/Config.dart';
 import 'package:assignwork/common/local/LocalStorage.dart';
 import 'package:assignwork/common/model/UserInfo.dart';
+import 'package:assignwork/common/net/Address.dart';
+import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/page/bookingStatus/bookingStatusType1Page.dart';
@@ -15,7 +17,10 @@ import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/HomeDrawer.dart';
 import 'package:assignwork/widget/MyTabBarWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:redux/redux.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -42,7 +47,6 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
 
   TabController _tabController;
   List<Widget> tabItems;
-  UserInfo userInfo;
 
   @override
   void initState() {
@@ -51,7 +55,7 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
       vsync: this,
       length: 4
     );
-    _getUserInfo();
+    _checkServerMode();
     
   }
 
@@ -61,20 +65,22 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
     _tabController.dispose();
   }
 
-  _getUserInfo() async {
-    var userText = await LocalStorage.get(Config.USER_INFO);
-    var userMap = json.decode(userText);
-    print("登入者信息->$userMap");
-    if (mounted) {
-      setState(() {
-        userInfo = UserInfo.fromJson(userMap);
-        statusModel.setCurrentAccNo(userInfo.accNo);
-        statusModel.setCurrentAccName(userInfo.empName);
-        statusModel.setCurrentDeptId(userInfo.deptCD);
-      });
-    }
-
+  Store<SysState> _getStore() {
+    return StoreProvider.of(context);
   }
+
+  _checkServerMode() async {
+    var text = await LocalStorage.get(Config.SERVERMODE);
+    if (text != null) {
+      if(mounted) {
+        setState(() {
+          Address.isEnterTest = true;
+          Fluttertoast.showToast(msg: '歡迎使用測試機');
+        });
+      }
+    }
+  }
+
 
   ///渲染 Tab 的 Item
   _renderTabItem() {
@@ -121,15 +127,6 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
         }
       }
     });
-  }
-
-  ///取得api資料
-  _getApiData() async {
-    Map<String, dynamic> params = {};
-    params["function"] = "queryCustomerWorkOrderInfos";
-    params["type"] = "1";
-    params["employeeCode"] = "";
-    // var res = await 
   }
 
   ///Scaffold bottomBar widget
@@ -257,56 +254,24 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-
-    return ScopedModel<StatusDetailModel>(
-      model: statusModel,
-      child: ScopedModelDescendant<StatusDetailModel>(
-        builder: (context, child, model) {
-
-          return MyTabBarWidget(
-            drawer: HomeDrawer(),
-            tabItems: _renderTabItem(),
-            tabViews: [
-              BookingStatusType1Page(accNo: userInfo.accNo, accName: userInfo.empName, deptId: userInfo.deptCD,),
-              BookingStatusType2Page(),
-              BookingStatusType3Page(),
-              BookingStatusType4Page(accNo: userInfo.accNo, accName: userInfo.empName, deptId: userInfo.deptCD,),
-            ],
-            backgroundColor: Theme.of(context).primaryColor,
-            indicatorColor: Colors.white,
-            title: Text('約裝狀態查詢', style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),),
-            onPageChanged: (index) {
-              statusModel.setCurrentIndex(index);
-            },
-            bottomNavBarChild: _bottomNavBar(),
-          );
-        },
-      ),
+    return MyTabBarWidget(
+      drawer: HomeDrawer(),
+      tabItems: _renderTabItem(),
+      tabViews: [
+        BookingStatusType1Page(),
+        BookingStatusType2Page(),
+        BookingStatusType3Page(),
+        BookingStatusType4Page(),
+      ],
+      backgroundColor: Theme.of(context).primaryColor,
+      indicatorColor: Colors.white,
+      title: Text('約裝狀態查詢', style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),),
+      onPageChanged: (index) {
+        statusModel.setCurrentIndex(index);
+      },
+      bottomNavBarChild: _bottomNavBar(),
     );
-
-
-
-
-    // return SafeArea(
-    //   top: false,
-    //   child: WillPopScope(
-    //     onWillPop: () {
-    //       return _dialogExitApp(context);
-    //     },
-    //     child: Scaffold(
-    //       appBar: AppBar(
-    //         backgroundColor: Theme.of(context).primaryColor,
-    //         title: Align(alignment: Alignment.center, child: Text('約裝查詢'),),
-    //         // leading: Container(),
-    //         // elevation: 0.0,
-    //         // actions: actions(),
-    //       ),
-    //       drawer: HomeDrawer(),
-    //       body: bodyView(),
-    //       bottomNavigationBar: bottomBar()
-    //     ),
-    //   ),
-    // );
+    
   }
 }
 

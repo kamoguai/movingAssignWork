@@ -1,4 +1,3 @@
-import 'package:assignwork/common/utils/AesUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:assignwork/common/local/LocalStorage.dart';
 import 'package:assignwork/common/config/Config.dart';
@@ -33,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   var _fcmToken = "123abc";
   final TextEditingController accountController = new TextEditingController();
   final TextEditingController pwController = new TextEditingController();
+  String _serverMode = "prod";
 
   _LoginPageState() : super();
 
@@ -47,9 +47,22 @@ class _LoginPageState extends State<LoginPage> {
    
     _account = await LocalStorage.get(Config.USER_NAME_KEY);
     _password = await LocalStorage.get(Config.PW_KEY);
+    // await LocalStorage.save(Config.SERVERMODE, "prod");
+    LocalStorage.remove(Config.SERVERMODE);
     accountController.value = new TextEditingValue(text: _account ?? "");
     pwController.value = new TextEditingValue(text: _password ?? "");
     
+  }
+
+  void _changeTaped() {
+    setState(() {
+      if (_serverMode == "prod") {
+        _serverMode = "test";
+      }
+      else {
+        _serverMode = "prod";
+      }
+    });
   }
 
   ///版號顯示
@@ -125,12 +138,27 @@ class _LoginPageState extends State<LoginPage> {
                             image: new AssetImage('static/images/logo.png')),
                       ),
                       new Padding(padding: new EdgeInsets.all(10.0)),
-                      new Text(
-                        '派裝系統3.0',
-                        style: TextStyle(
-                          fontSize: ScreenUtil().setSp(20.0) 
-                        ),  
+                      GestureDetector(
+                        child: new Text(
+                          '派裝系統3.0',
+                          style: TextStyle(
+                            fontSize: ScreenUtil().setSp(20.0) 
+                          ),  
+                        ),
+                        onTap: () {
+                          _changeTaped();
+                          setState(() {
+                            if (_serverMode == "test") {
+                              Fluttertoast.showToast(msg: '切換成測試機');
+                            }
+                            else {
+                              Fluttertoast.showToast(msg: '切換成正式機');
+                            }
+                            LocalStorage.save(Config.SERVERMODE, _serverMode);
+                          });
+                        },
                       ),
+                      
                       new Padding(padding: new EdgeInsets.all(10.0)),
                       new Card(
                         elevation: 5.0,

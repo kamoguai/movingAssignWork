@@ -1,133 +1,120 @@
-import 'package:assignwork/common/dao/BookingStatusDao.dart';
-import 'package:assignwork/common/model/BookingStatusTableCell.dart';
+import 'package:assignwork/bloc/bookingStatusType4_bloc.dart';
 import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
-import 'package:assignwork/page/HomePage.dart';
-import 'package:assignwork/widget/MyListState.dart';
-import 'package:assignwork/widget/MyPullLoadWidget.dart';
+import 'package:assignwork/common/redux/SysState.dart';
+import 'package:assignwork/common/style/MyStyle.dart';
+import 'package:assignwork/widget/MyNewPullLoadWidget.dart';
 import 'package:assignwork/widget/item/BookingStatusItem.dart';
-import 'package:assignwork/widget/pull/nested/MyNestedPullLoadWiget.dart';
-import 'package:assignwork/widget/pull/nested/nested_refresh.dart';
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
-
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+///
+///撤銷查詢tab頁
+///Date: 2019-10-17
 class BookingStatusType4Page extends StatefulWidget {
-
-  final String accNo;
-
-  final String accName;
-
-  final String deptId;
-
-  BookingStatusType4Page({this.accName, this.accNo, this.deptId});
 
   @override
   BookingStatusType4PageState createState() => BookingStatusType4PageState();
 }
 
-class BookingStatusType4PageState extends State<BookingStatusType4Page> with AutomaticKeepAliveClientMixin<BookingStatusType4Page>, MyListState<BookingStatusType4Page>, TickerProviderStateMixin {
-  
-  
+class BookingStatusType4PageState extends State<BookingStatusType4Page> with AutomaticKeepAliveClientMixin<BookingStatusType4Page> {
+
+  ///約裝查詢事件相關
+  final BookingStatusType4Bloc bloc = new BookingStatusType4Bloc();
+
   ///滑動監聽
   final ScrollController scrollController = new ScrollController();
-  ///當前顯示tab
-  int selectIndex = 0;
-  ///NestedScrollView 的刷新状态 GlobalKey ，方便主动刷新使用
-  final GlobalKey<NestedScrollViewRefreshIndicatorState> refreshIKey = new GlobalKey<NestedScrollViewRefreshIndicatorState>();
-  ///動畫控制器
-  AnimationController animationController;
 
-  @override
+  final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
+  
   showRefreshLoading() {
-    return Future.delayed(const Duration(seconds: 0), () {
-      refreshIKey.currentState.show().then((e){});
+    new Future.delayed(const Duration(seconds: 0), () {
+      refreshIndicatorKey.currentState.show().then((e) {});
       return true;
     });
   }
 
-  ///渲染item list
-  _renderItem(index) {
-    prefix0.CustomerWorkOrderInfos bstc = pullLoadWidgetControl.dataList[index];
-    BookingItemModel model = BookingItemModel.forMap(bstc);
-    return BookingStatusItem(model: model);
+  Store<SysState> _getStore() {
+    return StoreProvider.of(context);
   }
 
-  ///取得api資料
-  _getApiData() async {
-    Map<String, dynamic> params = {};
-    params["accNo"] = widget.accNo;
-    params["function"] = "queryCustomerWorkOrderInfos";
-    params["type"] = "4";
-    params["employeeCode"] = widget.accNo;
-    params["pageIndex"] = "1";
-    params["pageSize"] = "10";
-    List<prefix0.CustomerWorkOrderInfos> list = new List();
-    var res = await BookingStatusDao.getQueryCustomerWorkOrderInfos(params);
-    if (res != null && res.result) {
-      var mainDataArray = res.data["customerWorkOrderInfos"];
-      // var x = BookingStatusTableCell.fromJson(res.data);
-      // var y = x.customerWorkOrderInfos;
-      for (var dic in mainDataArray) {
-        list.add(prefix0.CustomerWorkOrderInfos.fromJson(dic));
-      }
-    }
-    if (mounted) {
-      setState(() {
-        pullLoadWidgetControl.dataList.clear();
-        pullLoadWidgetControl.dataList.addAll(list);
-      });
-    }
-    
+  ///下拉刷新數據
+  Future<void> requestRefresh() async {
+    Map<String, dynamic> jsonMap = new Map<String, dynamic>();
+    jsonMap["accNo"] = _getStore().state.userInfo?.accNo;
+    jsonMap["function"] = "queryCustomerWorkOrderInfos";
+    jsonMap["type"] = "4";
+    jsonMap["employeeCode"] = _getStore().state.userInfo?.accNo;
+    return await bloc.requestRefresh(jsonMap);
+  }
+
+  ///上拉請求更多數據
+  Future<void> requestLoadMore() async {
+    Map<String, dynamic> jsonMap = new Map<String, dynamic>();
+    jsonMap["accNo"] = _getStore().state.userInfo?.accNo;
+    jsonMap["function"] = "queryCustomerWorkOrderInfos";
+    jsonMap["type"] = "4";
+    jsonMap["employeeCode"] = _getStore().state.userInfo?.accNo;
+    return await bloc.requestLoadMore(jsonMap);
+  }
+
+  ///渲染item list
+  _renderItem(prefix0.CustomerWorkOrderInfos c) {
+
+    BookingItemModel model = BookingItemModel.forMap(c);
+    return BookingStatusItem(model: model, bookingType: "4",);
   }
  
   @override
   bool get wantKeepAlive => true;
 
-  @override
-  requestRefresh() {
-    return super.requestRefresh();
-  }
-
-  @override
-  requestLoadMore() {
-    return super.requestLoadMore();
-  }
-  
-  @override
-  bool get isRefreshFirst => true;
-
-  @override
-  bool get needHeader => false;
 
   @override
   void initState() {
     super.initState();
-    _getApiData();
   }
   
   @override
+  void didChangeDependencies() {
+    ///請求更新
+    if (bloc.getDataLength() == 0) {
+      bloc.changeLoadMoreStatus(false);
+      Map<String, dynamic> jsonMap = new Map<String, dynamic>();
+      jsonMap["accNo"] = _getStore().state.userInfo?.accNo;
+      jsonMap["function"] = "queryCustomerWorkOrderInfos";
+      jsonMap["type"] = "4";
+      jsonMap["employeeCode"] = _getStore().state.userInfo?.accNo;
+      ///先讀數據
+      bloc.requestRefresh(jsonMap, doNextFlag: false).then((_) {
+        showRefreshLoading();
+      });
+    }
+    else {
+      bloc.changeLoadMoreStatus(true);
+    }
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // return Container(
-    //   color: Colors.white,
-    // );
     super.build(context);
-    return ScopedModelDescendant<StatusDetailModel>(
-      builder: (context, child, model) {
-        return MyPullLoadWidget(
-          pullLoadWidgetControl,
-          (BuildContext context, int index) => _renderItem(index),
-          handleRefresh,
-          onLoadMore,
-          refreshKey: refreshIKey,
-          // scrollController: scrollController,
-          // headerSliverBuilder: (context, _) {
-          //   return _sliverBuilder(context, _);
-          // },
-        );
-      },
+    return Container(
+      color: Color(MyColors.hexFromStr('#eef1f9')),
+      child: MyPullLoadWidget(
+        bloc.pullLoadWidgetControl,
+        (BuildContext context, int index) => _renderItem(bloc.dataList[index]),
+        requestRefresh,
+        requestLoadMore,
+        refreshKey: refreshIndicatorKey,
+        scrollController: scrollController,
+      )
     );
   }
-  ///支持表頭動態調整位置，這裏沒用到，回空
-  List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
-    return <Widget>[];
-  }
+  
 }

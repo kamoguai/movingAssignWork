@@ -3,6 +3,7 @@ import 'package:assignwork/common/config/Config.dart';
 import 'package:assignwork/common/dao/BookingStatusDao.dart';
 import 'package:assignwork/widget/MyNewPullLoadWidget.dart';
 import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
+import 'package:fluttertoast/fluttertoast.dart';
 
 ///
 ///約裝bloc
@@ -18,6 +19,10 @@ class BookingStatusType4Bloc {
     jsonMap["pageIndex"] = _page;
     jsonMap["pageSize"] = Config.PAGE_SIZE;
     var res = await BookingStatusDao.getQueryCustomerWorkOrderInfos(jsonMap);
+    if(res.data == null || res.result == false) {
+      Fluttertoast.showToast(msg: 'API數據返回異常');
+      return null;
+    }
     var custInfo = res.data["customerWorkOrderInfos"];
     for (var dic in custInfo) {
       list.add(prefix0.CustomerWorkOrderInfos.fromJson(dic));

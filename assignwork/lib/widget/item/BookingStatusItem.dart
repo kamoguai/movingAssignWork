@@ -1,6 +1,7 @@
 
 import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
 import 'package:assignwork/widget/BaseWidget.dart';
+import 'package:assignwork/widget/dialog/BookingStatusDetailPop.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -21,10 +22,34 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
   final String deptId;
   ///api傳入資料，查詢類型
   final String bookingType;
+  ///由前頁呼叫的function
+  final Function detailEvent;
 
-  BookingStatusItem({this.accName, this.accNo, this.deptId, this.bookingType, this.model});
 
+  BookingStatusItem({this.accName, this.accNo, this.deptId, this.bookingType, this.model, this.detailEvent});
   
+  ///height 分隔線
+  _containerHeightLine() {
+    return Container(height: 20, width: 1, color: Colors.grey,);
+  }
+
+  ///詳情popup
+  Widget _detailPopDialog(BuildContext context, bookingType) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Card(
+            color: Colors.white,
+            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+            child: BookingStatusDetailPop(bookingType, model),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -37,10 +62,15 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
       bookingDate = dft.format(bookingDate);
     }
     ///通用欄位畫面
-    List<Widget> commonList() {
+    List<Widget> commonList(context) {
       List<Widget> list = [
         GestureDetector(
-          onTap: (){Fluttertoast.showToast(msg: model.name);},
+          onTap: (){
+            showDialog(
+              context: context, 
+              builder: (BuildContext context)=> _detailPopDialog(context,bookingType)
+            );
+          },
           child: Column(
             children: <Widget>[
               Container(
@@ -61,7 +91,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                         ],
                       ),
                     ),
-                    Container(height: 10, width: 1, color: Colors.grey,),
+                    _containerHeightLine(),
                     Flexible(
                       child: Row(
                         children: <Widget>[
@@ -79,6 +109,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                   ],
                 ),
               ),
+              
               Container(width: double.maxFinite, height: 1, color: Colors.grey,),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 2.0),
@@ -98,7 +129,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                         ],
                       ),
                     ),
-                    Container(height: 10, width: 1, color: Colors.grey,),
+                    _containerHeightLine(),
                     Flexible(
                       child: Row(
                         children: <Widget>[
@@ -126,7 +157,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                       child: autoTextSize('地址: ', TextStyle(color: Colors.black), context),
                     ),
                     Flexible(
-                      flex: 3,
+                      flex: 5,
                       child: autoTextSize(model.installAddress, TextStyle(color: Colors.grey[700]), context)
                     ),
                   ],
@@ -151,7 +182,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                         ],
                       ),
                     ),
-                    Container(height: 10, width: 1, color: Colors.grey,),
+                    _containerHeightLine(),
                     Flexible(
                       child: Row(
                         children: <Widget>[
@@ -208,7 +239,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                   ],
                 ),
               ),
-              Container(height: 10, width: 1, color: Colors.grey,),
+              _containerHeightLine(),
               Flexible(
                 flex: 1,
                 child: Row(
@@ -253,7 +284,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                   ],
                 ),
               ),
-              Container(height: 10, width: 1, color: Colors.grey,),
+              _containerHeightLine(),
               Flexible(
                 child: Row(
                   children: <Widget>[
@@ -303,7 +334,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                   ],
                 ),
               ),
-              Container(height: 10, width: 1, color: Colors.grey,),
+              _containerHeightLine(),
               Flexible(
                 child: Row(
                   children: <Widget>[
@@ -374,7 +405,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                   ],
                 ),
               ),
-              Container(height: 10, width: 1, color: Colors.grey,),
+              _containerHeightLine(),
               Flexible(
                 child: Row(
                   children: <Widget>[
@@ -414,7 +445,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
     ///最後要顯示Column畫面
     List<Widget> finalShowList() {
       List<Widget> list = [];
-      list.addAll(commonList());
+      list.addAll(commonList(context));
       ///依據不同bookingType添加畫面
       switch (bookingType) {
         case "1":
@@ -489,7 +520,7 @@ class BookingItemModel {
       purchaseInfo = PurchaseInfo.forMap(data.purchaseInfo);
     }
     if (data.purchaseInfo.additionalInfos != null) {
-
+      
     }
   }
 }

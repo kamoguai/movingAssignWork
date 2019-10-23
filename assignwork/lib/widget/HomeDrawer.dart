@@ -1,5 +1,6 @@
 import 'package:assignwork/common/model/UserInfo.dart';
 import 'package:assignwork/common/redux/SysState.dart';
+import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -40,7 +41,7 @@ class HomeDrawer extends StatelessWidget with BaseWidget {
                     title: autoTextSizeLeft('<1> 約裝狀態查詢', TextStyle(color: Colors.black), context)
                   ),
                   onTap: (){
-                    print(123);
+                    NavigatorUtils.goHome(context);
                   },
                 ),
                 GestureDetector(

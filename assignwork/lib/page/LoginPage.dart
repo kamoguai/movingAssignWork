@@ -47,8 +47,8 @@ class _LoginPageState extends State<LoginPage> {
    
     _account = await LocalStorage.get(Config.USER_NAME_KEY);
     _password = await LocalStorage.get(Config.PW_KEY);
-    // await LocalStorage.save(Config.SERVERMODE, "prod");
-    LocalStorage.remove(Config.SERVERMODE);
+    _serverMode = await LocalStorage.get(Config.SERVERMODE);  
+  
     accountController.value = new TextEditingValue(text: _account ?? "");
     pwController.value = new TextEditingValue(text: _password ?? "");
     
@@ -56,12 +56,15 @@ class _LoginPageState extends State<LoginPage> {
 
   void _changeTaped() {
     setState(() {
-      if (_serverMode == "prod") {
+      if (_serverMode == null || _serverMode == "prod") {
+        Fluttertoast.showToast(msg: '切換成測試機');
         _serverMode = "test";
       }
       else {
+        Fluttertoast.showToast(msg: '切換成正式機');
         _serverMode = "prod";
       }
+      LocalStorage.save(Config.SERVERMODE, _serverMode);
     });
   }
 
@@ -147,15 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         onTap: () {
                           _changeTaped();
-                          setState(() {
-                            if (_serverMode == "test") {
-                              Fluttertoast.showToast(msg: '切換成測試機');
-                            }
-                            else {
-                              Fluttertoast.showToast(msg: '切換成正式機');
-                            }
-                            LocalStorage.save(Config.SERVERMODE, _serverMode);
-                          });
+                          
                         },
                       ),
                       

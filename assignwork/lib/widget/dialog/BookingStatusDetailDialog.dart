@@ -1,33 +1,81 @@
+import 'package:assignwork/common/dao/BaseDao.dart';
+import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/item/BookingStatusItem.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
+
 ///
 ///約裝詳情popup
 ///Date: 2019-10-21
 ///
-class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
+class BookingStatusDetailDialog extends StatefulWidget {
+
   ///詳情model
   final BookingItemModel model;
+  ///由前頁傳過來accno
+  final accNo;
   ///由前頁傳過來，判別約裝狀態
   final bookingType;
 
-  BookingStatusDetailPop(this.bookingType, this.model);
+  BookingStatusDetailDialog({this.bookingType, this.model,this.accNo});
+
+  @override
+  _BookingStatusDetailDialogState createState() => _BookingStatusDetailDialogState();
+}
+
+class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> with BaseWidget {
+
+  String industryStr = "";
 
   ///height 分隔線
   _containerHeightLine() {
     return Container(height: 20, width: 1, color: Colors.grey,);
   }
 
+  ///call競業api
+  _getIndustryData() async {
+    Map<String, dynamic> paramMap = new Map<String, dynamic>();
+    paramMap["function"] = "getindustrywithwkno";
+    paramMap["accNo"] = widget.accNo;
+    paramMap["wkNo"] = widget.model.workorderCode;
+    var res = await BaseDao.getIndustryWithWkno(paramMap);
+    if (res.result) {
+      var data = res.data["industry"];
+      setState(() {
+        this.industryStr = data["Industry"];
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getIndustryData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+  }
+
   @override
   Widget build(BuildContext context) {
-
-
+    String cmCode = "---";
+    String dtvCode = "---";
+    ///cmCode擷取前段顯示
+    if (widget.model.purchaseInfo.cmCode != null && widget.model.purchaseInfo.cmCode != "") {
+      cmCode = widget.model.purchaseInfo.cmCode.substring(0,widget.model.purchaseInfo.cmCode.indexOf('_'));
+    }
+    
+    if (widget.model.purchaseInfo.dtvCode != null && widget.model.purchaseInfo.dtvCode != "") {
+      dtvCode = "基本頻道";
+    }
     ///通用欄位畫面
     List<Widget> commonList() {
       List<Widget> list = [
         Container(
+          // color: Colors.pink[50],
           padding: EdgeInsets.symmetric(horizontal: 2.0),
           child: Row(
             children: <Widget>[
@@ -40,7 +88,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.building, TextStyle(color: Colors.grey[700]), context),
+                      child: autoTextSize(widget.model.building, TextStyle(color: Colors.black), context),
                     ),
                   ],
                 ),
@@ -55,7 +103,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize('', TextStyle(color: Colors.grey[700]), context)
+                      child: autoTextSize(this.industryStr, TextStyle(color: Colors.black), context)
                     ),
                   ],
                 ),
@@ -65,6 +113,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
         ),
         Container(width: double.maxFinite, height: 1, color: Colors.grey,),
         Container(
+          color: Colors.pink[50],
           padding: EdgeInsets.symmetric(horizontal: 2.0),
           child: Row(
             children: <Widget>[
@@ -77,7 +126,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.purchaseInfo.dtvCode == null ? "---" : model.purchaseInfo.dtvCode, TextStyle(color: Colors.grey[700]), context),
+                      child: autoTextSize(dtvCode, TextStyle(color: Colors.black), context),
                     ),
                   ],
                 ),
@@ -92,7 +141,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.purchaseInfo.dtvMonth, TextStyle(color: Colors.grey[700]), context)
+                      child: autoTextSize(CommonUtils.filterMonthCN(widget.model.purchaseInfo.dtvMonth) , TextStyle(color: Colors.black), context)
                     ),
                   ],
                 ),
@@ -102,6 +151,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
         ),
         Container(width: double.maxFinite, height: 1, color: Colors.grey,),
         Container(
+          color: Colors.pink[50],
           padding: EdgeInsets.symmetric(horizontal: 2.0),
           child: Row(
             children: <Widget>[
@@ -114,7 +164,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize( "0種" , TextStyle(color: Colors.grey[700]), context),
+                      child: autoTextSize( "0種" , TextStyle(color: Colors.black), context),
                     ),
                   ],
                 ),
@@ -129,7 +179,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.purchaseInfo.slaveNumber, TextStyle(color: Colors.grey[700]), context)
+                      child: autoTextSize(widget.model.purchaseInfo.slaveNumber + '台', TextStyle(color: Colors.black), context)
                     ),
                   ],
                 ),
@@ -139,6 +189,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
         ),
         Container(width: double.maxFinite, height: 1, color: Colors.grey,),
         Container(
+          color: Colors.blue[50],
           padding: EdgeInsets.symmetric(horizontal: 2.0),
           child: Row(
             children: <Widget>[
@@ -151,7 +202,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.purchaseInfo.cmCode, TextStyle(color: Colors.red[300]), context),
+                      child: autoTextSize(cmCode, TextStyle(color: Colors.black), context),
                     ),
                   ],
                 ),
@@ -166,7 +217,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.purchaseInfo.cmMonth, TextStyle(color: Colors.black), context)
+                      child: autoTextSize(CommonUtils.filterMonthCN(widget.model.purchaseInfo.cmMonth) , TextStyle(color: Colors.black), context)
                     ),
                   ],
                 ),
@@ -176,6 +227,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
         ),
         Container(width: double.maxFinite, height: 1, color: Colors.grey,),
         Container(
+          color: Colors.lightBlue[50],
           padding: EdgeInsets.symmetric(horizontal: 2.0),
           child: Row(
             children: <Widget>[
@@ -188,7 +240,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.purchaseInfo.crossFloorNumber, TextStyle(color: Colors.red[300]), context),
+                      child: autoTextSize(widget.model.purchaseInfo.crossFloorNumber + '層', TextStyle(color: Colors.black), context),
                     ),
                   ],
                 ),
@@ -203,7 +255,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.purchaseInfo.networkCableNumber, TextStyle(color: Colors.black), context)
+                      child: autoTextSize(widget.model.purchaseInfo.networkCableNumber + "條", TextStyle(color: Colors.black), context)
                     ),
                   ],
                 ),
@@ -213,6 +265,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
         ),
         Container(width: double.maxFinite, height: 1, color: Colors.grey,),
         Container(
+          color: Colors.grey[100],
           padding: EdgeInsets.symmetric(horizontal: 2.0),
           child: Row(
             children: <Widget>[
@@ -222,7 +275,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
               ),
               Flexible(
                 flex: 7,
-                child: autoTextSizeLeft(model.description, TextStyle(color: Colors.grey[700]), context)
+                child: autoTextSizeLeft(widget.model.description, TextStyle(color: Colors.black), context)
               ),
             ],
           ),
@@ -234,7 +287,25 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
 
     ///約裝查詢用欄位畫面
     List<Widget> type1List() {
-
+      List<Widget> list = [
+         Container(width: double.maxFinite, height: 1, color: Colors.grey,),
+         Container(
+           padding: EdgeInsets.symmetric(horizontal: 2.0),
+           child: Row(
+            children: <Widget>[
+              Flexible(
+                flex: 2,
+                child: autoTextSize('BOSS回覆: ', TextStyle(color: Colors.black), context),
+              ),
+              Flexible(
+                flex: 6,
+                child: autoTextSizeLeft('', TextStyle(color: Colors.black), context)
+              ),
+            ],
+          ),
+         ),
+      ];
+      return list;
     }
 
      ///完工查詢用欄位畫面
@@ -272,23 +343,21 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
           child: Row(
             children: <Widget>[
               Flexible(
-                flex: 2,
                 child: Row(
                   children: <Widget>[
                     Flexible(
                       flex: 1,
-                      child: autoTextSize('撤銷\n時間: ', TextStyle(color: Colors.blue), context),
+                      child: autoTextSize('撤銷\n時間: ', TextStyle(color: Colors.red), context),
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.cancleInfo.operateTime, TextStyle(color: Colors.blue), context),
+                      child: autoTextSize(widget.model.cancleInfo.operateTime, TextStyle(color: Colors.red), context),
                     ),
                   ],
                 ),
               ),
               _containerHeightLine(),
               Flexible(
-                flex: 1,
                 child: Row(
                   children: <Widget>[
                     Flexible(
@@ -297,7 +366,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
                     ),
                     Flexible(
                       flex: 2,
-                      child: autoTextSize(model.cancleInfo.operators, TextStyle(color: Colors.grey[700]), context)
+                      child: autoTextSize(widget.model.cancleInfo.operators, TextStyle(color: Colors.black), context)
                     ),
                   ],
                 ),
@@ -316,7 +385,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
               ),
               Flexible(
                 flex: 6,
-                child: autoTextSizeLeft(model.cancleInfo.reason, TextStyle(color: Colors.black), context)
+                child: autoTextSizeLeft(widget.model.cancleInfo.reason, TextStyle(color: Colors.black), context)
               ),
             ],
           ),
@@ -330,7 +399,7 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
       List<Widget> list = [];
       list.addAll(commonList());
       ///依據不同bookingType添加畫面
-      switch (bookingType) {
+      switch (widget.bookingType) {
         case "1":
           list.addAll(type1List());
           break;
@@ -348,28 +417,18 @@ class BookingStatusDetailPop extends StatelessWidget with BaseWidget{
     }
 
     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-      width: double.maxFinite,
       child: GestureDetector(
         child: Container(
           child: Column(
               children: finalShowList()
             ),
-          color: Colors.white,
         ),
         onTap: () {
           Navigator.pop(context);
         },     
       ),
     );
-    // return Container(
-    //   width: 200,
-    //   height: 200,
-    //   color: Colors.yellow,
-    //   child: GestureDetector(
-    //     onTap: (){Navigator.pop(context);},
-    //     child: Text(model.name),
-    //   ),
-    // );
+    
   }
 }
+

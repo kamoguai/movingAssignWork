@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'package:assignwork/common/config/Config.dart';
-import 'package:assignwork/common/local/LocalStorage.dart';
 import 'package:flutter/services.dart';
 ///地址數據
 class Address {

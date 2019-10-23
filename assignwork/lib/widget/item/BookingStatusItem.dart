@@ -1,8 +1,12 @@
 
 import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
 import 'package:assignwork/widget/BaseWidget.dart';
-import 'package:assignwork/widget/dialog/BookingStatusDetailPop.dart';
+import 'package:assignwork/widget/dialog/BookingCancelDialog.dart';
+import 'package:assignwork/widget/dialog/BookingStatusDetailDialog.dart';
+import 'package:assignwork/widget/dialog/CalendarSelectorDialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
@@ -24,29 +28,132 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
   final String bookingType;
   ///由前頁呼叫的function
   final Function detailEvent;
+  ///由前頁呼叫的function
+  final Function getIndustry;
 
-
-  BookingStatusItem({this.accName, this.accNo, this.deptId, this.bookingType, this.model, this.detailEvent});
+  BookingStatusItem({this.accName, this.accNo, this.deptId, this.bookingType, this.model, this.detailEvent, this.getIndustry});
   
   ///height 分隔線
   _containerHeightLine() {
     return Container(height: 20, width: 1, color: Colors.grey,);
   }
 
+  ///confirm功能
+  static Future<Null> showConfirmDialog(BuildContext context, String titleStr, String contentStr) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: new Text(titleStr, style: TextStyle(fontSize: ScreenUtil().setSp(20)),),
+          content: new Text(contentStr, style: TextStyle(fontSize: ScreenUtil().setSp(16)),),
+          actions: <Widget>[
+            CupertinoButton(
+                onPressed: (){
+                  Fluttertoast.showToast(msg: contentStr);
+                },
+                child: Text('確定', style: TextStyle(color: Colors.blue, fontSize: ScreenUtil().setSp(20)),),
+            ),
+            CupertinoButton(
+                onPressed: (){
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: Text('取消', style: TextStyle(color: Colors.red, fontSize: ScreenUtil().setSp(20)),),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
   ///詳情popup
   Widget _detailPopDialog(BuildContext context, bookingType) {
+
+    List<Widget> columnList() {
+      List<Widget> list = [
+        Card(
+            color: Colors.white,
+            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            child: BookingStatusDetailDialog(bookingType: bookingType, model: model, accNo: accNo,),
+        ),
+      ];
+      switch (bookingType) {
+        case "1":
+          List<Widget> type1 = [
+            SizedBox(height: 20.0,),
+            Card(
+              color: Colors.white,
+              margin: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Container(
+                width: double.maxFinite,
+                height: 75,
+                child: Column(
+                  children: <Widget>[
+                    autoTextSize('撤銷後不得再派裝，請小心使用', TextStyle(color: Colors.red), context),
+                    FlatButton(
+                      color: Colors.red[300],
+                      onPressed: (){
+                        Navigator.pop(context);
+                        showDialog(
+                          context: context, 
+                          builder: (BuildContext context)=> _bookingCancelDialog(context,)
+                        );
+                      },
+                      child: autoTextSize('撤銷', TextStyle(color: Colors.white), context),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ];
+          list.addAll(type1);
+          break;
+        case "2":
+          break;
+        case "3":
+          break;
+        case "4":
+          break;
+      }
+      return list;
+    }
+
     return Material(
       type: MaterialType.transparency,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Card(
-            color: Colors.white,
-            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-            child: BookingStatusDetailPop(bookingType, model),
-          ),
-        ],
+        children: columnList()
       ),
+    );
+  }
+
+  ///show日期選擇器
+  Widget _calendarSelectorDialog(BuildContext context,) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white,
+        ),
+        margin: EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+        child: CalendarSelectorDialog(bookingDate: model.bookingDate,)
+      )
+    );
+  }
+
+  ///約裝撤銷dialog
+  Widget _bookingCancelDialog(BuildContext context, ) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white,
+        ),
+        margin: EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+        child: BookingCancelDialog(accNo: accNo, wkNo: model.workorderCode,)
+      )
     );
   }
 
@@ -220,44 +327,53 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
           ),
         ),
         Container(width: double.maxFinite, height: 1, color: Colors.grey,),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                flex: 2,
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('約裝時間: ', TextStyle(color: Colors.blue), context),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(bookingDate, TextStyle(color: Colors.blue), context),
-                    ),
-                  ],
+        GestureDetector(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 2.0),
+            child: Row(
+              children: <Widget>[
+                Flexible(
+                  flex: 2,
+                  child: Row(
+                    children: <Widget>[
+                      Flexible(
+                        flex: 2,
+                        child: autoTextSize('約裝時間: ', TextStyle(color: Colors.blue), context),
+                      ),
+                      Flexible(
+                        flex: 3,
+                        child: autoTextSize(bookingDate, TextStyle(color: Colors.blue), context),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              _containerHeightLine(),
-              Flexible(
-                flex: 1,
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('配屬: ', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(model.slaveInfo, TextStyle(color: Colors.grey[700]), context)
-                    ),
-                  ],
+                _containerHeightLine(),
+                Flexible(
+                  flex: 1,
+                  child: Row(
+                    children: <Widget>[
+                      Flexible(
+                        flex: 1,
+                        child: autoTextSize('配屬: ', TextStyle(color: Colors.black), context),
+                      ),
+                      Flexible(
+                        flex: 2,
+                        child: autoTextSize(model.slaveInfo, TextStyle(color: Colors.grey[700]), context)
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          onTap: () {
+            showDialog(
+              context: context, 
+              builder: (BuildContext context)=> _calendarSelectorDialog(context)
+            );
+          },
         ),
+        
       ];
       return list;
     }
@@ -274,11 +390,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                 child: Row(
                   children: <Widget>[
                     Flexible(
-                      flex: 1,
+                      flex: 2,
                       child: autoTextSize('工程改約: ', TextStyle(color: Colors.black), context),
                     ),
                     Flexible(
-                      flex: 2,
+                      flex: 3,
                       child: autoTextSize('', TextStyle(color: Colors.brown), context),
                     ),
                   ],

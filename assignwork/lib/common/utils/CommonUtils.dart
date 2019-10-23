@@ -83,7 +83,7 @@ class CommonUtils {
         return null;
       }
     }
-    String appDocPath = appDir.path + "/snrSys";
+    String appDocPath = appDir.path + "/assignwork";
     Directory appPath = Directory(appDocPath);
     await appPath.create(recursive: true);
     return appPath;
@@ -307,6 +307,33 @@ class CommonUtils {
       }
     );
   }
+
+  ///confirm功能
+  static Future<Null> showConfirmDialog(BuildContext context, String titleStr, String contentStr) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: new Text(titleStr, style: TextStyle(fontSize: ScreenUtil().setSp(20)),),
+          content: new Text(contentStr),
+          actions: <Widget>[
+            CupertinoButton(
+                onPressed: (){
+                  Fluttertoast.showToast(msg: contentStr);
+                },
+                child: Text('確定', style: TextStyle(color: Colors.blue, fontSize: ScreenUtil().setSp(20)),),
+            ),
+            CupertinoButton(
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+                child: Text('取消', style: TextStyle(color: Colors.red, fontSize: ScreenUtil().setSp(20)),),
+            ),
+          ],
+        );
+      }
+    );
+  }
   
 
   ///snr設定檔決定顏色
@@ -408,5 +435,22 @@ class CommonUtils {
       }
     }
     return MyColors.hexFromStr("#000000");
+  }
+
+  static filterMonthCN(String str) {
+    switch (str) {
+      case "0":
+          return "----";
+      case "1":
+          return "月繳";
+      case "3":
+          return "季繳";
+      case "6":
+          return "半年繳";
+      case "12":
+          return "年繳";
+      default:
+          return str;
+    }
   }
 }

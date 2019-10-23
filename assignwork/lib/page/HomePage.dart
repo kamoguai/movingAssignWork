@@ -1,12 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:assignwork/common/config/Config.dart';
 import 'package:assignwork/common/local/LocalStorage.dart';
-import 'package:assignwork/common/model/UserInfo.dart';
 import 'package:assignwork/common/net/Address.dart';
-import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/page/bookingStatus/bookingStatusType1Page.dart';
@@ -17,10 +14,8 @@ import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/HomeDrawer.dart';
 import 'package:assignwork/widget/MyTabBarWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:redux/redux.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -64,14 +59,10 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
     super.dispose();
     _tabController.dispose();
   }
-
-  Store<SysState> _getStore() {
-    return StoreProvider.of(context);
-  }
-
+  ///確認呼叫server路徑
   _checkServerMode() async {
     var text = await LocalStorage.get(Config.SERVERMODE);
-    if (text != null) {
+    if (text != null && text != "prod") {
       if(mounted) {
         setState(() {
           Address.isEnterTest = true;
@@ -119,7 +110,7 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
 
           break;
           case 1:
-
+            
           break;
           case 2:
             NavigatorUtils.goLogin(context);

@@ -18,6 +18,7 @@ import 'package:redux/redux.dart';
 
 void main() {
   // debugPaintSizeEnabled = true;
+  // WidgetsFlutterBinding.ensureInitialized();
   initializeDateFormatting().then((_) => runApp(MyApp()));
 }
 

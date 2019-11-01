@@ -235,11 +235,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                 child: Row(
                   children: <Widget>[
                     Flexible(
-                      flex: 1,
+                      flex: 2,
                       child: autoTextSize('跨樓層: ', TextStyle(color: Colors.black), context),
                     ),
                     Flexible(
-                      flex: 2,
+                      flex: 3,
                       child: autoTextSize(widget.model.purchaseInfo.crossFloorNumber + '層', TextStyle(color: Colors.black), context),
                     ),
                   ],
@@ -250,11 +250,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                 child: Row(
                   children: <Widget>[
                     Flexible(
-                      flex: 1,
+                      flex: 2,
                       child: autoTextSize('網路線: ', TextStyle(color: Colors.black), context),
                     ),
                     Flexible(
-                      flex: 2,
+                      flex: 3,
                       child: autoTextSize(widget.model.purchaseInfo.networkCableNumber + "條", TextStyle(color: Colors.black), context)
                     ),
                   ],

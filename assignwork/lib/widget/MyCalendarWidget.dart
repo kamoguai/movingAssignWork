@@ -62,7 +62,7 @@ class _MyCalendarWidgetState extends State<MyCalendarWidget> with TickerProvider
       ///日曆格式
       availableCalendarFormats: const {
         CalendarFormat.month: 'Month',
-        CalendarFormat.twoWeeks: '2 weeks',
+        // CalendarFormat.twoWeeks: '2 weeks',
         // CalendarFormat.week: 'Week',
       },
       ///日曆style

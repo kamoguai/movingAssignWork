@@ -1,7 +1,8 @@
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
-import 'package:assignwork/widget/MyCalendarWidget.dart';
+import 'package:assignwork/widget/item/TimePeriodItem.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 ///
@@ -18,18 +19,140 @@ class CalendarSelectorDialog extends StatefulWidget {
   _CalendarSelectorDialogState createState() => _CalendarSelectorDialogState();
 }
 
-class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with BaseWidget{
-  ///日曆controller
+class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with BaseWidget, TickerProviderStateMixin{
+  
+  DateTime _selectedDay;
+  Map<DateTime, List> _events;
+  Map<DateTime, List> _visibleEvents;
+  List _selectedEvents;
+  AnimationController _animationController;
   CalendarController _calendarController;
+  TabController _tabController;
+  ScrollController _scrollController = new ScrollController();
+
+  ///初始化日曆相關
+  _initCalendar() {
+    _selectedDay = DateTime.now();
+   
+    _selectedEvents = [];
+    _calendarController = CalendarController();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400)
+    );
+    _animationController.forward();
+  }
+  ///選擇日期後event
+  void _onDaySelected(DateTime day, List events) {
+    setState(() {
+      _selectedDay = day;
+      Fluttertoast.showToast(msg: "$_selectedDay");
+    });
+  }
+
+  void _onVisibleDaysChanged(DateTime first, DateTime last, CalendarFormat format) {
+    print('CALLBACK: _onVisibleDaysChanged');
+  }
+
+  ///cladar相關style顯示
+  Widget _buildTableCalendar() {
+    return TableCalendar(
+      ///多國語
+      locale: 'zh_CN',
+      ///顯示事件
+      events: {},
+      ///顯示假期
+      holidays: {},
+      ///初始化要顯示week, twoweek, month
+      initialCalendarFormat: CalendarFormat.month,
+      ///動畫演示
+      formatAnimation: FormatAnimation.slide,
+      ///起始日，可選週一或週日
+      startingDayOfWeek: StartingDayOfWeek.monday,
+      ///操作行為
+      availableGestures: AvailableGestures.horizontalSwipe,
+      ///日曆格式
+      availableCalendarFormats: const {
+        CalendarFormat.month: '月',
+        // CalendarFormat.twoWeeks: '2週',
+        // CalendarFormat.week: '週',
+      },
+      ///日曆style
+      calendarStyle: CalendarStyle(
+        ///所選定日期顏色
+        selectedColor:  Colors.blue[200],
+        ///今天顏色
+        todayColor:Colors.deepOrange[400],
+        ///註記顏色
+        markersColor: Colors.brown[700],
+
+        outsideDaysVisible: false,
+      ),
+      ///上方顯示日期及可選週期按鈕style
+      headerStyle: HeaderStyle(
+        ///顯示日期的style，這裡設定字型大小
+        titleTextStyle: TextStyle(fontSize: 16),
+        ///左邊箭頭padding，設定1為最小
+        leftChevronPadding: EdgeInsets.all(1),
+        ///右邊箭頭padding，設定1為最小
+        rightChevronPadding: EdgeInsets.all(1),
+        ///日期置中
+        centerHeaderTitle: true,
+        ///週期按鈕不顯示
+        // formatButtonVisible: false
+      ),
+      ///日曆間隔
+      rowHeight: 35,
+      ///選定日期
+      onDaySelected: _onDaySelected, 
+      ///controller
+      calendarController: _calendarController,
+      ///切換日期
+      onVisibleDaysChanged: _onVisibleDaysChanged,
+    );
+  }
+
+  ///渲染 Tab 的 Item
+  _renderTabItem() {
+    var itemList = [
+      "早班",
+      "中班",
+      "晚班",
+    ];
+    renderItem(String item, int i) {
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        alignment: Alignment.center,
+        child: Text(
+          item,
+          style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),
+          maxLines: 1,
+        ),
+      );
+    }
+    List<Widget> list = new List();
+    for (int i = 0; i < itemList.length; i++ ) {
+      list.add(renderItem(itemList[i], i));
+    }
+    return list;
+  }
 
   @override
   void initState() {
     super.initState();
+    _initCalendar();
+    _tabController = new TabController(
+      vsync: this,
+      length: 3
+    );
   }
 
   @override
   void dispose() {
     super.dispose();
+    _animationController.dispose();
+    _calendarController.dispose();
   }
 
 
@@ -38,6 +161,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
 
     Widget body;
     List<Widget> columnList = [];
+    List<Widget> columnList2 = [];
     DateFormat dft = new DateFormat('yyyy-MM-dd HH:mm:ss');
     var bookingDate;
     ///將約裝日期formate成自己要的格式
@@ -64,16 +188,84 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
       ),
     );
     columnList.add(
-      MyCalendarWidget(calendarController: _calendarController,)
+      Expanded(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          controller: _scrollController,
+          child: Column(
+            children: columnList2,
+          ),
+        ),
+      )
     );
-    columnList.add(
+    columnList2.add(
+      _buildTableCalendar()
+    );
+    columnList2.add(
       Container(
-        height: titleHeight(context) * 1.2,
+        height: titleHeight(context) * 1.4,
         decoration: BoxDecoration(
           border: Border(top: BorderSide(color: Colors.grey, width: 1), bottom: BorderSide(color: Colors.grey, width: 1),),
-          color: Colors.pink
+          color: Color(MyColors.hexFromStr('f4bf5f')),
         ),
+        child: TabBar(
+          tabs: _renderTabItem(),
+          indicatorWeight: 0.1,
+          controller: _tabController,
+        ),
+        // child: Flex(
+        //   direction: Axis.horizontal,
+        //   children: <Widget>[
+        //     Expanded(
+        //       child: GestureDetector(
+        //         child: Container(
+        //           decoration: BoxDecoration(
+        //             border: Border(right: BorderSide(color: Colors.grey, width: 1),),
+        //             // color: Colors.white
+        //           ),
+
+        //         ),
+        //         onTap: () {
+
+        //         },
+        //       ),
+        //     ),
+        //     Expanded(
+        //       child: FlatButton(
+        //         color: Colors.amber,
+        //         child: Text('午班'),
+        //         onPressed: (){},
+        //       ),
+        //     ),
+        //     Expanded(
+        //       child: FlatButton(
+        //         color: Colors.orange,
+        //         child: Text('晚班'),
+        //         onPressed: (){},
+        //       ),
+        //     )
+        //   ],
+        // ),
       ),
+    );
+    columnList2.add(
+      Container(
+        height: titleHeight(context) * 8,
+        child: TabBarView(
+          controller: _tabController,
+          children: <Widget>[
+            TimePeriodItem(classStr: "早",),
+            TimePeriodItem(classStr: "中",),
+            TimePeriodItem(classStr: "晚",),
+          ],
+        ),
+      )
+    );
+    columnList2.add(
+      Container(
+        height: 200, 
+        color: Colors.amber,
+      )
     );
 
     body = Container(

@@ -136,7 +136,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
           borderRadius: BorderRadius.all(Radius.circular(10)),
           color: Colors.white,
         ),
-        margin: EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+        margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: CalendarSelectorDialog(bookingDate: model.bookingDate,)
       )
     );

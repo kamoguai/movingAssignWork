@@ -453,4 +453,23 @@ class CommonUtils {
           return str;
     }
   }
+
+  static filterAreaCN(String str) {
+
+    switch (str) {
+
+      case "板橋區":
+        return "220/ROOT";
+      case "蘆洲區":
+        return "247/ROOT";
+      case "新莊區":
+        return "242/ROOT";
+      case "土城區":
+        return "236/ROOT";
+      case "三重區":
+        return "241/ROOT";
+      default:
+        return str;
+    }
+  }
 }

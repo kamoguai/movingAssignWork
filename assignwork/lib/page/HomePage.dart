@@ -209,18 +209,19 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
 
   Widget _bottomNavBar() {
     return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
+      type: BottomNavigationBarType.fixed,
+      items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
-          title: Text('首頁',)
+          title: autoTextSize('首頁', TextStyle(color: Colors.white), context)
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.search),
-          title: Text('查詢')
+          title: autoTextSize('查詢', TextStyle(color: Colors.white), context)
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.exit_to_app),
-          title: Text('登出'),
+          title: autoTextSize('登出', TextStyle(color: Colors.white), context)
         ),
       ],
       backgroundColor: Color(MyColors.hexFromStr('#f4bf5f')),

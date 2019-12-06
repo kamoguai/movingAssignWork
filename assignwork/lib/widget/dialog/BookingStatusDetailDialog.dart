@@ -1,7 +1,9 @@
 import 'package:assignwork/common/dao/BaseDao.dart';
+import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/item/BookingStatusItem.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 ///
@@ -24,6 +26,18 @@ class BookingStatusDetailDialog extends StatefulWidget {
 }
 
 class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> with BaseWidget {
+
+  @override
+  autoTextSize(text, style, context) {
+    var fontSize = MyScreen.normalPageFontSize(context);
+    var fontStyle = TextStyle(fontSize: fontSize);
+    return AutoSizeText(
+      text,
+      style: style.merge(fontStyle),
+      minFontSize: 5.0,
+      textAlign: TextAlign.center,
+    );
+  }   
 
   String industryStr = "";
 

@@ -116,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil(width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height)..init(context);
+
     return new StoreBuilder<SysState>(builder: (context, store) {
       return new GestureDetector(
         behavior: HitTestBehavior.translucent,

@@ -1,3 +1,5 @@
+import 'package:assignwork/common/net/Address.dart';
+import 'package:assignwork/common/net/Api.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:flutter/material.dart';
 ///選擇班表頁面
@@ -45,6 +47,9 @@ class _TimePeriodItemState extends State<TimePeriodItem> with BaseWidget{
     }
   }
 
+  getAPIData() async {
+    // var res = await HttpManager.netFetch(Address., params, header, option)
+  }
   @override
   Widget build(BuildContext context) {
     

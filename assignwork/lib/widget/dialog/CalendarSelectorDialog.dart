@@ -1,10 +1,14 @@
+import 'package:assignwork/common/dao/ManageSectionDao.dart';
+import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/item/TimePeriodItem.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:redux/redux.dart';
 ///
 ///日期班表選擇器
 ///Date: 2019-10-23
@@ -12,8 +16,12 @@ import 'package:table_calendar/table_calendar.dart';
 class CalendarSelectorDialog extends StatefulWidget {
   ///由前頁傳入預約日期
   final String bookingDate;
+  ///由前頁傳入地區
+  final String areaStr;
+  ///由前頁傳入工單號
+  final String wkNoStr;
 
-  CalendarSelectorDialog({this.bookingDate});
+  CalendarSelectorDialog({this.bookingDate, this.areaStr, this.wkNoStr});
 
   @override
   _CalendarSelectorDialogState createState() => _CalendarSelectorDialogState();
@@ -47,7 +55,9 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
   void _onDaySelected(DateTime day, List events) {
     setState(() {
       _selectedDay = day;
-      Fluttertoast.showToast(msg: "$_selectedDay");
+
+      _getChangeDateData();
+      // Fluttertoast.showToast(msg: "$_selectedDay");
     });
   }
 
@@ -137,6 +147,24 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     }
     return list;
   }
+  
+  Store<SysState> _getStore() {
+    return StoreProvider.of(context);
+  }
+
+  _getChangeDateData() async {
+    DateFormat df = new DateFormat('yyyy-MM-dd');
+    String selectData = df.format(_selectedDay);
+    Map<String, dynamic> jsonMap = new Map<String, dynamic>();
+    jsonMap["accNo"] = _getStore().state.userInfo?.accNo;
+    jsonMap["function"] = "queryBookService";
+    jsonMap["businessType"] = "3";
+    jsonMap["workorderCode"] = widget.wkNoStr;
+    jsonMap["bookingDate"] = selectData;
+    jsonMap["manageSectionCode"] = widget.areaStr;
+    var res = await ManageSectionDao.getQueryBookService(jsonMap);
+    
+  }
 
   @override
   void initState() {
@@ -146,6 +174,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
       vsync: this,
       length: 3
     );
+    Fluttertoast.showToast(msg: '${widget.areaStr}');
   }
 
   @override
@@ -209,6 +238,12 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
           color: Color(MyColors.hexFromStr('f4bf5f')),
         ),
         child: TabBar(
+          indicator: BoxDecoration(
+             
+            color: Colors.white
+          ),
+          labelColor: Colors.red,
+          unselectedLabelColor: Colors.white,
           tabs: _renderTabItem(),
           indicatorWeight: 0.1,
           controller: _tabController,

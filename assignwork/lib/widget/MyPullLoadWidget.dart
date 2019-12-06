@@ -140,7 +140,7 @@ class _MyPullLoadWidgetState extends State<MyPullLoadWidget> {
             child: new Image(image: new AssetImage(MyICons.DEFAULT_USER_ICON), width: 70.0, height: 70.0),
           ),
           Container(
-            child: Text('目前沒有資料', style: TextStyle(fontSize: ScreenUtil().setSp(MyConstant.normalTextSize))),
+            child: Text('目前沒有資料', style: TextStyle(fontSize: ScreenUtil().setSp(MyConstant.textSize_18))),
           ),
         ],
       ),

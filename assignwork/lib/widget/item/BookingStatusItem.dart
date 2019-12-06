@@ -1,9 +1,12 @@
 
 import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
+import 'package:assignwork/common/style/MyStyle.dart';
+import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/dialog/BookingCancelDialog.dart';
 import 'package:assignwork/widget/dialog/BookingStatusDetailDialog.dart';
 import 'package:assignwork/widget/dialog/CalendarSelectorDialog.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,6 +36,18 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
 
   BookingStatusItem({this.accName, this.accNo, this.deptId, this.bookingType, this.model, this.detailEvent, this.getIndustry});
   
+  @override
+  autoTextSize(text, style, context) {
+    var fontSize = MyScreen.normalPageFontSize(context);
+    var fontStyle = TextStyle(fontSize: fontSize);
+    return AutoSizeText(
+      text,
+      style: style.merge(fontStyle),
+      minFontSize: 5.0,
+      textAlign: TextAlign.center,
+    );
+  }
+
   ///height 分隔線
   _containerHeightLine() {
     return Container(height: 20, width: 1, color: Colors.grey,);
@@ -137,7 +152,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
           color: Colors.white,
         ),
         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-        child: CalendarSelectorDialog(bookingDate: model.bookingDate,)
+        child: CalendarSelectorDialog(bookingDate: model.bookingDate, areaStr: CommonUtils.filterAreaCN(model.installAddress.substring(3,6)), wkNoStr: model.workorderCode,)
       )
     );
   }

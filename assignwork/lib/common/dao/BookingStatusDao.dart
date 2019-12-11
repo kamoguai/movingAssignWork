@@ -94,5 +94,31 @@ class BookingStatusDao {
     }
   }
 
+  ///執行改約
+  static modifyBookingDate(Map<String, dynamic> jsonMap) async {
+    ///map轉json
+    String str = json.encode(jsonMap);
+    if (Config.DEBUG) {
+      print("執行改約request => " + str);
+    }
+    ///aesEncode
+    var aesData = AesUtils.aes128Encrypt(str);
+    Map paramsData = {"data": aesData};
+    var res = await HttpManager.netFetch(Address.getQueryCancelBaseInfo(), paramsData, null, new Options(method: "post"));
+    if (res != null && res.result) {
+      if (Config.DEBUG) {
+        print("執行改約resp => " + res.data.toString());
+      }
+      if (res.data['RtnCD'] == "00") {
+        
+        return new DataResult(null, true);
+      }
+      else {
+        Fluttertoast.showToast(msg: '${res.data['RtnMsg']}');
+        return new DataResult(null, false);
+      }
+    }
+  }
+
 
 }

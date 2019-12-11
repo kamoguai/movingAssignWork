@@ -215,10 +215,10 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
           icon: Icon(Icons.home),
           title: autoTextSize('首頁', TextStyle(color: Colors.white), context)
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          title: autoTextSize('查詢', TextStyle(color: Colors.white), context)
-        ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(Icons.search),
+        //   title: autoTextSize('查詢', TextStyle(color: Colors.white), context)
+        // ),
         BottomNavigationBarItem(
           icon: Icon(Icons.exit_to_app),
           title: autoTextSize('登出', TextStyle(color: Colors.white), context)

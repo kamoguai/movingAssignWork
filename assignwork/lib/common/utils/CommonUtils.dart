@@ -334,6 +334,24 @@ class CommonUtils {
       }
     );
   }
+
+  ///空页面
+  static buildEmpty() {
+    return new Container(
+      child: new Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          FlatButton(
+            onPressed: () {},
+            child: new Image(image: new AssetImage(MyICons.DEFAULT_USER_ICON), width: 70.0, height: 70.0),
+          ),
+          Container(
+            child: Text('目前沒有資料', style: TextStyle(fontSize: ScreenUtil().setSp(20))),
+          ),
+        ],
+      ),
+    );
+  }
   
 
   ///snr設定檔決定顏色

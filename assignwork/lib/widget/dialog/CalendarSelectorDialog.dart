@@ -1,7 +1,10 @@
+import 'package:assignwork/common/dao/BookingStatusDao.dart';
 import 'package:assignwork/common/dao/ManageSectionDao.dart';
 import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
+import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
+import 'package:assignwork/widget/dialog/BookingResultDialog.dart';
 import 'package:assignwork/widget/item/TimePeriodItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -20,28 +23,54 @@ class CalendarSelectorDialog extends StatefulWidget {
   final String areaStr;
   ///由前頁傳入工單號
   final String wkNoStr;
+  ///由前頁傳入客編
+  final String custNoStr;
 
-  CalendarSelectorDialog({this.bookingDate, this.areaStr, this.wkNoStr});
+  CalendarSelectorDialog({this.bookingDate, this.areaStr, this.wkNoStr, this.custNoStr});
 
   @override
   _CalendarSelectorDialogState createState() => _CalendarSelectorDialogState();
 }
 
 class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with BaseWidget, TickerProviderStateMixin{
-  
+  ///所選日期
   DateTime _selectedDay;
+  ///
   Map<DateTime, List> _events;
   Map<DateTime, List> _visibleEvents;
   List _selectedEvents;
+  ///calendar animation
   AnimationController _animationController;
+  ///calendar controller
   CalendarController _calendarController;
+  ///tab controller
   TabController _tabController;
+  /// scroll controller
   ScrollController _scrollController = new ScrollController();
+  ///textfield node
+  FocusNode _focusNode = FocusNode();
+  ///裝載api資料
+  List<dynamic> resApiData;
+  ///model 所有list
+  List<TimePeriodModel> modelList = new List<TimePeriodModel>();
+  ///早班model
+  List<TimePeriodModel> class1List = new List<TimePeriodModel>();
+  ///午班model
+  List<TimePeriodModel> class2List = new List<TimePeriodModel>();
+  ///晚班model
+  List<TimePeriodModel> class3List = new List<TimePeriodModel>();
+  TimePeriodModel model = new TimePeriodModel();
+  ///記錄所選班別
+  final List<String> timePeriodArr = [];
+  ///記錄textField
+  String inputText = "";
+  ///檢核送出
+  bool isValid = false;
 
   ///初始化日曆相關
   _initCalendar() {
     _selectedDay = DateTime.now();
-   
+    
     _selectedEvents = [];
     _calendarController = CalendarController();
 
@@ -49,16 +78,52 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
       vsync: this,
       duration: const Duration(milliseconds: 400)
     );
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _animationController.forward();
+      }
+      else {
+        _animationController.reverse();
+      }
+    });
     _animationController.forward();
   }
   ///選擇日期後event
   void _onDaySelected(DateTime day, List events) {
-    setState(() {
-      _selectedDay = day;
 
-      _getChangeDateData();
-      // Fluttertoast.showToast(msg: "$_selectedDay");
-    });
+    DateTime today = DateTime.now();
+    int i = day.compareTo(today);
+    var diffDate =  day.difference(today);
+    int y = diffDate.inDays;
+    ///如果日期小於或等於
+    if (i == 0 || i == 1) {
+      if (y > 30) {
+        Fluttertoast.showToast(msg: '所選日期不能超過30天');
+        setState(() {
+          modelList.clear();
+          class1List.clear();
+          class2List.clear();
+          class3List.clear();
+          timePeriodArr.clear();
+        });
+        return;
+      }
+      setState(() {
+        _selectedDay = day;
+
+        _getChangeDateData();
+      });
+    }
+    else {
+      setState(() {
+        modelList.clear();
+        class1List.clear();
+        class2List.clear();
+        class3List.clear();
+        timePeriodArr.clear();
+      });
+    }
+    _validateSendData();
   }
 
   void _onVisibleDaysChanged(DateTime first, DateTime last, CalendarFormat format) {
@@ -96,13 +161,17 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
         todayColor:Colors.deepOrange[400],
         ///註記顏色
         markersColor: Colors.brown[700],
+        ///週的style
+        weekdayStyle: TextStyle(fontSize: MyScreen.normalPageFontSize(context)),
+        ///週末的style
+        weekendStyle: TextStyle(fontSize: MyScreen.normalPageFontSize(context), color: Colors.redAccent),
 
         outsideDaysVisible: false,
       ),
       ///上方顯示日期及可選週期按鈕style
       headerStyle: HeaderStyle(
         ///顯示日期的style，這裡設定字型大小
-        titleTextStyle: TextStyle(fontSize: 16),
+        titleTextStyle: TextStyle(fontSize: MyScreen.normalPageFontSize(context)),
         ///左邊箭頭padding，設定1為最小
         leftChevronPadding: EdgeInsets.all(1),
         ///右邊箭頭padding，設定1為最小
@@ -112,6 +181,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
         ///週期按鈕不顯示
         // formatButtonVisible: false
       ),
+     
       ///日曆間隔
       rowHeight: 35,
       ///選定日期
@@ -132,7 +202,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     ];
     renderItem(String item, int i) {
       return Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
+        // padding: EdgeInsets.symmetric(vertical: 10),
         alignment: Alignment.center,
         child: Text(
           item,
@@ -151,8 +221,14 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
   Store<SysState> _getStore() {
     return StoreProvider.of(context);
   }
-
+  ///更換預約日期
   _getChangeDateData() async {
+    
+    modelList.clear();
+    class1List.clear();
+    class2List.clear();
+    class3List.clear();
+
     DateFormat df = new DateFormat('yyyy-MM-dd');
     String selectData = df.format(_selectedDay);
     Map<String, dynamic> jsonMap = new Map<String, dynamic>();
@@ -163,7 +239,73 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     jsonMap["bookingDate"] = selectData;
     jsonMap["manageSectionCode"] = widget.areaStr;
     var res = await ManageSectionDao.getQueryBookService(jsonMap);
-    
+    if (res != null && res.result) {
+      setState(() {
+        List <dynamic> dataList = res.data;
+        dataList.forEach((e) {
+          model = TimePeriodModel.forMap(e);
+          modelList.add(model);
+        });
+        ///處理班別資料
+        if (modelList.length > 0) {
+          for (var dic in modelList) {
+            final st = dic.serviceType;
+            if (st.contains("早")) {
+              class1List.add(dic);
+            }
+            else if (st.contains("中")) {
+              class2List.add(dic);
+            }
+            else if (st.contains("晚")) {
+              class3List.add(dic);
+            }
+          }
+        }
+      });
+    }
+  }
+  ///添加班別進入arr，以達到點擊切換顏色效果
+  void _addTransform(String timePeriod) {
+    setState(() {
+      if (timePeriodArr.contains(timePeriod)) {
+        var index = timePeriodArr.indexOf(timePeriod);
+        timePeriodArr.removeAt(index);
+      }
+      else {
+        timePeriodArr.clear();
+        timePeriodArr.add(timePeriod);
+      }
+      _validateSendData();
+    });
+  }
+
+   ///約裝撤銷dialog
+  Widget _bookingResultDialog(BuildContext context, ) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Card(
+            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            child: BookingResultDialog(custNo: widget.custNoStr, originDate: widget.bookingDate, changeDate: timePeriodArr[0],),
+          ),
+        ],
+      )
+    );
+  }
+
+  ///呼叫改約api
+  _postModifyBookingDate(String bookingDate, String desc) async {
+    Map<String, dynamic> jsonMap = new Map<String, dynamic>();
+    jsonMap["function"] = "modifyBookingDate";
+    jsonMap["accNo"] = _getStore().state.userInfo?.accNo;
+    jsonMap["operator"] = _getStore().state.userInfo?.accNo;
+    jsonMap["workorderCode"] = widget.wkNoStr;
+    jsonMap["bookingDate"] = bookingDate;
+    jsonMap["description"] = desc;
+    var res = await BookingStatusDao.modifyBookingDate(jsonMap);
+    return res;
   }
 
   @override
@@ -174,16 +316,43 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
       vsync: this,
       length: 3
     );
-    Fluttertoast.showToast(msg: '${widget.areaStr}');
   }
 
   @override
   void dispose() {
-    super.dispose();
     _animationController.dispose();
     _calendarController.dispose();
+    _scrollController.dispose();
+    _focusNode.dispose();
+    modelList.clear();
+    class1List.clear();
+    class2List.clear();
+    class3List.clear();
+    timePeriodArr.clear();
+    super.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (modelList.length == 0) {
+      ///初始化呼叫api
+     _getChangeDateData();
+
+    }
+  }
+
+  _validateSendData() {
+    setState(() {
+      if (timePeriodArr.length > 0 && inputText != "") {
+        isValid = true;
+      }
+      else {
+        isValid = false;
+      }
+    });
+   
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -197,16 +366,16 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     bookingDate = dft.parse(widget.bookingDate);
     dft = new DateFormat('yy-MM-dd (HH:mm)');
     bookingDate = dft.format(bookingDate);
-
     columnList.add(
       Container(
+        decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),color: Color(MyColors.hexFromStr('40b89e')),),
         padding: EdgeInsets.only(left: 10.0, right: 10.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             autoTextSize('原裝機日期： $bookingDate', TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context) * 1.5), context),
             GestureDetector(
-              child: Icon(Icons.cancel, color: Colors.blue, size: titleHeight(context) * 1.3,),
+              child: Icon(Icons.cancel, color: Colors.white, size: titleHeight(context) * 1.3,),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -232,9 +401,9 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     );
     columnList2.add(
       Container(
-        height: titleHeight(context) * 1.4,
+        height: titleHeight(context) * 1.2,
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.grey, width: 1), bottom: BorderSide(color: Colors.grey, width: 1),),
+          border: Border(top: BorderSide(color: Colors.grey, width: 1), bottom: BorderSide(color: Colors.red, width: 1),),
           color: Color(MyColors.hexFromStr('f4bf5f')),
         ),
         child: TabBar(
@@ -248,58 +417,87 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
           indicatorWeight: 0.1,
           controller: _tabController,
         ),
-        // child: Flex(
-        //   direction: Axis.horizontal,
-        //   children: <Widget>[
-        //     Expanded(
-        //       child: GestureDetector(
-        //         child: Container(
-        //           decoration: BoxDecoration(
-        //             border: Border(right: BorderSide(color: Colors.grey, width: 1),),
-        //             // color: Colors.white
-        //           ),
-
-        //         ),
-        //         onTap: () {
-
-        //         },
-        //       ),
-        //     ),
-        //     Expanded(
-        //       child: FlatButton(
-        //         color: Colors.amber,
-        //         child: Text('午班'),
-        //         onPressed: (){},
-        //       ),
-        //     ),
-        //     Expanded(
-        //       child: FlatButton(
-        //         color: Colors.orange,
-        //         child: Text('晚班'),
-        //         onPressed: (){},
-        //       ),
-        //     )
-        //   ],
-        // ),
       ),
     );
+    
     columnList2.add(
       Container(
-        height: titleHeight(context) * 8,
+        height: (listHeight(context) * 1.4) * 4,
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.red,))),
         child: TabBarView(
           controller: _tabController,
           children: <Widget>[
-            TimePeriodItem(classStr: "早",),
-            TimePeriodItem(classStr: "中",),
-            TimePeriodItem(classStr: "晚",),
+            TimePeriodItem(key: ValueKey('class1'), classStr: "早", modelList: class1List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay,),
+            TimePeriodItem(key: ValueKey('class2'), classStr: "中", modelList: class2List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay,),
+            TimePeriodItem(key: ValueKey('class3'), classStr: "晚", modelList: class3List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay,),
           ],
         ),
       )
     );
-    columnList2.add(
+    if (widget.wkNoStr != null) {
+      columnList2.add(
+        Container(
+          padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 5, bottom: 5),
+          child: TextField(
+            focusNode: _focusNode,
+            textInputAction: TextInputAction.done,
+            maxLines: 4,
+            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              labelText: '回覆內容',
+              labelStyle: TextStyle(color: Colors.grey),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(2.0),
+                borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
+              )
+            ),
+            onChanged: (String value) {
+              inputText = value;
+              _validateSendData();
+            },
+          ),
+        ),
+      );
+    }
+    columnList.add(
       Container(
-        height: 200, 
-        color: Colors.amber,
+        height: titleHeight(context) * 1.3,
+        decoration: BoxDecoration(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                height: titleHeight(context) * 1.3,
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10))),
+                  color: isValid == true ? Color(MyColors.hexFromStr('40b89e')) : Colors.grey,
+                  child: Text('確定', style: TextStyle(color: Colors.white, fontSize: MyScreen.normalPageFontSize(context)),),
+                  onPressed: () async {
+                    if (isValid) {
+                      ///改約
+                      if (widget.wkNoStr != null) {
+                        var res = await _postModifyBookingDate(timePeriodArr[0], inputText);
+                        if (res) {
+                          Navigator.pop(context);
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context)=> _bookingResultDialog(context)
+                          );
+                        }
+                      }
+                      else {
+
+                      }
+                    }
+                  },
+                ),
+              ),
+            )
+          ],
+        ),
       )
     );
 
@@ -311,5 +509,22 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     );
 
     return body;
+  }
+}
+///班別class model
+class TimePeriodModel {
+
+  String serviceType;
+  String timePeriod;
+  String acceptedAmount;
+  String sumAmount;
+
+  TimePeriodModel();
+
+  TimePeriodModel.forMap(data) {
+    serviceType = data["serviceType"] == null ? "" : data["serviceType"];
+    timePeriod = data["timePeriod"] == null ? "" : data["timePeriod"].toString();
+    acceptedAmount = data["acceptedAmount"] == null ? "" : data["acceptedAmount"].toString();
+    sumAmount = data["sumAmount"] == null ? "" : data["sumAmount"].toString();
   }
 }

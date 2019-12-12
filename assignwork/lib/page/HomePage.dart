@@ -13,6 +13,7 @@ import 'package:assignwork/page/bookingStatus/bookingStatusType4Page.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/HomeDrawer.dart';
 import 'package:assignwork/widget/MyTabBarWidget.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -51,6 +52,26 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
       length: 4
     );
     _checkServerMode();
+    // getDeviceInfo();
+
+
+    
+
+
+  }
+
+  getDeviceInfo() async {
+    DeviceInfoPlugin dip = new DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+         AndroidDeviceInfo androidInfo = await dip.androidInfo;
+         print('android info -> ${androidInfo.model}');
+      }
+      else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await dip.iosInfo;
+        print('iosInfo name -> ${iosInfo.name}, iosInfo name -> ${iosInfo.localizedModel}, iosInfo identifierForVendor -> ${iosInfo.identifierForVendor}');
+      }
+
+   
     
   }
 
@@ -110,7 +131,7 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
 
           break;
           case 1:
-            
+            NavigatorUtils.goLogin(context);
           break;
           case 2:
             NavigatorUtils.goLogin(context);

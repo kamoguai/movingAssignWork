@@ -117,9 +117,6 @@ class CommonUtils {
     ];
   }
 
-
-
-
   static launchOutURL(String url, BuildContext context) async {
     if (await canLaunch(url)) {
       await launch(url);

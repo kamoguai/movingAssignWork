@@ -487,9 +487,12 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
                             builder: (BuildContext context)=> _bookingResultDialog(context)
                           );
                         }
+                        else {
+                          return;
+                        }
                       }
                       else {
-
+                        
                       }
                     }
                   },

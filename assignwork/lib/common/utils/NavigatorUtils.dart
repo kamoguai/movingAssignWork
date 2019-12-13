@@ -1,5 +1,6 @@
 
 
+import 'package:assignwork/page/BookingViewPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:assignwork/page/HomePage.dart';
@@ -19,17 +20,17 @@ class NavigatorUtils {
     Navigator.pushNamed(context, routeName);
   }
   ///一般跳轉頁面
-  static NavigatorRouter(BuildContext context, Widget widget) {
+  static navigatorRouter(BuildContext context, Widget widget) {
     return Navigator.push(context, new CupertinoPageRoute(builder: (context) => widget));
   }
   ///跳轉至頁面並移除上一頁
-  static NavigatorRemoveRouter(BuildContext context, Widget widget) {
+  static navigatorRemoveRouter(BuildContext context, Widget widget) {
     Navigator.pushAndRemoveUntil(context, new CupertinoPageRoute(builder: (context) => widget), null);
   }
   ///登入頁
   static goLogin(BuildContext context, {isAutoLogin}) {
     if (isAutoLogin != null  && isAutoLogin != false) {
-      NavigatorRouter(context, LoginPage(isAutoLogin: isAutoLogin));
+      navigatorRouter(context, LoginPage(isAutoLogin: isAutoLogin));
     }
     else {
       Navigator.pushReplacementNamed(context, LoginPage.sName);
@@ -37,12 +38,16 @@ class NavigatorUtils {
   }
   ///跳回登入頁
   static goTopLogin(BuildContext context) {
-    NavigatorRemoveRouter(context, LoginPage());
+    navigatorRemoveRouter(context, LoginPage());
   }
   ///首頁
   ///pushReplacementNamed需要由main.dart做導航
   static goHome(BuildContext context) {
     Navigator.pushReplacementNamed(context, HomePage.sName);
+  }
+  ///新戶約裝
+  static goBookingView(BuildContext context) {
+    Navigator.pushReplacementNamed(context, BookingViewPage.sName);
   }
   
   

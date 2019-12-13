@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:assignwork/page/BookingViewPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -61,7 +62,12 @@ class MyApp extends StatelessWidget {
               return MyHomePage(
                 child: HomePage(),
               );
-            }
+            },
+            BookingViewPage.sName: (context) {
+              return MyHomePage(
+                child: BookingViewPage(),
+              );
+            },
           },
         );
       }),

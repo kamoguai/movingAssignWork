@@ -52,12 +52,6 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
       length: 4
     );
     _checkServerMode();
-    // getDeviceInfo();
-
-
-    
-
-
   }
 
   getDeviceInfo() async {
@@ -69,10 +63,7 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
       else if (Platform.isIOS) {
         IosDeviceInfo iosInfo = await dip.iosInfo;
         print('iosInfo name -> ${iosInfo.name}, iosInfo name -> ${iosInfo.localizedModel}, iosInfo identifierForVendor -> ${iosInfo.identifierForVendor}');
-      }
-
-   
-    
+      }    
   }
 
   @override

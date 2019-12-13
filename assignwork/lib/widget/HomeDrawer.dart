@@ -1,7 +1,9 @@
 import 'package:assignwork/common/model/UserInfo.dart';
 import 'package:assignwork/common/redux/SysState.dart';
+import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
@@ -11,6 +13,30 @@ import 'package:intl/intl.dart';
 ///Date: 2019-10-14
 class HomeDrawer extends StatelessWidget with BaseWidget {
   
+ @override
+  autoTextSize(text, style, context) {
+    var fontSize = MyScreen.homePageFontSize(context);
+    var fontStyle = TextStyle(fontSize: fontSize);
+    return AutoSizeText(
+      text,
+      style: style.merge(fontStyle),
+      minFontSize: 5.0,
+      textAlign: TextAlign.center,
+    );
+  }
+
+  @override
+  autoTextSizeLeft(text, style, context) {
+    var fontSize = MyScreen.homePageFontSize(context);
+    var fontStyle = TextStyle(fontSize: fontSize);
+    return AutoSizeText(
+      text,
+      style: style.merge(fontStyle),
+      minFontSize: 5.0,
+      textAlign: TextAlign.left,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var nowDate = DateTime.now();
@@ -49,7 +75,7 @@ class HomeDrawer extends StatelessWidget with BaseWidget {
                     title:autoTextSizeLeft('<2> 新戶約裝', TextStyle(color: Colors.black), context)
                   ),
                   onTap: () {
-
+                    NavigatorUtils.goBookingView(context);
                   },
                 ),
                 GestureDetector(
@@ -65,7 +91,7 @@ class HomeDrawer extends StatelessWidget with BaseWidget {
                   child: Align(
                     alignment: FractionalOffset.bottomRight,
                     child: ListTile(
-                      title: Text('$nowStr', style: TextStyle(color: Colors.blue,),textAlign: TextAlign.right,),
+                      title: Text('$nowStr', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),textAlign: TextAlign.right,),
                     ),
                   ),
                 ),

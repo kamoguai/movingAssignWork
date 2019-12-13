@@ -5,7 +5,6 @@ import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/item/BookingStatusItem.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-
 ///
 ///約裝詳情popup
 ///Date: 2019-10-21
@@ -38,13 +37,8 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
       textAlign: TextAlign.center,
     );
   }   
-
+  ///記錄競業
   String industryStr = "";
-
-  ///height 分隔線
-  _containerHeightLine() {
-    return Container(height: 20, width: 1, color: Colors.grey,);
-  }
 
   ///call競業api
   _getIndustryData() async {
@@ -89,212 +83,260 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
     List<Widget> commonList() {
       List<Widget> list = [
         Container(
-          // color: Colors.pink[50],
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
           child: Row(
             children: <Widget>[
               Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('大樓: ', TextStyle(color: Colors.black), context),
+                child: Container(
+                  decoration: BoxDecoration(border: Border(right: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '大樓: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: widget.model.building,
+                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
                     ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(widget.model.building, TextStyle(color: Colors.black), context),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-              _containerHeightLine(),
               Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('競業: ', TextStyle(color: Colors.black), context),
+                child: Container(
+                  padding: EdgeInsets.only(left: 5),
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '競業: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: this.industryStr,
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
                     ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(this.industryStr, TextStyle(color: Colors.black), context)
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Container(width: double.maxFinite, height: 1, color: Colors.grey,),
-        Container(
-          color: Colors.pink[50],
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('有線: ', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(dtvCode, TextStyle(color: Colors.black), context),
-                    ),
-                  ],
-                ),
-              ),
-              _containerHeightLine(),
-              Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('繳別: ', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(CommonUtils.filterMonthCN(widget.model.purchaseInfo.dtvMonth) , TextStyle(color: Colors.black), context)
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(width: double.maxFinite, height: 1, color: Colors.grey,),
-        Container(
-          color: Colors.pink[50],
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('加購: ', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize( "0種" , TextStyle(color: Colors.black), context),
-                    ),
-                  ],
-                ),
-              ),
-              _containerHeightLine(),
-              Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('分機: ', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(widget.model.purchaseInfo.slaveNumber + '台', TextStyle(color: Colors.black), context)
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(width: double.maxFinite, height: 1, color: Colors.grey,),
-        Container(
-          color: Colors.blue[50],
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('CM: ', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(cmCode, TextStyle(color: Colors.black), context),
-                    ),
-                  ],
-                ),
-              ),
-              _containerHeightLine(),
-              Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('繳別: ', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(CommonUtils.filterMonthCN(widget.model.purchaseInfo.cmMonth) , TextStyle(color: Colors.black), context)
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(width: double.maxFinite, height: 1, color: Colors.grey,),
-        Container(
-          color: Colors.lightBlue[50],
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize('跨樓層: ', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      flex: 3,
-                      child: autoTextSize(widget.model.purchaseInfo.crossFloorNumber + '層', TextStyle(color: Colors.black), context),
-                    ),
-                  ],
-                ),
-              ),
-              _containerHeightLine(),
-              Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize('網路線: ', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      flex: 3,
-                      child: autoTextSize(widget.model.purchaseInfo.networkCableNumber + "條", TextStyle(color: Colors.black), context)
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(width: double.maxFinite, height: 1, color: Colors.grey,),
-        Container(
-          color: Colors.grey[100],
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                flex: 1,
-                child: autoTextSize('備註: ', TextStyle(color: Colors.black), context),
-              ),
-              Flexible(
-                flex: 7,
-                child: autoTextSizeLeft(widget.model.description, TextStyle(color: Colors.black), context)
               ),
             ],
           ),
         ),
         
+        Container(
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid)),color: Colors.pink[50],),
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          child: Row(
+            children: <Widget>[
+              Flexible(
+                child: Container(
+                  decoration: BoxDecoration(border: Border(right: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '有線: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: dtvCode,
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
+                    ),
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.only(left: 5),
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '繳別: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: CommonUtils.filterMonthCN(widget.model.purchaseInfo.dtvMonth),
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid)),color: Colors.pink[50],),
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          child: Row(
+            children: <Widget>[
+              Flexible(
+                child: Container(
+                  decoration: BoxDecoration(border: Border(right: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '加購: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: '0種',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
+                    ),
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.only(left: 5),
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '分機: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: widget.model.purchaseInfo.slaveNumber + '台',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid)),color: Colors.blue[50],),
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          child: Row(
+            children: <Widget>[
+              Flexible(
+                child: Container(
+                  decoration: BoxDecoration(border: Border(right: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'CM: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: cmCode,
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
+                    ),
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.only(left: 5),
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '繳別: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: CommonUtils.filterMonthCN(widget.model.purchaseInfo.cmMonth) ,
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid)),color: Colors.lightBlue[50],),
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          child: Row(
+            children: <Widget>[
+              Flexible(
+                child: Container(
+                  decoration: BoxDecoration(border: Border(right: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '跨樓層: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: widget.model.purchaseInfo.crossFloorNumber + '層',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
+                    ),
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.only(left: 5),
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '網路線: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: widget.model.purchaseInfo.networkCableNumber + "條",
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid)),color: Colors.grey[100],),
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          alignment: Alignment.centerLeft,
+          child: RichText(
+            text: TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                  text: '備註: ',
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                ),
+                TextSpan(
+                  text: widget.model.description,
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                ),
+              ]
+            ),
+          ),
+        ),
       ];
       return list;
     }
@@ -302,22 +344,24 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
     ///約裝查詢用欄位畫面
     List<Widget> type1List() {
       List<Widget> list = [
-         Container(width: double.maxFinite, height: 1, color: Colors.grey,),
          Container(
-           padding: EdgeInsets.symmetric(horizontal: 2.0),
-           child: Row(
-            children: <Widget>[
-              Flexible(
-                flex: 2,
-                child: autoTextSize('BOSS回覆: ', TextStyle(color: Colors.black), context),
-              ),
-              Flexible(
-                flex: 6,
-                child: autoTextSizeLeft('', TextStyle(color: Colors.black), context)
-              ),
-            ],
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          alignment: Alignment.centerLeft,
+          child: RichText(
+            text: TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                  text: 'BOSS回覆: ',
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                ),
+                TextSpan(
+                  text: '',
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                ),
+              ]
+            ),
           ),
-         ),
+        ),
       ];
       return list;
     }
@@ -335,73 +379,69 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
     ///撤銷查詢用欄位畫面
     List<Widget> type4List() {
       List<Widget> list = [
-        Container(width: double.maxFinite, height: 1, color: Colors.grey,),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
           child: Row(
             children: <Widget>[
               Flexible(
-                flex: 2,
-                child: autoTextSize('BOSS回覆: ', TextStyle(color: Colors.black), context),
-              ),
-              Flexible(
-                flex: 6,
-                child: autoTextSizeLeft('已撤銷', TextStyle(color: Colors.red), context)
-              ),
-            ],
-          ),
-        ),
-        Container(width: double.maxFinite, height: 1, color: Colors.grey,),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('撤銷\n時間: ', TextStyle(color: Colors.red), context),
+                child: Container(
+                  decoration: BoxDecoration(border: Border(right: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'BOSS回覆: ',
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: ' 已撤銷',
+                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
                     ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(widget.model.cancleInfo.operateTime, TextStyle(color: Colors.red), context),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-              _containerHeightLine(),
               Flexible(
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 1,
-                      child: autoTextSize('撤銷人: ', TextStyle(color: Colors.black), context),
+                child: Container(
+                  padding: EdgeInsets.only(left: 5),
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: '撤銷時間: ',
+                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                        ),
+                        TextSpan(
+                          text: widget.model.cancleInfo.operateTime,
+                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                        )
+                      ]
                     ),
-                    Flexible(
-                      flex: 2,
-                      child: autoTextSize(widget.model.cancleInfo.operators, TextStyle(color: Colors.black), context)
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        Container(width: double.maxFinite, height: 1, color: Colors.grey,),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 2.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                flex: 2,
-                child: autoTextSize('撤銷原因: ', TextStyle(color: Colors.black), context),
-              ),
-              Flexible(
-                flex: 6,
-                child: autoTextSizeLeft(widget.model.cancleInfo.reason, TextStyle(color: Colors.black), context)
-              ),
-            ],
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+          alignment: Alignment.centerLeft,
+          child: RichText(
+            text: TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                  text: '撤銷原因: ',
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                ),
+                TextSpan(
+                  text: widget.model.cancleInfo.reason,
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                ),
+              ]
+            ),
           ),
         ),
       ];

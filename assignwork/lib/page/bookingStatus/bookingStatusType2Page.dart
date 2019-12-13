@@ -62,7 +62,7 @@ class BookingStatusType2PageState extends State<BookingStatusType2Page> with Aut
   _renderItem(prefix0.CustomerWorkOrderInfos c) {
 
     BookingItemModel model = BookingItemModel.forMap(c);
-    return BookingStatusItem(model: model, bookingType: "2",);
+    return BookingStatusItem(model: model, bookingType: "2", accNo: _getStore().state.userInfo?.accNo, accName: _getStore().state.userInfo?.empName, deptId: _getStore().state.userInfo?.deptCD,);
   }
  
   @override

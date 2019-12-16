@@ -41,7 +41,7 @@ class BaseDao {
     }
   }
 
-  ///取得競業
+  ///取得工單條件競業
   static getIndustryWithWkno(Map jsonMap) async {
     Map<String, dynamic> resDataArray = {};
     ///map轉json

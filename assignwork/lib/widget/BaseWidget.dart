@@ -9,6 +9,31 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
  * Date: 2019-05-09
  */
 mixin BaseWidget{
+  ///可選地區json
+  final areaAddressJson = """
+   [
+      {
+        "code": "236/ROOT",
+        "name": "土城區"
+      },
+      {
+        "code": "241/ROOT",
+        "name": "三重區"
+      },
+      {
+        "code": "242/ROOT",
+        "name": "新莊區"
+      },
+      {
+        "code": "247/ROOT",
+        "name": "蘆洲區"
+      },
+      {
+        "code": "220/ROOT",
+        "name": "板橋區"
+      }
+    ]
+  """;
   ///是否讀取中
   var isLoading = false;
   ///讀取用dialog

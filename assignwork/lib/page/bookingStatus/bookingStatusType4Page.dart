@@ -76,6 +76,7 @@ class BookingStatusType4PageState extends State<BookingStatusType4Page> with Aut
   
   @override
   void didChangeDependencies() {
+    if(mounted)
     ///請求更新
     if (bloc.getDataLength() == 0) {
       bloc.changeLoadMoreStatus(false);

@@ -38,7 +38,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
   
   @override
   autoTextSize(text, style, context) {
-    var fontSize = MyScreen.normalPageFontSize(context);
+    var fontSize = MyScreen.normalPageFontSize_span(context);
     var fontStyle = TextStyle(fontSize: fontSize);
     return AutoSizeText(
       text,
@@ -206,11 +206,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                             children: <TextSpan>[
                               TextSpan(
                                 text: '姓名: ',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                               ),
                               TextSpan(
                                 text: model.name,
-                                style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize_span(context))
                               )
                             ]
                           ),
@@ -225,11 +225,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                             children: <TextSpan>[
                               TextSpan(
                                 text: '客編: ',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                               ),
                               TextSpan(
                                 text: model.code,
-                                style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize_span(context))
                               )
                             ]
                           ),
@@ -253,11 +253,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                             children: <TextSpan>[
                               TextSpan(
                                 text: '電話: ',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                               ),
                               TextSpan(
                                 text: model.telephone,
-                                style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize_span(context))
                               )
                             ]
                           ),
@@ -272,11 +272,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                             children: <TextSpan>[
                               TextSpan(
                                 text: '手機: ',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                               ),
                               TextSpan(
                                 text: model.mobile,
-                                style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize_span(context))
                               )
                             ]
                           ),
@@ -295,11 +295,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                     children: <TextSpan>[
                       TextSpan(
                         text: '地址: ',
-                        style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                       ),
                       TextSpan(
                         text: model.installAddress,
-                        style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize(context))
+                        style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize_span(context))
                       ),
                     ]
                   ),
@@ -319,11 +319,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                             children: <TextSpan>[
                               TextSpan(
                                 text: '大樓: ',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                               ),
                               TextSpan(
                                 text: model.building,
-                                style: TextStyle(color: Colors.red[300], fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.red[300], fontSize: MyScreen.normalPageFontSize_span(context))
                               )
                             ]
                           ),
@@ -338,11 +338,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                             children: <TextSpan>[
                               TextSpan(
                                 text: '狀態: ',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                               ),
                               TextSpan(
                                 text: model.orderTypeName,
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                               )
                             ]
                           ),
@@ -361,11 +361,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                     children: <TextSpan>[
                       TextSpan(
                         text: '備註: ',
-                        style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                       ),
                       TextSpan(
                         text: model.description,
-                        style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize(context))
+                        style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize_span(context))
                       ),
                     ]
                   ),
@@ -390,11 +390,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '約裝時間: ',
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.normalPageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.normalPageFontSize_span(context))
                           ),
                           TextSpan(
                             text: bookingDate,
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.normalPageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.normalPageFontSize_span(context))
                           )
                         ]
                       ),
@@ -409,11 +409,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '配屬: ',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                           ),
                           TextSpan(
                             text: model.slaveInfo,
-                            style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize(context))
+                            style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize_span(context))
                           )
                         ]
                       ),
@@ -451,11 +451,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                       children: <TextSpan>[
                         TextSpan(
                           text: '工程改約: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: '',
-                          style: TextStyle(color: Colors.brown, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.brown, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -470,11 +470,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                       children: <TextSpan>[
                         TextSpan(
                           text: '派工: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: model.constructName,
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -511,11 +511,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                       children: <TextSpan>[
                         TextSpan(
                           text: '完工時間: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: openTime,
-                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -530,11 +530,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                       children: <TextSpan>[
                         TextSpan(
                           text: '工程人員: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: model.constructName,
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -552,11 +552,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
               children: <TextSpan>[
                 TextSpan(
                   text: '撤銷原因: ',
-                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                 ),
                 TextSpan(
                   text: model.cancleInfo.reason,
-                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                 ),
               ]
             ),
@@ -609,11 +609,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                             children: <TextSpan>[
                               TextSpan(
                                 text: '撤銷: ',
-                                style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize_span(context))
                               ),
                               TextSpan(
                                 text: operateTime,
-                                style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize_span(context))
                               )
                             ]
                           ),
@@ -628,11 +628,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                             children: <TextSpan>[
                               TextSpan(
                                 text: '撤銷人: ',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                               ),
                               TextSpan(
                                 text: model.cancleInfo.operators,
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                               )
                             ]
                           ),
@@ -650,11 +650,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                     children: <TextSpan>[
                       TextSpan(
                         text: '撤銷原因: ',
-                        style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                       ),
                       TextSpan(
                         text: model.cancleInfo.reason,
-                        style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                        style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                       ),
                     ]
                   ),

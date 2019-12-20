@@ -2,9 +2,11 @@
 import 'package:assignwork/common/dao/BaseDao.dart';
 import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
+import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/HomeDrawer.dart';
+import 'package:assignwork/widget/dialog/CustDetailSelectDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -51,30 +53,60 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   ///記錄網路線下拉
   List<dynamic> netCableArr = [];
   String netCableSelected = "";
+  ///有線業贈下拉
+  List<dynamic> dtvGiftArr = [];
+  String dtvGiftSelected = "";
+  ///寬頻業贈下拉
+  List<dynamic> cmGiftArr = [];
+  String cmGiftSelected = "";  
 
   Store<SysState> _getStore() {
     return StoreProvider.of(context);
   }
+
+   ///下拉選單高度
+   double _dropHeight(context) {
+     return titleHeight(context) * 1.3;
+   }
   
   ///取得競業資料
   _getIndustryData() async {
     Map<String, dynamic> paramMap = new Map<String, dynamic>();
-    paramMap["function"] = "getindustrywithwkno";
+    paramMap["function"] = "getIndustryList";
     paramMap["accNo"] = _getStore().state.userInfo?.accNo;
-    paramMap["areaCode"] = "";
+    paramMap["areaCode"] = "220/ROOT";
     var res = await BaseDao.getIndustryList(paramMap);
     if (res.result) {
+
       var data = res.data["industryList"];
+      data.insert(0,'');
       setState(() {
-        this.industyArr = data["industryList"];
+        this.industyArr = data;
       });
     }
   }
 
-  ///競業dialog
+  ///取得基本資料
+  _getBaseData() async {
+    Map<String, dynamic> paramMap = new Map<String, dynamic>();
+    paramMap["function"] = "getBaseListInfo";
+    paramMap["accNo"] = _getStore().state.userInfo?.accNo;
+    var res = await BaseDao.getBaseListInfo(paramMap);
+    if (res.result) {
+      final data1 = res.data["networkCableNumberList"];
+      final data2 = res.data["crossFloorNumberList"];
+      final data3 = res.data["slaveNumberList"];
+      
+      setState(() {
+        this.netCableArr = data1;
+        this.crossFloorArr = data2;
+        this.slaveArr = data3;
+      });
+    }
+  }
   
 
-
+  
 
   ///Scaffold body
   Widget _bodyView() {
@@ -85,7 +117,10 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
           ///點擊跳出可輸入pop
           InkWell(
             onTap: () {
-              Fluttertoast.showToast(msg: '顯示pop');
+              showDialog(
+                context: context, 
+                builder: (BuildContext context)=> _custDetailSelectorDialog(context)
+              );
             },
             child: Column(
               children: <Widget>[
@@ -103,11 +138,11 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                               children: <TextSpan>[
                                 TextSpan(
                                 text: '姓名：',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 ),
                                 TextSpan(
                                   text: '123',
-                                  style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                                  style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 )
                               ]
                             ),
@@ -122,11 +157,11 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                               children: <TextSpan>[
                                 TextSpan(
                                 text: '客編：',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 ),
                                 TextSpan(
                                   text: '123',
-                                  style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                                  style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 )
                               ]
                             ),
@@ -145,11 +180,11 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                       children: <TextSpan>[
                         TextSpan(
                           text: '電話：',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                         ),
                         TextSpan(
                           text: '123',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                         ),
                       ]
                     ),
@@ -164,11 +199,11 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                       children: <TextSpan>[
                         TextSpan(
                           text: '地址：',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                         ),
                         TextSpan(
                           text: '123',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                         ),
                       ]
                     ),
@@ -189,17 +224,17 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                       Expanded(
                         flex: 3,
                         child: Container(
-                          decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
+                          // decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
                           child: RichText(
                             text: TextSpan(
                               children: <TextSpan>[
                                 TextSpan(
                                 text: '大樓：',
-                                style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                                style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 ),
                                 TextSpan(
                                   text: '123',
-                                  style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), 
+                                  style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 ),
                               ]
                             ),
@@ -209,23 +244,24 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                       Expanded(
                         flex: 2,
                         child: Container(
+                          height: _dropHeight(context),
+                          decoration: BoxDecoration(border: Border(left: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
                           padding: EdgeInsets.only(left: 5.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 2,
-                                child: Text('競業：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: InkWell(
-                                  onTap: () async {
-                                    _showSelectorController(context, dataList: this.industyArr, title: '競業', resultStr: this.industySelected, T: this.industySelected);
-                                  },
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                          child: InkWell(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('競業', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
                                 ),
-                              )
-                            ],
+                                Expanded(
+                                  child: Text('${this.industySelected == '' ? '請選擇▿' : this.industySelected}', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                )
+                              ],
+                            ),
+                            onTap: () async {
+                              _showSelectorController(context, dataList: this.industyArr, title: '競業', dropStr: 'industy');
+                            },
                           ),
                         ),
                       ),
@@ -239,39 +275,41 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                     children: <Widget>[
                       Expanded(
                         child: Container(
+                          height: _dropHeight(context),
                           decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Text('有線：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: InkWell(
-                                  onTap: () {},
+                          child: InkWell(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('有線', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
                                   child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                             onTap: () {},
                           ),
                         ),
                       ),
                       Expanded(
                         child: Container(
+                          height: _dropHeight(context),
                           padding: EdgeInsets.only(left: 5.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Text('繳別：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: InkWell(
-                                  onTap: () {},
+                          child: InkWell(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('繳別', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
                                   child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            onTap: () {},
                           ),
                         ),
                       ),
@@ -285,39 +323,42 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                     children: <Widget>[
                       Expanded(
                         child: Container(
+                          height: _dropHeight(context),
                           decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Text('加購：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: InkWell(
-                                  onTap: () {},
+                          child: InkWell(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('加購', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
                                   child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            onTap: () {},
                           ),
                         ),
                       ),
                       Expanded(
                         child: Container(
+                          height: _dropHeight(context),
                           padding: EdgeInsets.only(left: 5.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Text('分機：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                          child: InkWell(
+                            child: Column(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('分機', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
                                 ),
-                              ),
-                            ],
+                                Expanded(
+                                  child: Text(this.slaveSelected == '' ? '請選擇▿' : this.slaveSelected + ' 台', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              _showSelectorController(context, dataList: this.slaveArr, title: '分機', dropStr: 'slave');
+                            },
                           ),
                         ),
                       ),
@@ -331,39 +372,41 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                     children: <Widget>[
                       Expanded(
                         child: Container(
+                          height: _dropHeight(context),
                           decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Text('CM：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: InkWell(
-                                  onTap: () {},
+                          child: InkWell(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('CM', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
                                   child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            onTap: () {},
                           ),
                         ),
                       ),
                       Expanded(
                         child: Container(
+                          height: _dropHeight(context),
                           padding: EdgeInsets.only(left: 5.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Text('繳別：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: InkWell(
-                                  onTap: () {},
+                          child: InkWell(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('繳別', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
                                   child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            onTap: () {},
                           ),
                         ),
                       ),
@@ -377,41 +420,139 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                     children: <Widget>[
                       Expanded(
                         child: Container(
+                          height: _dropHeight(context),
                           decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 2,
-                                child: Text('跨樓層：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                          child: InkWell(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('跨樓層', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
                                 ),
-                              ),
-                            ],
+                                Expanded(
+                                  child: Text(this.crossFloorSelected == '' ? '請選擇▿' : this.crossFloorSelected + ' 層', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              _showSelectorController(context, dataList: this.crossFloorArr, title: '跨樓層', dropStr: 'crossFloor');
+                            },
                           ),
                         ),
                       ),
                       Expanded(
                         child: Container(
+                          height: _dropHeight(context),
                           padding: EdgeInsets.only(left: 5.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 2,
-                                child: Text('網路線：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: InkWell(
-                                  onTap: () {},
+                          child: InkWell(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('網路線', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
+                                  child: Text(this.netCableSelected == '' ? '請選擇▿' : this.netCableSelected + ' 條', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              _showSelectorController(context, dataList: this.netCableArr, title: '網路線', dropStr: 'netCable');
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          height: _dropHeight(context),
+                          decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
+                          child: InkWell(
+                            child: Column(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('裝機日期', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
                                   child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            onTap: () {},
+                          ),
+                          
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: _dropHeight(context),
+                          padding: EdgeInsets.only(left: 5.0),
+                          child: InkWell(
+                            child: Column(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('發展人', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
+                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                ),
+                              ],
+                            ),
+                            onTap: () {},
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid)), color: Colors.amber[100]),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          height: _dropHeight(context),
+                          decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
+                          child: InkWell(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('有線業贈', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
+                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                ),
+                              ],
+                            ),
+                            onTap: () {},
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: _dropHeight(context),
+                          padding: EdgeInsets.only(left: 5.0),
+                          child: InkWell(
+                            child: Column(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text('寬頻業贈', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
+                                ),
+                                Expanded(
+                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                ),
+                              ],
+                            ),
+                            onTap: () {},
                           ),
                         ),
                       ),
@@ -428,110 +569,12 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                           child: Row(
                             children: <Widget>[
                               Flexible(
-                                // flex: 2,
                                 child: Text('備註：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
                               ),
                               Expanded(
-                                // flex: 3,
                                 child: InkWell(
                                   onTap: () {},
                                   child: Text('', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
-                  decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 2,
-                                child: Text('裝機：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.only(left: 5.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 2,
-                                child: Text('發展人：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
-                  decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(border: Border(right: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 2,
-                                child: Text('有線\n業贈：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.only(left: 5.0),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                flex: 2,
-                                child: Text('寬頻\n業贈：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
                               ),
                             ],
@@ -575,15 +618,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '有線：',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '0000',
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '元',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           )
                         ]
                       ),
@@ -598,15 +641,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '寬頻：',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '0000',
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '元',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           )
                         ]
                       ),
@@ -629,15 +672,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '加購：',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '0000',
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '元',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           )
                         ]
                       ),
@@ -652,15 +695,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '押金：',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '0000',
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '元',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           )
                         ]
                       ),
@@ -683,15 +726,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '裝機費：',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '0000',
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '元',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           )
                         ]
                       ),
@@ -706,15 +749,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '跨樓層：',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '0000',
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '元',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           )
                         ]
                       ),
@@ -737,15 +780,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '網路線：',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '0000',
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '元',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           )
                         ]
                       ),
@@ -761,15 +804,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                         children: <TextSpan>[
                           TextSpan(
                             text: '合計：',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '0000',
-                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
                             text: '元',
-                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context))
+                            style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           )
                         ]
                       ),
@@ -849,13 +892,30 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     });
   }
 
+   ///show日期選擇器
+  Widget _custDetailSelectorDialog(BuildContext context,) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white,
+        ),
+        margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        child: Scaffold(
+          body: CustDetailSelectDialog()
+        ),
+      )
+    );
+  }
 
 
 
   @override
   void initState() {
     super.initState();
-
+    
+    
   }
 
   @override
@@ -865,6 +925,12 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
 
   @override
   void didChangeDependencies() {
+    if (this.industyArr.length == 0) {
+      _getIndustryData();
+    }
+    if (this.netCableArr.length == 0) {
+      _getBaseData();
+    }
     super.didChangeDependencies();
   }
   @override
@@ -888,7 +954,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
 
 
   ///下拉選擇器
-  _showSelectorController(BuildContext context, { List<dynamic> dataList, String title, String valName, String resultStr, T}) {
+  _showSelectorController(BuildContext context, { List<dynamic> dataList, String title, String valName, String dropStr}) {
     showCupertinoModalPopup<String>(
       context: context,
       builder: (context) {
@@ -900,7 +966,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
               Navigator.pop(context);
             },
           ),
-          actions: resultStr != null ?  _selectorActions(dataList: dataList, valName: valName, resultStr: resultStr) : _selectorActions(dataList: dataList, valName: valName, T: T)
+          actions: _selectorActions(dataList: dataList, valName: valName, dropStr: dropStr)
         );
         return dialog;
       }
@@ -908,36 +974,47 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   }
 
   ///選擇器Actions
-  List<Widget> _selectorActions({List<dynamic> dataList, String valName, String resultStr, T}) {
+  List<Widget> _selectorActions({List<dynamic> dataList, String valName, String dropStr}) {
     List<Widget> wList = [];
     if (dataList != null && dataList.length > 0) {
       for (var dic in dataList) {
         wList.add(
           CupertinoActionSheetAction(
-            child: Text(dic[valName], style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),),
+            child: Text('$dic', style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),),
             onPressed: () {
               setState(() {
-                if (resultStr != null) {
-                  resultStr = dic[valName];
-                  T = resultStr;
-                }
-                Navigator.pop(context);
-              });
-            },
-          )
-        );
-      }
-    }
-    else {
-      for (var dic in dataList) {
-        wList.add(
-          CupertinoActionSheetAction(
-            child: Text(dic, style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),),
-            onPressed: () {
-              setState(() {
-                if (resultStr != null) {
-                  resultStr = dic;
-                }
+                switch (dropStr) {
+                  case 'industy':
+                    this.industySelected = '$dic';
+                    break;
+                  case 'dtv':
+                    this.dtvSelected = '$dic';
+                    break;
+                  case 'dtvPay':
+                    this.dtvPaySelected = '$dic';
+                    break;
+                  case 'slave':
+                    this.slaveSelected = '$dic';
+                    break;
+                  case 'cm':
+                    this.cmSelected = '$dic';
+                    break;
+                  case 'cmPay':
+                    this.cmPaySelected = '$dic';
+                    break;
+                  case 'crossFloor':
+                    this.crossFloorSelected = '$dic';
+                    break;
+                  case 'netCable':
+                    this.netCableSelected = '$dic';
+                    break;
+                  case 'dtvGift':
+                    this.dtvGiftSelected = '$dic';
+                    break;
+                  case 'cmGift':
+                    this.cmGiftSelected = '$dic';
+                    break;
+                } 
                 Navigator.pop(context);
               });
             },

@@ -96,11 +96,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '大樓: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: widget.model.building,
-                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -115,11 +115,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '競業: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: this.industryStr,
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -144,11 +144,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '有線: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: dtvCode,
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -163,11 +163,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '繳別: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: CommonUtils.filterMonthCN(widget.model.purchaseInfo.dtvMonth),
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -191,11 +191,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '加購: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: '0種',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -210,11 +210,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '分機: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: widget.model.purchaseInfo.slaveNumber + '台',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -238,11 +238,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: 'CM: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: cmCode,
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -257,11 +257,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '繳別: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: CommonUtils.filterMonthCN(widget.model.purchaseInfo.cmMonth) ,
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -285,11 +285,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '跨樓層: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: widget.model.purchaseInfo.crossFloorNumber + '層',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -304,11 +304,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '網路線: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: widget.model.purchaseInfo.networkCableNumber + "條",
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -327,11 +327,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
               children: <TextSpan>[
                 TextSpan(
                   text: '備註: ',
-                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                 ),
                 TextSpan(
                   text: widget.model.description,
-                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                 ),
               ]
             ),
@@ -352,11 +352,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
               children: <TextSpan>[
                 TextSpan(
                   text: 'BOSS回覆: ',
-                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                 ),
                 TextSpan(
                   text: '',
-                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                 ),
               ]
             ),
@@ -393,11 +393,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: 'BOSS回覆: ',
-                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: ' 已撤銷',
-                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -412,11 +412,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
                       children: <TextSpan>[
                         TextSpan(
                           text: '撤銷時間: ',
-                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize_span(context))
                         ),
                         TextSpan(
                           text: widget.model.cancleInfo.operateTime,
-                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize(context))
+                          style: TextStyle(color: Colors.red, fontSize: MyScreen.normalPageFontSize_span(context))
                         )
                       ]
                     ),
@@ -434,11 +434,11 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
               children: <TextSpan>[
                 TextSpan(
                   text: '撤銷原因: ',
-                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                 ),
                 TextSpan(
                   text: widget.model.cancleInfo.reason,
-                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context))
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                 ),
               ]
             ),

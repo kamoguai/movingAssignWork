@@ -40,8 +40,8 @@ dependencies:
   event_bus: ^1.1.0 #事件管理
   date_format: ^1.0.6 #時間格式化
   intl: ^0.15.8 #時間格式化
-  auto_size_text: ^2.0.0 #字體縮放
-  flutter_screenutil: ^0.5.2 #固定字體大小，不被裝置系統字體影響
+  auto_size_text: ^2.1.0 #字體縮放
+  flutter_screenutil: ^0.7.0 #固定字體大小，不被裝置系統字體影響
   pointycastle: ^1.0.1 #加解密機制pacs7 , aes ...
   font_awesome_flutter: #flutter圖案
   android_intent: #可以取得安卓系統資料

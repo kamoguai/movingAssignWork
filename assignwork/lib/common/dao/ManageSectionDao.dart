@@ -16,7 +16,7 @@ class ManageSectionDao {
   ///
   static getQueryManageSection(Map<String, dynamic> jsonMap) async {
 
-    Map<String, dynamic> mainDataArray = {};
+    List<dynamic> mainDataArray = [];
     ///map轉json
     String str = json.encode(jsonMap);
     if (Config.DEBUG) {
@@ -31,7 +31,7 @@ class ManageSectionDao {
         print("查詢子管理區域resp => " + res.data.toString());
       }
       if (res.data['RtnCD'] == "00") {
-        mainDataArray = res.data['data'];
+        mainDataArray = res.data['manageSectionInfos'];
       }
       if (mainDataArray.length > 0) {
         return new DataResult(mainDataArray, true);

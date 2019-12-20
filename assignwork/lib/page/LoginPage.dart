@@ -145,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: new Text(
                           '派裝系統3.0',
                           style: TextStyle(
-                            fontSize: ScreenUtil().setSp(20.0) 
+                            fontSize: MyScreen.loginTextFieldFontSize(context)
                           ),  
                         ),
                         onTap: () {
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                             children: <Widget>[
                               new Padding(padding: new EdgeInsets.all(10.0)),
                               new MyInputWidget(
-                                textStyle: TextStyle(fontSize: ScreenUtil().setSp(MyScreen.loginTextFieldFontSize(context))),
+                                textStyle: TextStyle(fontSize: MyScreen.loginTextFieldFontSize(context)),
                                 hintText: '請輸入帳號',
                                 textTitle: '帳號',
                                 onChanged: (String value) {
@@ -179,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               new Padding(padding: new EdgeInsets.all(10.0)),
                               new MyInputWidget(
-                                textStyle: TextStyle(fontSize: ScreenUtil().setSp(MyScreen.loginTextFieldFontSize(context))),
+                                textStyle: TextStyle(fontSize: MyScreen.loginTextFieldFontSize(context)),
                                 hintText: '請輸入密碼',
                                 textTitle: '密碼',
                                 onChanged: (String value) {
@@ -192,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                                 text: '登入',
                                 color: Color(MyColors.hexFromStr("#358cb0")),
                                 textColor: Color(MyColors.textWhite),
-                                fontSize: ScreenUtil().setSp(20.0),
+                                fontSize: MyScreen.loginTextFieldFontSize(context),
                                 onPress: () {
                                   if (_account == null || _account.length == 0) {
                                     return;

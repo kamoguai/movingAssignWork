@@ -328,17 +328,17 @@ class MyScreen {
     final deviceHeight = MediaQuery.of(context).size.height;
     var fontSize = 12.0;
     if (deviceHeight < 570) {
-      fontSize = MyConstant.textSize_16;
-    } else if (deviceHeight > 570 && deviceHeight < 720) {
-      fontSize = MyConstant.textSize_18;
-    } else if (deviceHeight >= 720 && deviceHeight < 800) {
       fontSize = MyConstant.textSize_20;
-    } else if (deviceHeight >= 800 && deviceHeight < 900) {
+    } else if (deviceHeight > 570 && deviceHeight < 720) {
       fontSize = MyConstant.textSize_22;
+    } else if (deviceHeight >= 720 && deviceHeight < 800) {
+      fontSize = MyConstant.textSize_24;
+    } else if (deviceHeight >= 800 && deviceHeight < 900) {
+      fontSize = MyConstant.textSize_26;
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return fontSize;
+    return ScreenUtil.getInstance().setSp(fontSize);
   }
 
 
@@ -357,7 +357,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil().setSp(fontSize);
+    return ScreenUtil.getInstance().setSp(fontSize);
   }
   
 
@@ -376,7 +376,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil().setSp(fontSize);
+    return ScreenUtil.getInstance().setSp(fontSize);
   }
 
   ///通用detailList字體大小
@@ -394,7 +394,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil().setSp(fontSize);
+    return ScreenUtil.getInstance().setSp(fontSize);
   }
  
   
@@ -413,6 +413,99 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil().setSp(fontSize);
+    return ScreenUtil.getInstance().setSp(fontSize);
+  }
+
+  ///登入textFiled大小_span
+  static double loginTextFieldFontSize_span(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height;
+    var fontSize = 12.0;
+    if (deviceHeight < 570) {
+      fontSize = MyConstant.textSize_16;
+    } else if (deviceHeight > 570 && deviceHeight < 720) {
+      fontSize = MyConstant.textSize_18;
+    } else if (deviceHeight >= 720 && deviceHeight < 800) {
+      fontSize = MyConstant.textSize_20;
+    } else if (deviceHeight >= 800 && deviceHeight < 900) {
+      fontSize = MyConstant.textSize_22;
+    } else {
+      fontSize = MyConstant.textSize_30;
+    }
+    return ScreenUtil.getInstance().setWidth(fontSize);
+  }
+
+
+  ///首頁字體大小_span
+  static double homePageFontSize_span(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height;
+    double fontSize = 0.0;
+    if (deviceHeight < 570) {
+      fontSize = MyConstant.textSize_18;
+    } else if (deviceHeight > 570 && deviceHeight < 720) {
+      fontSize = MyConstant.textSize_20;
+    } else if (deviceHeight >= 720 && deviceHeight < 800) {
+      fontSize = MyConstant.textSize_22;
+    } else if (deviceHeight >= 800 && deviceHeight < 900) {
+      fontSize = MyConstant.textSize_24;
+    } else {
+      fontSize = MyConstant.textSize_30;
+    }
+    return ScreenUtil.getInstance().setWidth(fontSize);
+  }
+  
+
+  ///一般大小_span
+  static double normalPageFontSize_span(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height;
+    double fontSize = 0.0;
+    if (deviceHeight < 570) {
+      fontSize = MyConstant.textSize_16;
+    } else if (deviceHeight > 570 && deviceHeight < 720) {
+      fontSize = MyConstant.textSize_18;
+    } else if (deviceHeight >= 720 && deviceHeight < 800) {
+      fontSize = MyConstant.textSize_20;
+    } else if (deviceHeight >= 800 && deviceHeight < 900) {
+      fontSize = MyConstant.textSize_20;
+    } else {
+      fontSize = MyConstant.textSize_30;
+    }
+    return ScreenUtil.getInstance().setWidth(fontSize);
+  }
+
+  ///通用detailList字體大小_span
+  static double defaultTableCellFontSize_span(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height;
+    double fontSize = 0.0;
+    if (deviceHeight < 570) {
+      fontSize = MyConstant.textSize_16;
+    } else if (deviceHeight > 570 && deviceHeight < 720) {
+      fontSize = MyConstant.textSize_18;
+    } else if (deviceHeight >= 720 && deviceHeight < 800) {
+      fontSize = MyConstant.textSize_20;
+    } else if (deviceHeight >= 800 && deviceHeight < 900) {
+      fontSize = MyConstant.textSize_22;
+    } else {
+      fontSize = MyConstant.textSize_30;
+    }
+    return ScreenUtil.getInstance().setWidth(fontSize);
+  }
+ 
+  
+  ///appbar button size_span
+  static double appBarFontSize_span(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height;
+    double fontSize = 0.0;
+    if (deviceHeight < 570) {
+      fontSize = MyConstant.textSize_14;
+    } else if (deviceHeight > 570 && deviceHeight < 720) {
+      fontSize = MyConstant.textSize_16;
+    } else if (deviceHeight >= 720 && deviceHeight < 800) {
+      fontSize = MyConstant.textSize_18;
+    } else if (deviceHeight >= 800 && deviceHeight < 900) {
+      fontSize = MyConstant.textSize_20;
+    } else {
+      fontSize = MyConstant.textSize_30;
+    }
+    return ScreenUtil.getInstance().setWidth(fontSize);
   }
 }

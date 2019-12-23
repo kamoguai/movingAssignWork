@@ -9,7 +9,9 @@ import 'package:assignwork/widget/dialog/RoadSelectDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:redux/redux.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
 ///
 ///新戶約裝輸入客戶基本資料的dialog
 ///Date: 2019-12-18
@@ -26,7 +28,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
   ///街路段arr
   List<dynamic> roadAddressArr = [];
   ///記錄全路段
-  List<dynamic> logFullAddress = ["新北市","板橋區"];
+  List<dynamic> logFullAddress = ["新北市","板橋區", "",""];
   ///記錄市區代碼
   String manageSectionCodeStr = "";
 
@@ -62,6 +64,82 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
   var _floorOfController = TextEditingController();
   ///scrollController
   ScrollController _scrollController = ScrollController();
+  ///是否檢核通過
+  bool _isValid = false;
+
+  ///鍵盤config
+  KeyboardActionsConfig _buildConfig(BuildContext context) {
+    return KeyboardActionsConfig(
+      keyboardActionsPlatform: KeyboardActionsPlatform.IOS,
+      keyboardBarColor: Colors.grey[200],
+      nextFocus: true,
+      actions: [
+        KeyboardAction(
+          focusNode: _mobileFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(5),
+            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+          ),
+        ),
+        KeyboardAction(
+          focusNode: _telAreaCodeFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(5),
+            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+          ),
+        ),
+        KeyboardAction(
+          focusNode: _telPhoneFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(5),
+            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+          ),
+        ),
+        KeyboardAction(
+          focusNode: _communityFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(5),
+            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+          ),
+        ),
+        KeyboardAction(
+          focusNode: _laneFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(5),
+            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+          ),
+        ),
+        KeyboardAction(
+          focusNode: _unitFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(5),
+            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+          ),
+        ),
+        KeyboardAction(
+          focusNode: _ofUnitFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(5),
+            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+          ),
+        ),
+        KeyboardAction(
+          focusNode: _floorFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(5),
+            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+          ),
+        ),
+        KeyboardAction(
+          focusNode: _floorOfFocus,
+          closeWidget: Padding(
+            padding: EdgeInsets.all(5),
+            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+          ),
+        ),
+      ]
+    );
+  }
   
   _fieldFoucusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
@@ -75,11 +153,39 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
 
   ///取得地址api
   _getAddressData(String sectionCode) async {
+    
     Map<String, dynamic> paramMap = new Map<String, dynamic>();
     paramMap["function"] = "queryManageSection";
     paramMap["accNo"] = _getStore().state.userInfo?.accNo;
     paramMap["currentManageSectionCode"] = sectionCode;
     var res = await ManageSectionDao.getQueryManageSection(paramMap);
+    if (res.result) {
+      setState(() {
+        this.roadAddressArr = res.data;
+      });
+      
+    }
+  }
+  
+  ///匹配地址
+  _postMatchAddress() async {
+    Map<String, dynamic> paramMap = new Map<String, dynamic>();
+    Map<String, dynamic> paramMap2 = new Map<String, dynamic>();
+    paramMap2["parentManageSectoinCode"] = this.logFullAddress[3];
+    paramMap2["community"] = _communityController.text.length == 0 ? "0" : _communityController.text;
+    paramMap2["lane"] = _laneController.text.length == 0 ? "0" : _laneController.text;
+    paramMap2["unit"] = _unitController.text.length == 0 ? "0" : _unitController.text;
+    paramMap2["ofUnit"] = _ofUnitController.text.length == 0 ? "0" : _ofUnitController.text;
+    paramMap2["floor"] = _floorController.text.length == 0 ? "0" : _floorController.text;
+    paramMap2["floorOf"] = _floorOfController.text.length == 0 ? "0" : _floorOfController.text;
+    paramMap2["description"] = "";
+
+    paramMap["function"] = "matchAddress";
+    paramMap["accNo"] = _getStore().state.userInfo?.accNo;
+    paramMap["installAddress"] = paramMap2;
+    paramMap["postAddress"] = paramMap2;
+    
+    var res = await ManageSectionDao.postMatchAddress(paramMap);
     if (res.result) {
       setState(() {
         this.roadAddressArr = res.data;
@@ -106,14 +212,8 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
 
   void _selectFunc(Map<String, dynamic> map) {
     setState(() {
-      if (this.logFullAddress[2] == null) {
-        this.logFullAddress.insert(2, map["name"]);
-        this.logFullAddress.insert(3, map["code"]);
-      }
-      else {
-        this.logFullAddress[2] = map["name"];
-        this.logFullAddress[3] = map["code"];
-      }
+      this.logFullAddress[2] = map["name"];
+      this.logFullAddress[3] = map["code"];
       print(this.logFullAddress.toString());
     });
   }
@@ -154,14 +254,14 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
 
     columnList.add(
       Container(
-        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid)),color: Color(MyColors.hexFromStr('40b89e'))),
         padding: EdgeInsets.only(left: 5.0, right: 5.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             autoTextSize('客戶資料輸入', TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context) * 1.5), context),
             GestureDetector(
-              child: Icon(Icons.cancel, color: Colors.blue, size: titleHeight(context) * 1.3,),
+              child: Icon(Icons.cancel, color: Colors.white, size: titleHeight(context) * 1.3,),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -173,15 +273,18 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
     );
 
     columnList.add(
-      Expanded(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          controller: _scrollController,
-          child: Column(
-            children: columnList2,
+        Expanded(
+        child: KeyboardActions(
+          config: _buildConfig(context),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            controller: _scrollController,
+            child: Column(
+              children: columnList2,
+            ),
           ),
-        ),
-      )
+        )
+      ),
     );
 
     columnList2.add(
@@ -366,7 +469,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
           children: <Widget>[
             InkWell(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1, style: BorderStyle.solid),borderRadius: BorderRadius.circular(2.0), color: Colors.lightGreen[100]),
                 child: autoTextSize('新北市', TextStyle(color: Colors.blue), context),
               ),
@@ -377,7 +480,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
             ),
             InkWell(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(2.0), color: Colors.lightGreen[100]),
                 child: autoTextSize('板橋區'.contains(this.logFullAddress[1]) == true ? "板橋區" : this.logFullAddress[1], TextStyle(color: Colors.blue), context),
               ),
@@ -394,20 +497,26 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
       )
     );
 
+    var roadStr = "";
+    if (this.logFullAddress[2] != "") {
+      roadStr = this.logFullAddress[2];
+    }
+    else {
+      roadStr = '請選擇路段';
+    }
     columnList2.add(
       Container(
         padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             InkWell(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(2.0), color: Colors.lightGreen[100]),
-                child: autoTextSize('請選擇路段', TextStyle(color: Colors.blue), context),
+                child: autoTextSize(roadStr, TextStyle(color: Colors.blue), context),
               ),
               onTap: () {
-                // _showSelectorController(context, dataList: this.roadAddressArr,title: '街路段', dropStr: 'road');
+                FocusScope.of(context).unfocus();
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => roadSelectorDialot(context)
@@ -415,68 +524,10 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
               },
             ),
             Container(
+              padding: EdgeInsets.symmetric(horizontal: 5),
               child: autoTextSize('街路段', TextStyle(color: Colors.black), context),
             ),
-            Container(
-              margin: EdgeInsets.only(top: 20),
-              width: 60,
-              // height: 60,
-              child: TextFormField(
-                controller: _communityController,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.next,
-                focusNode: _communityFocus,
-                maxLines: 1,
-                maxLength: 3,
-                style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: '巷',
-                  labelStyle: TextStyle(color: Colors.grey),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(2.0),
-                    borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
-                  )
-                ),
-                onFieldSubmitted: (val) {
-                  _fieldFoucusChange(context, _communityFocus, _laneFocus);
-                },
-              ),
-            ),
-            Container(
-              child: autoTextSize('巷', TextStyle(color: Colors.black), context),
-            ),
-             Container(
-              margin: EdgeInsets.only(top: 20),
-              width: 60,
-              // height: 60,
-              child: TextFormField(
-                controller: _laneController,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.next,
-                focusNode: _laneFocus,
-                maxLines: 1,
-                maxLength: 3,
-                style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: '弄',
-                  labelStyle: TextStyle(color: Colors.grey),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(2.0),
-                    borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
-                  )
-                ),
-                onFieldSubmitted: (String value) {
-                  _fieldFoucusChange(context, _laneFocus, _unitFocus);
-                },
-              ),
-            ),
-            Container(
-              child: autoTextSize('弄', TextStyle(color: Colors.black), context),
-            ),
+            
           ],
         ),
       )
@@ -485,12 +536,89 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
     columnList2.add(
       Container(
         padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Flexible(
+              flex: 3,
+              child: Container(
+                child: TextFormField(
+                  controller: _communityController,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  focusNode: _communityFocus,
+                  maxLines: 1,
+                  maxLength: 3,
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    labelText: '巷',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(2.0),
+                      borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
+                    )
+                  ),
+                  onFieldSubmitted: (val) {
+                    _fieldFoucusChange(context, _communityFocus, _laneFocus);
+                  },
+                ),
+              ),
+            ),
+            Flexible(
               flex: 2,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: autoTextSize('巷', TextStyle(color: Colors.black), context),
+              ),
+            ),
+            Flexible(
+              flex: 3,
+              child: Container(
+                child: TextFormField(
+                  controller: _laneController,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  focusNode: _laneFocus,
+                  maxLines: 1,
+                  maxLength: 3,
+                  style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    labelText: '弄',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(2.0),
+                      borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
+                    )
+                  ),
+                  onFieldSubmitted: (String value) {
+                    _fieldFoucusChange(context, _laneFocus, _unitFocus);
+                  },
+                ),
+              ),
+            ),
+            Flexible(
+              flex: 2,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: autoTextSize('弄', TextStyle(color: Colors.black), context),
+              ),
+            ),
+            
+          ],
+        ),
+      )
+    );
+
+    columnList2.add(
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        child: Row(
+          children: <Widget>[
+            Flexible(
+              flex: 3,
               child: Container(
                 child: TextFormField(
                   controller: _unitController,
@@ -517,10 +645,14 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
               ),
             ),
             Flexible(
-              child: autoTextSize(' - ', TextStyle(color: Colors.black), context)
+              flex: 2,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: autoTextSize(' - ', TextStyle(color: Colors.black), context)
+              ),
             ),
             Flexible(
-              flex: 2,
+              flex: 3,
               child: Container(
                 child: TextFormField(
                   controller: _ofUnitController,
@@ -547,12 +679,25 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
               ),
             ),
             Flexible(
+              flex: 2,
               child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
                 child: autoTextSize('號', TextStyle(color: Colors.black), context)
               ),
             ),
+          ],
+        ),
+      )
+    );
+
+    columnList2.add(
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
+        child: Row(
+          children: <Widget>[
             Flexible(
-              flex: 2,
+              flex: 3,
               child: Container(
                 child: TextFormField(
                   controller: _floorController,
@@ -579,14 +724,17 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
               ),
             ),
             Flexible(
-              child: autoTextSize('樓 - ', TextStyle(color: Colors.black), context)
+              flex: 2,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: autoTextSize('樓 - ', TextStyle(color: Colors.black), context)
+              ),
             ),
             Flexible(
-              flex: 2,
+              flex: 3,
               child: Container(
                 child: TextFormField(
                   controller: _floorOfController,
-                  keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.done,
                   focusNode: _floorOfFocus,
                   maxLines: 1,
@@ -595,7 +743,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
-                    // labelText: '樓',
+                    labelText: '之樓',
                     labelStyle: TextStyle(color: Colors.grey),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(2.0),
@@ -608,47 +756,55 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
               ),
             ),
+            Flexible(
+              flex: 2,
+              child: Container(),
+            )
           ],
         ),
-      )
+      ),
     );
 
-    columnList2.add(
+    columnList.add(
       Container(
-        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        height: titleHeight(context) * 1.3,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Expanded(
-              child: SizedBox(),
+              flex: 5,
+              child: Container(
+                height: titleHeight(context) * 1.3,
+                child: FlatButton(
+                  color: Colors.purple[50],
+                  child: autoTextSize('匹配', TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)), context),
+                  onPressed: (){
+                    FocusScope.of(context).unfocus();
+                    _isValid = _validateSubmit();
+                    if(_isValid) {
+                      _postMatchAddress();
+                    }
+                    else {
+                      return ;
+                    }
+                  },
+                ),
+              )
             ),
             Expanded(
-              child: FlatButton(
-                color: Colors.blue,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
-                child: autoTextSize('匹配', TextStyle(color: Colors.white), context),
-                onPressed: () {
-
-                },
-              ),
-            ),
-            Expanded(
-              child: SizedBox(),
-            ),
-            Expanded(
-              child: FlatButton(
-                color: Colors.blue,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
-                child: autoTextSize('確定', TextStyle(color: Colors.black), context),
-                onPressed: () {
-
-                },
-              ),
-            ),
-            Expanded(
-              child: SizedBox(),
-            ),
+              flex: 5,
+              child: Container(
+                height: titleHeight(context) * 1.5, 
+                child: FlatButton(
+                  color: Color(MyColors.hexFromStr('#40b89e')),
+                  child: autoTextSize('確定', TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)), context),
+                  onPressed: () {
+                    
+                    FocusScope.of(context).unfocus();
+                  },
+                ),
+              )
+            )
           ],
         ),
       )
@@ -677,8 +833,9 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
 
     body = Container(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.start,
-        children: columnList,
+        children: columnList
       ),
     );
     
@@ -686,6 +843,22 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
    
   }
 
+  bool _validateSubmit() {
+    if (_nameController.text.length == 0) {
+      Fluttertoast.showToast(msg: '請填妥顧客姓名。');
+      return false;
+    }
+    if ((_mobileController.text.length == 0) && (_telPhoneController.text.length == 0)) {
+      Fluttertoast.showToast(msg: '市話或手機請至少填入一項。');
+      return false;
+    }
+    if (this.logFullAddress[2] == "" ) {
+      Fluttertoast.showToast(msg: '路段尚未選擇');
+      return false;
+    }
+    return true;
+
+  }
 
 
 
@@ -744,4 +917,6 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
     }
     return wList;
   }
+
+  
 }

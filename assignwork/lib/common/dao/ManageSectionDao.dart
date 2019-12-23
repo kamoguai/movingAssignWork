@@ -89,7 +89,7 @@ class ManageSectionDao {
         print("匹配地址resp => " + res.data.toString());
       }
       if (res.data['RtnCD'] == "00") {
-        mainDataArray = res.data['data'];
+        mainDataArray = res.data;
       }
       if (mainDataArray.length > 0) {
         return new DataResult(mainDataArray, true);

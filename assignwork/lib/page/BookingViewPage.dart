@@ -950,7 +950,16 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
 
 
 
-
+  Future<void> _handleLoadData(BuildContext context) async {
+    try {
+      BaseWidget.showLoadingDialog(context);
+      await _getIndustryData();
+      Navigator.of(context).pop();
+    }
+    catch(e) {
+      print(e);
+    }
+  }
 
 
   ///下拉選擇器

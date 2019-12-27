@@ -1,16 +1,18 @@
 
 import 'package:assignwork/common/dao/BaseDao.dart';
+import 'package:assignwork/common/dao/ManageSectionDao.dart';
 import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/HomeDrawer.dart';
+import 'package:assignwork/widget/dialog/CalendarSelectorDialog.dart';
 import 'package:assignwork/widget/dialog/CustDetailSelectDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 ///
 ///新戶約裝頁面
@@ -25,6 +27,8 @@ class BookingViewPage extends StatefulWidget {
 
 class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   ScrollController _scrollController = new ScrollController();
+  TextEditingController _editingController = new TextEditingController();
+
   ///bottomNavigatorBar index
   int _bnbIndex = 0;
   ///記錄競業arr
@@ -33,6 +37,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   ///記錄有線產品下拉
   List<dynamic> dtvArr = [];
   String dtvSelected = "";
+  String dtvNameSelected = "";
   ///記錄有線繳別下拉
   List<dynamic> dtvPayArr = [];
   String dtvPaySelected = "";
@@ -44,6 +49,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   ///記錄cm產品下拉
   List<dynamic> cmArr = [];
   String cmSelected = "";
+  String cmNameSelected = "";
   ///記錄cm繳別下拉
   List<dynamic> cmPayArr = [];
   String cmPaySelected = "";
@@ -59,6 +65,17 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   ///寬頻業贈下拉
   List<dynamic> cmGiftArr = [];
   String cmGiftSelected = "";  
+  ///發展人下拉
+  List<dynamic> salesArr = [];
+  String salesSelected = "";
+  ///記錄匹配完資料
+  Map<String, dynamic> logMatchArr = {};
+  ///記錄套餐資料
+  Map<String, dynamic> logProdInfo = {};
+  ///記錄所選約裝時間
+  String bookingDateSelected = "";
+  ///判斷檢核完成後才能送出
+  bool _isPkSend = false;
 
   Store<SysState> _getStore() {
     return StoreProvider.of(context);
@@ -104,12 +121,81 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
       });
     }
   }
-  
+  ///取得發展人資料
+  _getSalesData() async {
+    Map<String, dynamic> paramMap = new Map<String, dynamic>();
+    paramMap["function"] = "queryemplyeelist";
+    paramMap["accNo"] = _getStore().state.userInfo?.accNo;
+    paramMap["deptCD"] = _getStore().state.userInfo?.deptCD;
+    var res = await BaseDao.getSalesListInfo(paramMap);
+    if (res.result) {
+      final data1 = res.data["networkCableNumberList"];
+      final data2 = res.data["crossFloorNumberList"];
+      final data3 = res.data["slaveNumberList"];
+      
+      setState(() {
+        this.netCableArr = data1;
+        this.crossFloorArr = data2;
+        this.slaveArr = data3;
+      });
+    }
+  }
 
+  ///取得地區產品資料
+  _getProdInfoData(Map<String, dynamic> map) async {
+    var res = await ManageSectionDao.getQueryProductInfo(map);
+    if (res.result) {
+      this.logProdInfo = res.data;
+      this.dtvArr = this.logProdInfo["dtvInfos"];
+      this.dtvPayArr = this.dtvArr[0]["payMonths"];
+      this.dtvArr.insert(0, {"code": "", "name": "", "payMonths": []});
+      this.cmArr = this.logProdInfo["broadbandSpeedInfos"];
+      this.cmArr.insert(0, {"code": "", "name": "", "payMonths": []});
+      this.dtvAddProdArr = this.logProdInfo["additionalProductInfos"];
+
+    }
+  }
+  
+  ///給客戶詳情輸入用function
+  void _getMatchDataFunc(Map<String, dynamic> map) async {
+    setState(() {
+      this.logMatchArr = map;
+      Map<String, dynamic> jsonMap = Map<String, dynamic>();
+      jsonMap["function"] = "queryProductInfo";
+      jsonMap["accNo"] = _getStore().state.userInfo?.accNo;
+      jsonMap["areaCode"] = this.logMatchArr["areaCode"];
+      _getProdInfoData(jsonMap);
+    });
+  }
+
+  ///給calendar用function
+  void _getBookingDateSelectFunc(String date) {
+    setState(() {
+      this.bookingDateSelected = date;
+      print('新約日期 -> ${this.bookingDateSelected}');
+    });
+  }
   
 
   ///Scaffold body
   Widget _bodyView() {
+    var telphone = "";
+    var bookingTime = "";
+    if (this.logMatchArr["mobile"] != null) {
+      telphone += this.logMatchArr["mobile"];
+    }
+    if (this.logMatchArr["telPhone"] != null && this.logMatchArr["telPhone"] != "") {
+      if (this.logMatchArr["mobile"] != null) {
+        telphone += " , ";  
+      }
+      telphone += this.logMatchArr["telAreaCode"] + this.logMatchArr["telPhone"];
+    }
+    if (this.bookingDateSelected != "") {
+      DateFormat df = DateFormat("yyyy-MM-dd HH:mm:ss");
+      DateTime d = df.parse(this.bookingDateSelected);
+      df = DateFormat("yy-MM-dd HH:mm");
+      bookingTime = df.format(d);
+    }
     return SingleChildScrollView(
       controller: _scrollController,
       child: Column(
@@ -141,7 +227,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                 style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 ),
                                 TextSpan(
-                                  text: '123',
+                                  text: this.logMatchArr["custName"] == null ? '' : this.logMatchArr["custName"],
                                   style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 )
                               ]
@@ -160,7 +246,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                 style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 ),
                                 TextSpan(
-                                  text: '123',
+                                  text: '',
                                   style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 )
                               ]
@@ -183,7 +269,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                           style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                         ),
                         TextSpan(
-                          text: '123',
+                          text: telphone,
                           style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                         ),
                       ]
@@ -202,7 +288,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                           style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                         ),
                         TextSpan(
-                          text: '123',
+                          text: this.logMatchArr["fullAddress"] == null ? "" : this.logMatchArr["fullAddress"],
                           style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                         ),
                       ]
@@ -233,7 +319,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                 style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 ),
                                 TextSpan(
-                                  text: '123',
+                                  text: this.logMatchArr["buildingName"] == null ? "" : this.logMatchArr["buildingName"] ,
                                   style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context)), 
                                 ),
                               ]
@@ -285,11 +371,13 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                   child: Text('有線', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
                                 ),
                                 Expanded(
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                  child: Text('${this.dtvNameSelected == '' ? '請選擇▿' : this.dtvNameSelected}', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
                               ],
                             ),
-                             onTap: () {},
+                             onTap: () async {
+                                _showSelectorController(context, dataList: this.dtvArr, title: '頻道類別', dropStr: 'dtv');
+                             }, 
                           ),
                         ),
                       ),
@@ -305,11 +393,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                   child: Text('繳別', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
                                 ),
                                 Expanded(
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                  child: Text('${this.dtvPaySelected == '' ? '請選擇▿' : this.dtvPaySelected}', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
                               ],
                             ),
-                            onTap: () {},
+                            onTap: () async {
+                              if (this.dtvSelected != "") {
+                                _showSelectorController(context, dataList: this.dtvPayArr, title: '繳費類型', dropStr: 'dtvPay');
+                              }
+                            },
                           ),
                         ),
                       ),
@@ -357,7 +449,9 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                               ],
                             ),
                             onTap: () {
-                              _showSelectorController(context, dataList: this.slaveArr, title: '分機', dropStr: 'slave');
+                              if (this.dtvSelected != "") {
+                                _showSelectorController(context, dataList: this.slaveArr, title: '分機', dropStr: 'slave');
+                              } 
                             },
                           ),
                         ),
@@ -382,11 +476,13 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                   child: Text('CM', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
                                 ),
                                 Expanded(
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                  child: Text('${this.cmNameSelected == "" ?  '請選擇▿' : this.cmNameSelected}', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
                               ],
                             ),
-                            onTap: () {},
+                            onTap: () async{ 
+                              _showSelectorController(context, dataList: this.cmArr, title: '寬頻服務類別', dropStr: 'cm');
+                            },
                           ),
                         ),
                       ),
@@ -402,11 +498,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                   child: Text('繳別', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
                                 ),
                                 Expanded(
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                  child: Text('${this.cmPaySelected == "" ? '請選擇▿' : this.cmPaySelected}', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
                               ],
                             ),
-                            onTap: () {},
+                            onTap: () async {  
+                              if (this.cmSelected != "") {
+                                _showSelectorController(context, dataList: this.cmPayArr, title: '繳費類型', dropStr: 'cmPay');
+                              }
+                            },
                           ),
                         ),
                       ),
@@ -435,7 +535,9 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                               ],
                             ),
                             onTap: () {
-                              _showSelectorController(context, dataList: this.crossFloorArr, title: '跨樓層', dropStr: 'crossFloor');
+                              if (this.dtvSelected != "" && this.slaveSelected != "") {
+                                _showSelectorController(context, dataList: this.crossFloorArr, title: '跨樓層', dropStr: 'crossFloor');
+                              }
                             },
                           ),
                         ),
@@ -457,7 +559,9 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                               ],
                             ),
                             onTap: () {
-                              _showSelectorController(context, dataList: this.netCableArr, title: '網路線', dropStr: 'netCable');
+                              if (this.cmSelected != "") {
+                                _showSelectorController(context, dataList: this.netCableArr, title: '網路線', dropStr: 'netCable');
+                              }
                             },
                           ),
                         ),
@@ -481,11 +585,17 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                   child: Text('裝機日期', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
                                 ),
                                 Expanded(
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                  child: Text('${bookingTime == '' ? '請選擇▿' : bookingTime }', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
                               ],
                             ),
-                            onTap: () {},
+                            onTap: () {
+                              //  if (this.logMatchArr.length > 0)
+                               showDialog(
+                                context: context, 
+                                builder: (BuildContext context)=> _calendarSelectorDialog(context)
+                               );
+                            },
                           ),
                           
                         ),
@@ -560,28 +670,26 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
+                  padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
                   decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          child: Row(
-                            children: <Widget>[
-                              Flexible(
-                                child: Text('備註：', style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize(context)),),
-                              ),
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: Text('', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                  child: TextField(
+                    controller: _editingController,
+                    textInputAction: TextInputAction.done,
+                    maxLines: 4,
+                    style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: '備註',
+                      labelStyle: TextStyle(color: Colors.grey),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(2.0),
+                        borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
                       ),
-                    ],
+                    ),
+                    onChanged: (val) {
+
+                    },
                   ),
                 ),
               ],
@@ -833,9 +941,9 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
             minWidth: MediaQuery.of(context).size.width / 2,
             // buttonColor: Colors.blue,
             child: FlatButton(
-              color: Colors.blue,
+              color: this._isPkSend == true ? Colors.blue : Colors.grey[300],
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: Text('試算', style: TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)),),
+              child: Text('送出', style: TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)),),
               onPressed: () async {
 
               },
@@ -892,7 +1000,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     });
   }
 
-   ///show日期選擇器
+   ///show客戶資料輸入popup
   Widget _custDetailSelectorDialog(BuildContext context,) {
     return Material(
       type: MaterialType.transparency,
@@ -903,7 +1011,24 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
         ),
         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Scaffold(
-          body: CustDetailSelectDialog()
+          body: CustDetailSelectDialog(getMatchDataFunc: _getMatchDataFunc, logMatchAddr: this.logMatchArr,)
+        ),
+      )
+    );
+  }
+
+  ///show日期選擇器
+  Widget _calendarSelectorDialog(BuildContext context,) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white,
+        ),
+        margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        child: Scaffold(
+          body: CalendarSelectorDialog(bookingDate: this.bookingDateSelected, areaStr: CommonUtils.filterAreaCN('板橋區'), getBookingDate: _getBookingDateSelectFunc,)
         ),
       )
     );
@@ -920,7 +1045,10 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
 
   @override
   void dispose() {
+    this._scrollController.dispose();
+    this._editingController.dispose();
     super.dispose();
+
   }
 
   @override
@@ -947,21 +1075,6 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     );
   }
 
-
-
-
-  Future<void> _handleLoadData(BuildContext context) async {
-    try {
-      BaseWidget.showLoadingDialog(context);
-      await _getIndustryData();
-      Navigator.of(context).pop();
-    }
-    catch(e) {
-      print(e);
-    }
-  }
-
-
   ///下拉選擇器
   _showSelectorController(BuildContext context, { List<dynamic> dataList, String title, String valName, String dropStr}) {
     showCupertinoModalPopup<String>(
@@ -986,49 +1099,88 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   List<Widget> _selectorActions({List<dynamic> dataList, String valName, String dropStr}) {
     List<Widget> wList = [];
     if (dataList != null && dataList.length > 0) {
-      for (var dic in dataList) {
-        wList.add(
-          CupertinoActionSheetAction(
-            child: Text('$dic', style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),),
-            onPressed: () {
-              setState(() {
-                switch (dropStr) {
-                  case 'industy':
-                    this.industySelected = '$dic';
-                    break;
-                  case 'dtv':
-                    this.dtvSelected = '$dic';
-                    break;
-                  case 'dtvPay':
-                    this.dtvPaySelected = '$dic';
-                    break;
-                  case 'slave':
-                    this.slaveSelected = '$dic';
-                    break;
-                  case 'cm':
-                    this.cmSelected = '$dic';
-                    break;
-                  case 'cmPay':
-                    this.cmPaySelected = '$dic';
-                    break;
-                  case 'crossFloor':
-                    this.crossFloorSelected = '$dic';
-                    break;
-                  case 'netCable':
-                    this.netCableSelected = '$dic';
-                    break;
-                  case 'dtvGift':
-                    this.dtvGiftSelected = '$dic';
-                    break;
-                  case 'cmGift':
-                    this.cmGiftSelected = '$dic';
-                    break;
-                } 
-                Navigator.pop(context);
-              });
-            },
-          )
-        );
+      if (dropStr == "dtv" || dropStr == "cm") {
+        for (var dic in dataList) {
+          wList.add(
+            CupertinoActionSheetAction(
+              child: Text('${dic["name"]}', style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),),
+              onPressed: () {
+                setState(() {
+                  switch (dropStr) {                    
+                    case "dtv":
+                      this.dtvSelected = dic["code"];
+                      this.dtvNameSelected = dic["name"];
+                      if (this.dtvSelected == "") {
+                        this.dtvPaySelected = "";
+                        this.slaveSelected = "";
+                        this.crossFloorSelected = "";
+                      }
+                      else {
+                        this.dtvPaySelected = CommonUtils.filterMonthCN2('${this.dtvPayArr[0]}');
+                      }
+                      break;
+                    case "cm":
+                      this.cmSelected = dic["code"];
+                      this.cmNameSelected = dic["name"];
+                      this.cmPayArr = dic["payMonths"];
+                      if (this.cmSelected == "") {
+                        this.cmPaySelected = "";
+                        this.netCableSelected = "";
+                      }
+                      else {
+                        this.cmPaySelected = CommonUtils.filterMonthCN2('${this.cmPayArr[0]}');
+                      } 
+                      break;
+                  }
+                  Navigator.pop(context);
+                });
+              },
+            )
+          );
+        }
+      }
+      else {
+        for (var dic in dataList) {
+          if (dropStr == "dtvPay" || dropStr == "cmPay") {
+            dic = CommonUtils.filterMonthCN2('$dic');
+          }
+          wList.add(
+            CupertinoActionSheetAction(
+              child: Text('$dic', style: TextStyle(fontSize: MyScreen.homePageFontSize(context)),),
+              onPressed: () {
+                setState(() {
+                  switch (dropStr) {
+                    case 'industy':
+                      this.industySelected = '$dic';
+                      break;
+                    case 'dtvPay':
+                      this.dtvPaySelected = '$dic';
+                      break;
+                    case 'slave':
+                      this.slaveSelected = '$dic';
+                      break;
+                    case 'cmPay':
+                      this.cmPaySelected = '$dic';
+                      break;
+                    case 'crossFloor':
+                      this.crossFloorSelected = '$dic';
+                      break;
+                    case 'netCable':
+                      this.netCableSelected = '$dic';
+                      break;
+                    case 'dtvGift':
+                      this.dtvGiftSelected = '$dic';
+                      break;
+                    case 'cmGift':
+                      this.cmGiftSelected = '$dic';
+                      break;
+                  } 
+                  Navigator.pop(context);
+                });
+              },
+            )
+          );
+        }
       }
     }
     return wList;

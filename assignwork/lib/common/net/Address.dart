@@ -19,11 +19,7 @@ class Address {
   static String domainNameAES = "http://wos.dctv.net.tw:8083/WorkInstall/interfaceJsonAES";
   ///是否進入測試機
   static bool isEnterTest = false;
-  ///加解密相關
-  static final String AESKEY_en = "dctv2952dctv2952";
-  static final String AESKEY_de = "dctv1688dctv1688";
-  static final String AESKEY = "dctv1688dctv1688";
-  static final int IV_SIZE = 16;
+  
   ///app版本設在這裡
   static final String verNo = "3.0.0715";
 

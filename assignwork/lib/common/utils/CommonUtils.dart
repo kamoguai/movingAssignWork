@@ -468,6 +468,41 @@ class CommonUtils {
           return str;
     }
   }
+  
+  static filterMonthCN2(String str) {
+    switch (str) {
+      case "0":
+          return "";
+      case "1":
+          return "月繳";
+      case "3":
+          return "季繳";
+      case "6":
+          return "半年繳";
+      case "12":
+          return "年繳";
+      default:
+          return str;
+    }
+  }
+
+  static filterMonthNm(String str) {
+    switch (str) {
+      case "----":
+      case "":
+          return "0";
+      case "月繳":
+          return "1";
+      case "季繳":
+          return "3";
+      case "半年繳":
+          return "6";
+      case "年繳":
+          return "12";
+      default:
+          return str;
+    }
+  }
 
   static filterAreaCN(String str) {
 

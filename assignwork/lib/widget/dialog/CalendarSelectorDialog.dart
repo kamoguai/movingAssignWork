@@ -25,8 +25,10 @@ class CalendarSelectorDialog extends StatefulWidget {
   final String wkNoStr;
   ///由前頁傳入客編
   final String custNoStr;
+  ///由前頁傳入的func，供新約使用
+  final Function getBookingDate;
 
-  CalendarSelectorDialog({this.bookingDate, this.areaStr, this.wkNoStr, this.custNoStr});
+  CalendarSelectorDialog({this.bookingDate, this.areaStr, this.wkNoStr, this.custNoStr, this.getBookingDate});
 
   @override
   _CalendarSelectorDialogState createState() => _CalendarSelectorDialogState();
@@ -47,6 +49,8 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
   TabController _tabController;
   /// scroll controller
   ScrollController _scrollController = new ScrollController();
+  ///pageView controller
+  PageController _pageViewController = new PageController();
   ///textfield node
   FocusNode _focusNode = FocusNode();
   ///裝載api資料
@@ -110,8 +114,12 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
       }
       setState(() {
         _selectedDay = day;
-
-        _getChangeDateData();
+        if (widget.wkNoStr != null) {
+          _getChangeDateData();
+        }
+        else {
+          _getBookingDateData();
+        }
       });
     }
     else {
@@ -264,6 +272,48 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
       });
     }
   }
+  ///新約日期
+  _getBookingDateData() async {
+
+    modelList.clear();
+    class1List.clear();
+    class2List.clear();
+    class3List.clear();
+
+    DateFormat df = new DateFormat('yyyy-MM-dd');
+    String selectData = df.format(_selectedDay);
+    Map<String, dynamic> jsonMap = new Map<String, dynamic>();
+    jsonMap["accNo"] = _getStore().state.userInfo?.accNo;
+    jsonMap["function"] = "queryBookService";
+    jsonMap["businessType"] = "1";
+    jsonMap["bookingDate"] = selectData;
+    jsonMap["manageSectionCode"] = widget.areaStr;
+    var res = await ManageSectionDao.getQueryBookService(jsonMap);
+    if (res != null && res.result) {
+      setState(() {
+        List <dynamic> dataList = res.data;
+        dataList.forEach((e) {
+          model = TimePeriodModel.forMap(e);
+          modelList.add(model);
+        });
+        ///處理班別資料
+        if (modelList.length > 0) {
+          for (var dic in modelList) {
+            final st = dic.serviceType;
+            if (st.contains("早")) {
+              class1List.add(dic);
+            }
+            else if (st.contains("中")) {
+              class2List.add(dic);
+            }
+            else if (st.contains("晚")) {
+              class3List.add(dic);
+            }
+          }
+        }
+      });
+    }
+  }
   ///添加班別進入arr，以達到點擊切換顏色效果
   void _addTransform(String timePeriod) {
     setState(() {
@@ -323,6 +373,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     _animationController.dispose();
     _calendarController.dispose();
     _scrollController.dispose();
+    _pageViewController.dispose();
     _focusNode.dispose();
     modelList.clear();
     class1List.clear();
@@ -335,21 +386,37 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (modelList.length == 0) {
+    if (modelList.length == 0 && widget.wkNoStr != null) {
       ///初始化呼叫api
      _getChangeDateData();
 
+    }
+    else if (modelList.length == 0 && widget.wkNoStr == null) {
+      _getBookingDateData();
     }
   }
 
   _validateSendData() {
     setState(() {
-      if (timePeriodArr.length > 0 && inputText != "") {
-        isValid = true;
+      ///改約
+      if (widget.wkNoStr != null) {
+        if (timePeriodArr.length > 0 && inputText != "") {
+          isValid = true;
+        }
+        else {
+          isValid = false;
+        }
       }
+      ///新約
       else {
-        isValid = false;
+        if (timePeriodArr.length > 0) {
+          isValid = true;
+        }
+        else {
+          isValid = false;
+        }
       }
+      
     });
    
   }
@@ -360,31 +427,56 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     Widget body;
     List<Widget> columnList = [];
     List<Widget> columnList2 = [];
-    DateFormat dft = new DateFormat('yyyy-MM-dd HH:mm:ss');
-    var bookingDate;
-    ///將約裝日期formate成自己要的格式
-    bookingDate = dft.parse(widget.bookingDate);
-    dft = new DateFormat('yy-MM-dd (HH:mm)');
-    bookingDate = dft.format(bookingDate);
-    columnList.add(
-      Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),color: Color(MyColors.hexFromStr('40b89e')),),
-        padding: EdgeInsets.only(left: 10.0, right: 10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            autoTextSize('原裝機日期： $bookingDate', TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context) * 1.5), context),
-            GestureDetector(
-              child: Icon(Icons.cancel, color: Colors.white, size: titleHeight(context) * 1.3,),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            )
-            
-          ],
+    ///改約時進入
+    if (widget.wkNoStr != null && widget.wkNoStr.length > 0) {
+      DateFormat dft = new DateFormat('yyyy-MM-dd HH:mm:ss');
+      var bookingDate;
+      ///將約裝日期formate成自己要的格式
+      bookingDate = dft.parse(widget.bookingDate);
+      dft = new DateFormat('yy-MM-dd (HH:mm)');
+      bookingDate = dft.format(bookingDate);
+      columnList.add(
+        Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),color: Color(MyColors.hexFromStr('40b89e')),),
+          padding: EdgeInsets.only(left: 10.0, right: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              autoTextSize('原裝機日期： $bookingDate', TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context) * 1.5), context),
+              GestureDetector(
+                child: Icon(Icons.cancel, color: Colors.white, size: titleHeight(context) * 1.3,),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              )
+              
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+    ///新約時進入
+    else {
+      columnList.add(
+        Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),color: Color(MyColors.hexFromStr('40b89e')),),
+          padding: EdgeInsets.only(left: 10.0, right: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              // autoTextSize('', TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize(context) * 1.5), context),
+              GestureDetector(
+                child: Icon(Icons.cancel, color: Colors.white, size: titleHeight(context) * 1.3,),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+        ),
+      );
+    }
+   
     columnList.add(
       Expanded(
         child: SingleChildScrollView(
@@ -416,10 +508,27 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
           tabs: _renderTabItem(),
           indicatorWeight: 0.1,
           controller: _tabController,
+          onTap: (val) {
+            print(' tabBar tap val -> $val');
+            _tabController.animateTo(val);
+          },
         ),
       ),
     );
-    
+    // columnList2.add(
+    //   Container(
+    //     height: (listHeight(context) * 1.4) * 4,
+    //     decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.red,))),
+    //     child: PageView(
+    //       controller: _pageViewController,
+    //       children: _tabBarView(),
+    //       onPageChanged: (index) {
+    //         print("pageView index => $index");
+    //         _tabController.animateTo(index);
+    //       },
+    //     ),
+    //   )
+    // );
     columnList2.add(
       Container(
         height: (listHeight(context) * 1.4) * 4,
@@ -487,12 +596,10 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
                             builder: (BuildContext context)=> _bookingResultDialog(context)
                           );
                         }
-                        else {
-                          return;
-                        }
                       }
                       else {
-                        
+                        widget.getBookingDate(timePeriodArr[0]);
+                        Navigator.pop(context);
                       }
                     }
                   },
@@ -512,6 +619,15 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     );
 
     return body;
+  }
+
+  ///tab view widget
+  List<Widget> _tabBarView() {
+    return [
+        TimePeriodItem(key: ValueKey('class1'), classStr: "早", modelList: class1List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay,),
+        TimePeriodItem(key: ValueKey('class2'), classStr: "中", modelList: class2List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay,),
+        TimePeriodItem(key: ValueKey('class3'), classStr: "晚", modelList: class3List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay,),
+      ];
   }
 }
 ///班別class model

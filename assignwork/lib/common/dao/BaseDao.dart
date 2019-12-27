@@ -123,4 +123,34 @@ class BaseDao {
       }
     }
   }
+
+  ///取得發展人選單列表
+  static getSalesListInfo(Map jsonMap) async {
+    Map<String, dynamic> resDataArray = {};
+    List<dynamic> mList = new List<dynamic>();
+    ///map轉json
+    String str = json.encode(jsonMap);
+    if (Config.DEBUG) {
+      print("取得發展人選單列表request => " + str);
+    }
+    ///aesEncode
+    var aesData = AesUtils.aes128Encrypt(str);
+    Map paramsData = {"data": aesData};
+    var res = await HttpManager.netFetch(Address.getQueryemplyeeList(), paramsData, null, new Options(method: "post"));
+    if (res != null && res.result) {
+      if (Config.DEBUG) {
+        print("取得發展人選單列表resp => " + res.data.toString());
+      }
+      if (res.data['RtnCD'] == "00") {
+        mList = res.data['data'];
+      }
+      if (mList.length > 0) {
+        return new DataResult(mList, true);
+      }
+      else {
+        return new DataResult(null, false);
+      }
+    }
+  }
+
 }

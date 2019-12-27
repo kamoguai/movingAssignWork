@@ -4,31 +4,43 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 ///
-///街道路選擇器
-///Date: 2019-12-20
-class RoadSelectDialog extends StatefulWidget {
+///共用選擇器，包括filter功能
+///Date: 2019-12-27
+class SelectorDialog extends StatefulWidget {
   ///由上頁傳入dataList
   final List<dynamic> dataList;
   ///由上頁傳入func，此頁選定後把值帶回前頁
   final Function selectFunc;
+  ///由上頁傳入所要查詢item name
+  final String findItemName;
+  ///由上頁傳入所要查詢label text
+  final String labelTxt;
+  ///由上頁傳入所要查詢title text
+  final String titleTxt;
+  ///由上頁傳入所要查詢error text
+  final String errTxt;
+  ///由上頁傳入所要model name text
+  final String modelName;
+  ///由上頁傳入所要model value text
+  final String modelVal;
 
-  RoadSelectDialog({this.dataList, this.selectFunc});
+  SelectorDialog({this.dataList, this.selectFunc, this.findItemName, this.labelTxt, this.titleTxt, this.errTxt, this.modelName, this.modelVal});
 
   @override
-  _RoadSelectDialogState createState() => _RoadSelectDialogState();
+  _SelectorDialogState createState() => _SelectorDialogState();
 }
 
-class _RoadSelectDialogState extends State<RoadSelectDialog> with BaseWidget {
+class _SelectorDialogState extends State<SelectorDialog> with BaseWidget {
 
   ///裝載資料
   List<dynamic> dataArray = [];
+  ///原始資料
   List<dynamic> originArray = [];
+  ///所選資料
   Map<String, dynamic> pickData = {};
   ///textField controller
   TextEditingController textEditingController =  TextEditingController();
   FocusNode textFocus = FocusNode();
-
-
 
   ///filter功能
   void filterSearchResult(String str) {
@@ -37,7 +49,7 @@ class _RoadSelectDialogState extends State<RoadSelectDialog> with BaseWidget {
     if (str.isNotEmpty) {
       List<dynamic> dummyListData = List<dynamic>();
       dummySearchList.forEach((item) {
-        if (item['name'].contains(str)) {
+        if (item[widget.findItemName].contains(str)) {
           dummyListData.add(item);
           setState(() {
             dataArray = dummyListData;
@@ -55,8 +67,8 @@ class _RoadSelectDialogState extends State<RoadSelectDialog> with BaseWidget {
 
   ///搜尋bar
   Widget searchTextField() {
-    Widget widget;
-    widget = Padding(
+    Widget content;
+    content = Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
         onSubmitted: (value) {
@@ -65,7 +77,7 @@ class _RoadSelectDialogState extends State<RoadSelectDialog> with BaseWidget {
         controller: textEditingController,
         focusNode: textFocus,
         decoration: InputDecoration(
-          labelText: '路名',
+          labelText: widget.labelTxt,
           prefixIcon: Icon(Icons.search),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(25.0))
@@ -73,13 +85,13 @@ class _RoadSelectDialogState extends State<RoadSelectDialog> with BaseWidget {
         ),
       ),
     );
-    return widget;
+    return content;
   }
   ///widget list item
   Widget listItem(BuildContext context, int index) {
     Widget item;
     var dicIndex = dataArray[index];
-    var dic = RoadSelectorModel.forMap(dicIndex);
+    var dic = SelectorModel.forMap(dicIndex, modelName: widget.modelName, modelVal: widget.modelVal);
     item = GestureDetector(
       child: Container(
         color: pickData == dicIndex ? Colors.yellow : Colors.white,
@@ -138,10 +150,10 @@ class _RoadSelectDialogState extends State<RoadSelectDialog> with BaseWidget {
                color: Color(MyColors.hexFromStr('#40b89e')),
              ),
              height: titleHeight(context) * 1.5,
-             child: Center(child: autoTextSize('選擇道路', TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)), context),)
+             child: Center(child: autoTextSize(widget.titleTxt, TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)), context),)
            ),
            searchTextField(),
-           listView(),
+           widget.dataList.length > 0 ? listView() : Container(),
            Container(
              height: titleHeight(context) * 1.5,
              child: Row(
@@ -173,7 +185,7 @@ class _RoadSelectDialogState extends State<RoadSelectDialog> with BaseWidget {
                             Navigator.pop(context, 'ok');
                           }
                           else {
-                            Fluttertoast.showToast(msg: '尚未選擇路段！');
+                            Fluttertoast.showToast(msg: widget.errTxt);
                             return;
                           }
                           
@@ -190,16 +202,16 @@ class _RoadSelectDialogState extends State<RoadSelectDialog> with BaseWidget {
   }
 }
 
-class RoadSelectorModel {
+class SelectorModel {
   ///路名
   String name;
   ///路代碼
   String code;
 
-  RoadSelectorModel();
+  SelectorModel();
 
-  RoadSelectorModel.forMap(dic) {
-    name = dic["name"] == null ? "" : dic["name"];
-    code = dic["code"] == null ? "" : dic["code"];
+  SelectorModel.forMap(dic, {modelName, modelVal}) {
+    name = dic[modelName] == null ? "" : dic[modelName];
+    code = dic[modelVal] == null ? "" : dic[modelVal];
   }
 }

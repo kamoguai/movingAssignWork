@@ -60,7 +60,7 @@ class ManageSectionDao {
         print("查詢套餐訊息resp => " + res.data.toString());
       }
       if (res.data['RtnCD'] == "00") {
-        mainDataArray = res.data['data'];
+        mainDataArray = res.data['baseInfoForPurchase'];
       }
       if (mainDataArray.length > 0) {
         return new DataResult(mainDataArray, true);
@@ -95,7 +95,7 @@ class ManageSectionDao {
         return new DataResult(mainDataArray, true);
       }
       else {
-        return new DataResult(null, false);
+        return new DataResult(res.data['RtnMsg'], false);
       }
     }
   }
@@ -104,7 +104,6 @@ class ManageSectionDao {
   ///查詢班次
   ///
   static getQueryBookService(Map<String, dynamic> jsonMap) async {
-    Map<String, dynamic> mainDataArray = {};
     List<dynamic> mList = new List<dynamic>();
     ///map轉json
     String str = json.encode(jsonMap);

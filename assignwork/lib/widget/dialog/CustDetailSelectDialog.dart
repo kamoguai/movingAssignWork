@@ -5,7 +5,7 @@ import 'package:assignwork/common/dao/ManageSectionDao.dart';
 import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
-import 'package:assignwork/widget/dialog/RoadSelectDialog.dart';
+import 'package:assignwork/widget/dialog/SelectorDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -16,6 +16,10 @@ import 'package:keyboard_actions/keyboard_actions.dart';
 ///新戶約裝輸入客戶基本資料的dialog
 ///Date: 2019-12-18
 class CustDetailSelectDialog extends StatefulWidget {
+  final Function getMatchDataFunc;
+  final Map<String, dynamic> logMatchAddr;
+  CustDetailSelectDialog({this.getMatchDataFunc, this.logMatchAddr});
+
   @override
   _CustDetailSelectDialogState createState() => _CustDetailSelectDialogState();
 
@@ -28,9 +32,11 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
   ///街路段arr
   List<dynamic> roadAddressArr = [];
   ///記錄全路段
-  List<dynamic> logFullAddress = ["新北市","板橋區", "",""];
+  Map<String, dynamic> logFullAddress = {"city": "新北市", "area": "板橋區", "areaCode": "220/ROOT", "road": "", "roadCode": "", "community": "", "lane": "", "unit": "", "ofUnit": "", "floor": "", "floorOf": "", "custName": "", "mobile": "", "telAreaCode": "" , "telPhone": "", "fullAddressCode": "", "fullAddress": "", "buildingName": ""};
   ///記錄市區代碼
   String manageSectionCodeStr = "";
+  ///記錄匹配後地址
+  Map<String, dynamic> logMatchAddr = {};
 
   ///姓名 textfield node，controller
   final FocusNode _nameFocus =  FocusNode();
@@ -66,6 +72,8 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
   ScrollController _scrollController = ScrollController();
   ///是否檢核通過
   bool _isValid = false;
+  ///是否通過匹配
+  bool _isGetAddressPK = false;
 
   ///鍵盤config
   KeyboardActionsConfig _buildConfig(BuildContext context) {
@@ -78,14 +86,14 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
           focusNode: _mobileFocus,
           closeWidget: Padding(
             padding: EdgeInsets.all(5),
-            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _mobileFocus, _telAreaCodeFocus);},)
           ),
         ),
         KeyboardAction(
           focusNode: _telAreaCodeFocus,
           closeWidget: Padding(
             padding: EdgeInsets.all(5),
-            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _telAreaCodeFocus, _telPhoneFocus);},)
           ),
         ),
         KeyboardAction(
@@ -99,7 +107,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
           focusNode: _communityFocus,
           closeWidget: Padding(
             padding: EdgeInsets.all(5),
-            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _communityFocus, _laneFocus);},)
           ),
         ),
         KeyboardAction(
@@ -113,7 +121,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
           focusNode: _unitFocus,
           closeWidget: Padding(
             padding: EdgeInsets.all(5),
-            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _unitFocus, _ofUnitFocus);},)
           ),
         ),
         KeyboardAction(
@@ -127,7 +135,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
           focusNode: _floorFocus,
           closeWidget: Padding(
             padding: EdgeInsets.all(5),
-            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
+            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _floorFocus, _floorOfFocus);},)
           ),
         ),
         KeyboardAction(
@@ -160,7 +168,9 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
     paramMap["currentManageSectionCode"] = sectionCode;
     var res = await ManageSectionDao.getQueryManageSection(paramMap);
     if (res.result) {
+      if(mounted)
       setState(() {
+        isLoading = false;
         this.roadAddressArr = res.data;
       });
       
@@ -171,7 +181,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
   _postMatchAddress() async {
     Map<String, dynamic> paramMap = new Map<String, dynamic>();
     Map<String, dynamic> paramMap2 = new Map<String, dynamic>();
-    paramMap2["parentManageSectoinCode"] = this.logFullAddress[3];
+    paramMap2["parentManageSectoinCode"] = this.logFullAddress["roadCode"];
     paramMap2["community"] = _communityController.text.length == 0 ? "0" : _communityController.text;
     paramMap2["lane"] = _laneController.text.length == 0 ? "0" : _laneController.text;
     paramMap2["unit"] = _unitController.text.length == 0 ? "0" : _unitController.text;
@@ -188,10 +198,52 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
     var res = await ManageSectionDao.postMatchAddress(paramMap);
     if (res.result) {
       setState(() {
-        this.roadAddressArr = res.data;
+        this._isGetAddressPK = true;
+        this.logMatchAddr = res.data;
+        this.logFullAddress["fullAddressCode"] = res.data["installAddressCode"];
+        this.logFullAddress["buildingName"] = res.data["InstallAddressBuildingName"];
+        _appendFullData();
+        Fluttertoast.showToast(msg: '匹配成功！');
       });
-      
     }
+    else {
+      Fluttertoast.showToast(msg: res.data);
+      return ;
+    }
+  }
+
+  _appendFullData() {
+      this.logFullAddress["community"] = _communityController.text;
+      this.logFullAddress["lane"] = _laneController.text;
+      this.logFullAddress["unit"] = _unitController.text;
+      this.logFullAddress["ofUnit"] = _ofUnitController.text;
+      this.logFullAddress["floor"] =  _floorController.text;
+      this.logFullAddress["floorOf"] = _floorOfController.text;
+      this.logFullAddress["custName"] = _nameController.text;
+      this.logFullAddress["mobile"] = _mobileController.text;
+      this.logFullAddress["telAreaCode"] = _telAreaCodeController.text;
+      this.logFullAddress["telPhone"] = _telPhoneController.text;
+     
+      var fullAddr = "${this.logFullAddress["city"]}${this.logFullAddress["area"]}${this.logFullAddress["road"]}";
+      if (this.logFullAddress["community"] != "") {
+        fullAddr += "${this.logFullAddress["community"]}巷";
+      }
+      if (this.logFullAddress["lane"] != "") {
+        fullAddr += "${this.logFullAddress["lane"]}弄";
+      }
+      if (this.logFullAddress["unit"] != "") {
+        fullAddr += "${this.logFullAddress["unit"]}號";
+      }
+      if (this.logFullAddress["ofUnit"] != "") {
+        fullAddr += "${this.logFullAddress["ofUnit"]}之號";
+      }
+      if (this.logFullAddress["floor"] != "") {
+        fullAddr += "${this.logFullAddress["floor"]}樓";
+      }
+      if (this.logFullAddress["floorOf"] != "") {
+        fullAddr += "${this.logFullAddress["floorOf"]}之樓";
+      }
+      this.logFullAddress["fullAddress"] = fullAddr;
   }
 
   ///道路選擇dialog
@@ -205,42 +257,96 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
           color: Colors.white,
         ),
         margin: EdgeInsets.symmetric(vertical: 40, horizontal: 30),
-        child: RoadSelectDialog(dataList: roadData, selectFunc: _selectFunc,),
+        // child: RoadSelectDialog(dataList: roadData, selectFunc: _selectFunc,),
+        child: SelectorDialog(dataList: roadData, selectFunc: _selectFunc, findItemName: 'name', labelTxt: '道路', titleTxt: '選擇道路', errTxt: '尚未選擇路段！', modelName: 'name', modelVal: 'code',),
       )
     );
   }
 
   void _selectFunc(Map<String, dynamic> map) {
     setState(() {
-      this.logFullAddress[2] = map["name"];
-      this.logFullAddress[3] = map["code"];
-      print(this.logFullAddress.toString());
+      this.logFullAddress["road"] = map["name"];
+      this.logFullAddress["roadCode"] = map["code"];
+      
     });
   }
 
-
-
-
-
-
+  void initData() {
+    ///callback時進入
+    if (widget.logMatchAddr.length > 0) {
+      _nameController.value = TextEditingValue(text: widget.logMatchAddr["custName"] ?? "");
+      _mobileController.value = TextEditingValue(text: widget.logMatchAddr["mobile"] ?? "");
+      _telAreaCodeController.value = TextEditingValue(text: widget.logMatchAddr["telAreaCode"] ?? "");
+      _telPhoneController.value = TextEditingValue(text: widget.logMatchAddr["telPhone"] ?? "");
+      _communityController.value = TextEditingValue(text: widget.logMatchAddr["community"] ?? "");
+      _laneController.value = TextEditingValue(text: widget.logMatchAddr["lane"] ?? "");
+      _unitController.value = TextEditingValue(text: widget.logMatchAddr["unit"] ?? "");
+      _ofUnitController.value = TextEditingValue(text: widget.logMatchAddr["ofUnit"] ?? "");
+      _floorController.value = TextEditingValue(text: widget.logMatchAddr["floor"] ?? "");
+      _floorOfController.value = TextEditingValue(text: widget.logMatchAddr["floorOf"] ?? "");
+      this.logFullAddress["area"] = widget.logMatchAddr["area"];
+      this.logFullAddress["areaCode"] = widget.logMatchAddr["areaCode"];
+      this.logFullAddress["road"] = widget.logMatchAddr["road"];
+      this.logFullAddress["roadCode"] = widget.logMatchAddr["roadCode"];
+      
+    } 
+  }
 
   @override
   void initState() {
     super.initState();
+    initData();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _nameController.dispose();
+    _nameFocus.dispose();
+    _mobileController.dispose();
+    _mobileFocus.dispose();
+    _telAreaCodeController.dispose();
+    _telAreaCodeFocus.dispose();
+    _telPhoneController.dispose();
+    _telPhoneFocus.dispose();
+    _communityController.dispose();
+    _communityFocus.dispose();
+    _laneController.dispose();
+    _laneFocus.dispose();
+    _unitController.dispose();
+    _unitFocus.dispose();
+    _ofUnitController.dispose();
+    _ofUnitFocus.dispose();
+    _floorController.dispose();
+    _floorFocus.dispose();
+    _floorOfController.dispose();
+    _floorOfFocus.dispose();
+    _scrollController.dispose();
   }
 
   @override
   void didChangeDependencies() {
-    if (this.roadAddressArr.length == 0) {
+    ///初次進入
+    if (widget.logMatchAddr.length == 0) {
+      if (this.roadAddressArr.length == 0) {
+        var currentSection = json.decode(areaAddressJson);
+        this.areaAddressArr = currentSection;
+        isLoading = true;
+        _getAddressData(this.areaAddressArr[4]["code"]);
+
+      }
+    }
+    ///callback 進入
+    else {
       var currentSection = json.decode(areaAddressJson);
       this.areaAddressArr = currentSection;
-      _getAddressData(this.areaAddressArr[4]["code"]);
-
+      for (var dic in this.areaAddressArr) {
+        if (dic["name"].toString().contains(this.logFullAddress["area"])) {
+          if(mounted)
+          isLoading = true;
+          _getAddressData(dic["code"]);
+        }
+      }
     }
     super.didChangeDependencies();
   }
@@ -263,6 +369,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
             GestureDetector(
               child: Icon(Icons.cancel, color: Colors.white, size: titleHeight(context) * 1.3,),
               onTap: () {
+                FocusScope.of(context).unfocus();
                 Navigator.pop(context);
               },
             )
@@ -482,11 +589,11 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(2.0), color: Colors.lightGreen[100]),
-                child: autoTextSize('板橋區'.contains(this.logFullAddress[1]) == true ? "板橋區" : this.logFullAddress[1], TextStyle(color: Colors.blue), context),
+                child: autoTextSize('板橋區'.contains(this.logFullAddress["area"]) == true ? "板橋區" : this.logFullAddress["area"], TextStyle(color: Colors.blue), context),
               ),
-              onTap: (){
-                _showSelectorController(context, dataList: this.areaAddressArr, title: '鄉鎮市區', dropStr: 'area');
+              onTap: (){                
                 FocusScope.of(context).unfocus();
+                _showSelectorController(context, dataList: this.areaAddressArr, title: '鄉鎮市區', dropStr: 'area');
               },
             ),
             Container(
@@ -498,8 +605,8 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
     );
 
     var roadStr = "";
-    if (this.logFullAddress[2] != "") {
-      roadStr = this.logFullAddress[2];
+    if (this.logFullAddress["road"] != "") {
+      roadStr = this.logFullAddress["road"];
     }
     else {
       roadStr = '請選擇路段';
@@ -517,6 +624,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
               ),
               onTap: () {
                 FocusScope.of(context).unfocus();
+                if (!isLoading)
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => roadSelectorDialot(context)
@@ -559,8 +667,8 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                       borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
                     )
                   ),
-                  onFieldSubmitted: (val) {
-                    _fieldFoucusChange(context, _communityFocus, _laneFocus);
+                  onChanged: (val) {
+                    // _fieldFoucusChange(context, _communityFocus, _laneFocus);
                   },
                 ),
               ),
@@ -572,6 +680,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 child: autoTextSize('巷', TextStyle(color: Colors.black), context),
               ),
             ),
+            if(_communityController.text != "")
             Flexible(
               flex: 3,
               child: Container(
@@ -599,12 +708,23 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
               ),
             ),
+            if(_communityController.text != "")
             Flexible(
               flex: 2,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: autoTextSize('弄', TextStyle(color: Colors.black), context),
               ),
+            ),
+            if (_communityController.text == "") 
+            Flexible(
+              flex: 3,
+              child: Container(),
+            ),
+            if (_communityController.text == "") 
+            Flexible(
+              flex: 2,
+              child: Container(),
             ),
             
           ],
@@ -638,12 +758,13 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                       borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
                     )
                   ),
-                  onFieldSubmitted: (val) {
-                    _fieldFoucusChange(context, _unitFocus, _ofUnitFocus);
+                  onChanged: (val) {
+                    // _fieldFoucusChange(context, _unitFocus, _ofUnitFocus);
                   },
                 ),
               ),
             ),
+            if (_unitController.text != "")
             Flexible(
               flex: 2,
               child: Container(
@@ -651,6 +772,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 child: autoTextSize(' - ', TextStyle(color: Colors.black), context)
               ),
             ),
+            if (_unitController.text != "")
             Flexible(
               flex: 3,
               child: Container(
@@ -678,12 +800,28 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
               ),
             ),
+            if (_unitController.text != "")
             Flexible(
               flex: 2,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: autoTextSize('號', TextStyle(color: Colors.black), context)
               ),
+            ),
+            if (_unitController.text == "")
+            Flexible(
+              flex: 2,
+              child: Container(),
+            ),
+            if (_unitController.text == "")
+            Flexible(
+              flex: 3,
+              child: Container(),
+            ),
+            if (_unitController.text == "")
+            Flexible(
+              flex: 2,
+              child: Container(),
             ),
           ],
         ),
@@ -723,6 +861,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
               ),
             ),
+            if (_floorController.text != "")
             Flexible(
               flex: 2,
               child: Container(
@@ -730,11 +869,13 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 child: autoTextSize('樓 - ', TextStyle(color: Colors.black), context)
               ),
             ),
+            if (_floorController.text != "")
             Flexible(
               flex: 3,
               child: Container(
                 child: TextFormField(
                   controller: _floorOfController,
+                  keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.done,
                   focusNode: _floorOfFocus,
                   maxLines: 1,
@@ -756,10 +897,29 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
               ),
             ),
+            if (_floorController.text != "")
             Flexible(
               flex: 2,
               child: Container(),
-            )
+            ),
+            if (_floorController.text == "")
+            Flexible(
+              flex: 2,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: autoTextSize('樓', TextStyle(color: Colors.black), context)
+              ),
+            ),
+            if (_floorController.text == "")
+            Flexible(
+              flex: 3,
+              child: Container(),
+            ),
+            if (_floorController.text == "")
+            Flexible(
+              flex: 2,
+              child: Container(),
+            ),
           ],
         ),
       ),
@@ -799,8 +959,15 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                   color: Color(MyColors.hexFromStr('#40b89e')),
                   child: autoTextSize('確定', TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)), context),
                   onPressed: () {
-                    
                     FocusScope.of(context).unfocus();
+                    if(this._isGetAddressPK) {
+                      Navigator.pop(context);
+                      widget.getMatchDataFunc(this.logFullAddress);
+                    }
+                    else {
+                      Fluttertoast.showToast(msg: "請先匹配地址！");
+                      return;
+                    }
                   },
                 ),
               )
@@ -822,7 +989,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),
               ),
               TextSpan(
-                text: '',
+                text: this.logMatchAddr["InstallAddessBuildingName"] == null ? "" : this.logMatchAddr["InstallAddessBuildingName"],
                 style: TextStyle(color: Colors.red, fontSize: MyScreen.defaultTableCellFontSize(context)),
               )
             ]
@@ -852,19 +1019,52 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
       Fluttertoast.showToast(msg: '市話或手機請至少填入一項。');
       return false;
     }
-    if (this.logFullAddress[2] == "" ) {
+    if (_telPhoneController.text.length > 0) {
+      if (_telAreaCodeController.text.length == 0) {
+        Fluttertoast.showToast(msg: '請輸入市話區碼。');
+      return false;
+      }
+    }
+    if (this.logFullAddress["road"] == "" ) {
       Fluttertoast.showToast(msg: '路段尚未選擇');
       return false;
     }
+    if (this.logFullAddress["community"] == "" && this.logFullAddress["lane"] != "") {
+      Fluttertoast.showToast(msg: '您沒有輸入『巷』，『弄』不能輸入。');
+      return false;
+    }
+    if (this.logFullAddress["unit"] == "" && this.logFullAddress["ofUnit"] != "") {
+      Fluttertoast.showToast(msg: '您沒有輸入『號』，『之號』不能輸入。');
+      return false;
+    }
+    if (this.logFullAddress["floor"] == "" && this.logFullAddress["floorOf"] != "") {
+      Fluttertoast.showToast(msg: '您沒有輸入『樓』，『之樓』不能輸入。');
+      return false;
+    }
+    if (this.logFullAddress["unit"] == "" && this.logFullAddress["floor"] != "") {
+      Fluttertoast.showToast(msg: '您沒有輸入『號』，『樓』不能輸入。');
+      return false;
+    }
+    if (this.logFullAddress["floor"] != "" ) {
+      int i = int.parse(this.logFullAddress["floor"]);
+      if (i >= 100)
+      Fluttertoast.showToast(msg: '請勿輸入不合理樓層。');
+      return false;
+    }
+    if (this.logFullAddress["floorOf"] != "" ) {
+      int i = int.parse(this.logFullAddress["floorOf"]);
+      if (i >= 100)
+      Fluttertoast.showToast(msg: '請勿輸入不合理樓層之幾。');
+      return false;
+    }
+
     return true;
 
   }
 
-
-
-
    ///下拉選擇器
   _showSelectorController(BuildContext context, { List<dynamic> dataList, String title, String valName, String dropStr}) {
+    FocusScope.of(context).unfocus();
     showCupertinoModalPopup<String>(
       context: context,
       builder: (context) {
@@ -895,19 +1095,16 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
               setState(() {
                 switch (dropStr) {
                   case 'area':
-                    this.logFullAddress[1] = dic["name"];
+                    this.logFullAddress["area"] = dic["name"];
+                    this.logFullAddress["areaCode"] = dic["code"];
                     for(var dis in this.areaAddressArr) {
                       if (dis["name"].contains(dic["name"])) {
                         _getAddressData(dis["code"]);
                       }
                     }
                     break;
-                  case 'road':
-                    this.logFullAddress.insert(2, dic["name"]);
-                    print('${this.logFullAddress.toString()}');
-                    break;
-                  
                 } 
+                isLoading = true;
                 Navigator.pop(context);
               });
             },

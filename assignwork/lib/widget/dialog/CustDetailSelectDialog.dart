@@ -161,7 +161,8 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
 
   ///取得地址api
   _getAddressData(String sectionCode) async {
-    
+    ///初始化road arr
+    this.roadAddressArr.clear();
     Map<String, dynamic> paramMap = new Map<String, dynamic>();
     paramMap["function"] = "queryManageSection";
     paramMap["accNo"] = _getStore().state.userInfo?.accNo;
@@ -472,7 +473,19 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                   )
                 ),
                 onFieldSubmitted: (val) {
-                  _fieldFoucusChange(context, _mobileFocus, _telAreaCodeFocus);
+                  if (val.length < 10) {
+                    Fluttertoast.showToast(msg: '請輸入完整手機號！');
+                    return;
+                  }
+                  else {
+                    var subStr = val.substring(0,2);
+                    if (!subStr.contains("09")) {
+                      Fluttertoast.showToast(msg: '請輸入正確的手機號碼！');
+                      return;
+                    } 
+                    _fieldFoucusChange(context, _mobileFocus, _telAreaCodeFocus);
+
+                  }
                 },
                ),
              )
@@ -668,7 +681,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                     )
                   ),
                   onChanged: (val) {
-                    // _fieldFoucusChange(context, _communityFocus, _laneFocus);
+                    _fieldFoucusChange(context, _communityFocus, _laneFocus);
                   },
                 ),
               ),
@@ -680,7 +693,6 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 child: autoTextSize('巷', TextStyle(color: Colors.black), context),
               ),
             ),
-            if(_communityController.text != "")
             Flexible(
               flex: 3,
               child: Container(
@@ -708,7 +720,6 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
               ),
             ),
-            if(_communityController.text != "")
             Flexible(
               flex: 2,
               child: Container(
@@ -716,17 +727,6 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 child: autoTextSize('弄', TextStyle(color: Colors.black), context),
               ),
             ),
-            if (_communityController.text == "") 
-            Flexible(
-              flex: 3,
-              child: Container(),
-            ),
-            if (_communityController.text == "") 
-            Flexible(
-              flex: 2,
-              child: Container(),
-            ),
-            
           ],
         ),
       )
@@ -759,12 +759,11 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                     )
                   ),
                   onChanged: (val) {
-                    // _fieldFoucusChange(context, _unitFocus, _ofUnitFocus);
+                    _fieldFoucusChange(context, _unitFocus, _ofUnitFocus);
                   },
                 ),
               ),
             ),
-            if (_unitController.text != "")
             Flexible(
               flex: 2,
               child: Container(
@@ -772,7 +771,6 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 child: autoTextSize(' - ', TextStyle(color: Colors.black), context)
               ),
             ),
-            if (_unitController.text != "")
             Flexible(
               flex: 3,
               child: Container(
@@ -800,28 +798,12 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
               ),
             ),
-            if (_unitController.text != "")
             Flexible(
               flex: 2,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: autoTextSize('號', TextStyle(color: Colors.black), context)
               ),
-            ),
-            if (_unitController.text == "")
-            Flexible(
-              flex: 2,
-              child: Container(),
-            ),
-            if (_unitController.text == "")
-            Flexible(
-              flex: 3,
-              child: Container(),
-            ),
-            if (_unitController.text == "")
-            Flexible(
-              flex: 2,
-              child: Container(),
             ),
           ],
         ),
@@ -861,7 +843,6 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
               ),
             ),
-            if (_floorController.text != "")
             Flexible(
               flex: 2,
               child: Container(
@@ -869,7 +850,6 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 child: autoTextSize('樓 - ', TextStyle(color: Colors.black), context)
               ),
             ),
-            if (_floorController.text != "")
             Flexible(
               flex: 3,
               child: Container(
@@ -897,25 +877,6 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
               ),
             ),
-            if (_floorController.text != "")
-            Flexible(
-              flex: 2,
-              child: Container(),
-            ),
-            if (_floorController.text == "")
-            Flexible(
-              flex: 2,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: autoTextSize('樓', TextStyle(color: Colors.black), context)
-              ),
-            ),
-            if (_floorController.text == "")
-            Flexible(
-              flex: 3,
-              child: Container(),
-            ),
-            if (_floorController.text == "")
             Flexible(
               flex: 2,
               child: Container(),
@@ -1009,7 +970,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
     return body;
    
   }
-
+  ///欄位檢核
   bool _validateSubmit() {
     if (_nameController.text.length == 0) {
       Fluttertoast.showToast(msg: '請填妥顧客姓名。');

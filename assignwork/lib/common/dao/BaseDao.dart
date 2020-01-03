@@ -126,7 +126,6 @@ class BaseDao {
 
   ///取得發展人選單列表
   static getSalesListInfo(Map jsonMap) async {
-    Map<String, dynamic> resDataArray = {};
     List<dynamic> mList = new List<dynamic>();
     ///map轉json
     String str = json.encode(jsonMap);

@@ -680,7 +680,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                       borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
                     )
                   ),
-                  onChanged: (val) {
+                  onFieldSubmitted: (val) {
                     _fieldFoucusChange(context, _communityFocus, _laneFocus);
                   },
                 ),
@@ -758,7 +758,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                       borderSide: BorderSide(color: Colors.black, width: 1.0, style: BorderStyle.solid)
                     )
                   ),
-                  onChanged: (val) {
+                  onFieldSubmitted: (val) {
                     _fieldFoucusChange(context, _unitFocus, _ofUnitFocus);
                   },
                 ),

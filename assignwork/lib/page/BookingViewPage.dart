@@ -1,5 +1,6 @@
 
 import 'package:assignwork/common/dao/BaseDao.dart';
+import 'package:assignwork/common/dao/BookingSendDao.dart';
 import 'package:assignwork/common/dao/ManageSectionDao.dart';
 import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
@@ -9,9 +10,12 @@ import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/HomeDrawer.dart';
 import 'package:assignwork/widget/dialog/CalendarSelectorDialog.dart';
 import 'package:assignwork/widget/dialog/CustDetailSelectDialog.dart';
+import 'package:assignwork/widget/dialog/ProductSelectDialog.dart';
+import 'package:assignwork/widget/dialog/SelectorDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 ///
@@ -74,8 +78,12 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   Map<String, dynamic> logProdInfo = {};
   ///記錄所選約裝時間
   String bookingDateSelected = "";
+  ///記錄試算結果金額
+  Map<String, dynamic> logTrialArr = {"dtvMoney": "", "cmMoney": "", "installMoney": "", "buildMoney": "", "foregiftMoney": "", "additionalMoney": "", "networkCableMoney": "", "sumMoney": ""};
   ///判斷檢核完成後才能送出
   bool _isPkSend = false;
+  ///判斷檢核試算欄位
+  bool _isTrial = false;
 
   Store<SysState> _getStore() {
     return StoreProvider.of(context);
@@ -129,14 +137,10 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     paramMap["deptCD"] = _getStore().state.userInfo?.deptCD;
     var res = await BaseDao.getSalesListInfo(paramMap);
     if (res.result) {
-      final data1 = res.data["networkCableNumberList"];
-      final data2 = res.data["crossFloorNumberList"];
-      final data3 = res.data["slaveNumberList"];
+      final data = res.data["networkCableNumberList"];
       
       setState(() {
-        this.netCableArr = data1;
-        this.crossFloorArr = data2;
-        this.slaveArr = data3;
+        this.salesArr = data;
       });
     }
   }
@@ -155,10 +159,52 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
 
     }
   }
+
+  ///試算
+  _postTrailData() async {
+    validTrialParam();
+    Map<String, dynamic> paramMap = new Map<String, dynamic>();
+    paramMap["function"] = "trial";
+    paramMap["accNo"] = _getStore().state.userInfo?.accNo;
+    paramMap["trialType"] = "1";
+    paramMap["manageSectionCode"] = this.logMatchArr["areaCode"];
+    paramMap["bookingDate"] = this.bookingDateSelected;
+    paramMap["dtvCode"] = this.dtvSelected;
+    paramMap["dtvMonth"] = CommonUtils.filterMonthNm(this.dtvPaySelected);
+    paramMap["cmCode"] = this.cmSelected;
+    paramMap["cmMonth"] = CommonUtils.filterMonthNm(this.cmPaySelected);
+    paramMap["allowanceMonth"] = "0";
+    paramMap["slaveNumber"] = this.slaveSelected == "" ? "0" : this.slaveSelected;
+    paramMap["crossFloorNumber"] = this.crossFloorSelected == "" ? "0" : this.crossFloorSelected;
+    paramMap["networkCableNumber"] = this.netCableSelected == "" ? "0" : this.netCableSelected;
+    paramMap["additionalInfos"] = [];
+    var res = await BookingSendDao.postTrail(paramMap);
+    if(res.result) {
+      if (res.data["RtnCD"] == "00") {
+        Fluttertoast.showToast(msg: '試算成功!');
+        setState(() {
+          this.logTrialArr["dtvMoney"] = res.data["dtvMoney"];
+          this.logTrialArr["cmMoney"] = res.data["cmMoney"];
+          this.logTrialArr["installMoney"] = res.data["installMoney"];
+          this.logTrialArr["buildMoney"] = res.data["buildMoney"];
+          this.logTrialArr["foregiftMoney"] = res.data["foregiftMoney"];
+          this.logTrialArr["additionalMoney"] = res.data["additionalMoney"];
+          this.logTrialArr["networkCableMoney"] = res.data["networkCableMoney"];
+          this.logTrialArr["sumMoney"] = res.data["sumMoney"];
+        });
+      }
+      else {
+        Fluttertoast.showToast(msg: res.data["RtnMsg"]);
+        return;
+      }
+    }
+  }
   
   ///給客戶詳情輸入用function
   void _getMatchDataFunc(Map<String, dynamic> map) async {
     setState(() {
+      ///匹配完後試算按鈕可按
+      this._isTrial = true;
       this.logMatchArr = map;
       Map<String, dynamic> jsonMap = Map<String, dynamic>();
       jsonMap["function"] = "queryProductInfo";
@@ -376,6 +422,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                               ],
                             ),
                              onTap: () async {
+                                if(this.logMatchArr.length > 0)
                                 _showSelectorController(context, dataList: this.dtvArr, title: '頻道類別', dropStr: 'dtv');
                              }, 
                           ),
@@ -429,7 +476,12 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                 ),
                               ],
                             ),
-                            onTap: () {},
+                            onTap: () {
+                              showDialog(
+                                context: context, 
+                                builder: (BuildContext context)=> _productSelectorDialog(context)
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -481,6 +533,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                               ],
                             ),
                             onTap: () async{ 
+                              if(this.logMatchArr.length > 0)
                               _showSelectorController(context, dataList: this.cmArr, title: '寬頻服務類別', dropStr: 'cm');
                             },
                           ),
@@ -701,11 +754,12 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
             minWidth: MediaQuery.of(context).size.width / 2,
             // buttonColor: Colors.blue,
             child: FlatButton(
-              color: Colors.blue,
+              color: this._isTrial == true ? Colors.blue : Colors.grey[300],
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
               child: Text('試算', style: TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)),),
               onPressed: () async {
-
+                if (_isTrial)
+                  _postTrailData();
               },
             ),
           ),
@@ -729,7 +783,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                             style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
-                            text: '0000',
+                            text: '${this.logTrialArr["dtvMoney"] == "" ? "0000" : this.logTrialArr["dtvMoney"]}',
                             style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
@@ -752,7 +806,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                             style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
-                            text: '0000',
+                            text: '${this.logTrialArr["cmMoney"] == "" ? "0000" : this.logTrialArr["cmMoney"]}',
                             style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
@@ -783,7 +837,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                             style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
-                            text: '0000',
+                            text: '${this.logTrialArr["additionalMoney"] == "" ? "0000" : this.logTrialArr["additionalMoney"]}',
                             style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
@@ -806,7 +860,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                             style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
-                            text: '0000',
+                            text: '${this.logTrialArr["foregiftMoney"] == "" ? "0000" : this.logTrialArr["foregiftMoney"]}',
                             style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
@@ -837,7 +891,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                             style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
-                            text: '0000',
+                            text: '${this.logTrialArr["installMoney"] == "" ? "0000" : this.logTrialArr["installMoney"]}',
                             style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
@@ -860,7 +914,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                             style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
-                            text: '0000',
+                            text: '${this.logTrialArr["buildMoney"] == "" ? "0000" : this.logTrialArr["buildMoney"]}',
                             style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
@@ -891,7 +945,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                             style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
-                            text: '0000',
+                            text: '${this.logTrialArr["networkCableMoney"] == "" ? "0000" : this.logTrialArr["networkCableMoney"]}',
                             style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
@@ -915,7 +969,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                             style: TextStyle(color: Colors.black, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
-                            text: '0000',
+                            text: '${this.logTrialArr["sumMoney"] == "" ? "0000" : this.logTrialArr["sumMoney"]}',
                             style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize_span(context))
                           ),
                           TextSpan(
@@ -1033,7 +1087,47 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
       )
     );
   }
+  
+  ///show加購頻道選擇器
+  Widget _productSelectorDialog(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white,
+        ),
+        margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        child: Scaffold(
+          body: ProductSelectDialog(dataList: this.dtvAddProdArr)
+        ),
+      )
+    );
+  }
 
+  ///發展人dialog
+  Widget roadSelectorDialot(BuildContext context) {
+    var salesData = this.salesArr;
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white,
+        ),
+        margin: EdgeInsets.symmetric(vertical: 40, horizontal: 30),
+        // child: RoadSelectDialog(dataList: roadData, selectFunc: _selectFunc,),
+        child: SelectorDialog(dataList: salesData, selectFunc: _selectFunc, findItemName: 'name', labelTxt: '發展人', titleTxt: '選擇發展人', errTxt: '尚未選則發展人！', modelName: 'name', modelVal: 'code',),
+      )
+    );
+  }
+
+  void _selectFunc(Map<String, dynamic> map) {
+    setState(() {
+      
+      
+    });
+  }
 
 
   @override
@@ -1058,6 +1152,9 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     }
     if (this.netCableArr.length == 0) {
       _getBaseData();
+    }
+    if (this.salesArr.length == 0) {
+      _getSalesData();
     }
     super.didChangeDependencies();
   }
@@ -1185,4 +1282,30 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     }
     return wList;
   }
+
+  ///檢核欄位- 試算(trial)
+  void validTrialParam() {
+    if (this.dtvSelected == "" && this.cmSelected == "") {
+      Fluttertoast.showToast(msg: "請選擇欲約裝之產品！");
+      return;
+    }
+    if (this.dtvSelected != "") {
+      if (this.dtvPaySelected == "") {
+        Fluttertoast.showToast(msg: "請選擇基本頻道繳別！");
+        return;
+      }
+    }
+    if (this.cmSelected != "") {
+      if(this.cmPaySelected == "") {
+        Fluttertoast.showToast(msg: "請選擇寬頻繳別！");
+        return;
+      }
+    }
+    if (this.bookingDateSelected == "") {
+      Fluttertoast.showToast(msg: "尚未選擇裝機日期！");
+      return;
+    }
+
+  }
+
 }

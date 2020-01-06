@@ -27,8 +27,9 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
   List<dynamic> originArray = [];
   ///所選資料
   Map<String, dynamic> pickData = {};
+  List<dynamic> payTypeArr = ["1", "3", "6", "12"];
   ///radio group
-  int groupVal = 1;
+  int groupVal = 0;
 
   ///widget list item
   Widget listItem(BuildContext context, int index) {
@@ -51,7 +52,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                     Expanded(
                       flex: 3,
                       child: CheckboxListTile(
-                        value: true,
+                        value: false,
                         title: autoTextSize(dic.name, TextStyle(color: Colors.black), context),
                         controlAffinity: ListTileControlAffinity.leading,
                         onChanged: (bool val){},
@@ -78,7 +79,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                   children: <Widget>[
                     Flexible(
                       child: Radio(
-                        value: 1,
+                        value: 0,
                         groupValue: groupVal,
                         activeColor: Colors.red,
                         onChanged: (T) {
@@ -91,7 +92,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                     ),
                     Flexible(
                       child: Radio(
-                        value: 2,
+                        value: 1,
                         groupValue: groupVal,
                         activeColor: Colors.red,
                         onChanged: (T) {
@@ -104,7 +105,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                     ),
                     Flexible(
                       child: Radio(
-                        value: 3,
+                        value: 2,
                         groupValue: groupVal,
                         activeColor: Colors.red,
                         onChanged: (T) {
@@ -117,7 +118,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                     ),
                     Flexible(
                       child: Radio(
-                        value: 4,
+                        value: 3,
                         groupValue: groupVal,
                         activeColor: Colors.red,
                         onChanged: (T) {

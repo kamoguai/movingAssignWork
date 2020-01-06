@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:assignwork/common/dao/BaseDao.dart';
 import 'package:assignwork/common/dao/BookingSendDao.dart';
 import 'package:assignwork/common/dao/ManageSectionDao.dart';
@@ -91,7 +93,11 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
 
    ///下拉選單高度
    double _dropHeight(context) {
-     return titleHeight(context) * 1.3;
+     var deviceHieght = titleHeight(context) * 1.3;
+     if (Platform.isAndroid) {
+       deviceHieght = titleHeight(context) * 1.5;
+     }
+     return deviceHieght;
    }
   
   ///取得競業資料
@@ -477,10 +483,11 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                               ],
                             ),
                             onTap: () {
-                              showDialog(
-                                context: context, 
-                                builder: (BuildContext context)=> _productSelectorDialog(context)
-                              );
+                              if (this.dtvSelected != "")
+                                showDialog(
+                                  context: context, 
+                                  builder: (BuildContext context)=> _productSelectorDialog(context)
+                                );
                             },
                           ),
                         ),

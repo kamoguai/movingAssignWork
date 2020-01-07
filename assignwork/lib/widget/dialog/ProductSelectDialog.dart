@@ -26,125 +26,148 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
   ///原始資料
   List<dynamic> originArray = [];
   ///所選資料
+  List<dynamic> checkBoxArr = [];
   Map<String, dynamic> pickData = {};
-  List<dynamic> payTypeArr = ["1", "3", "6", "12"];
   ///radio group
-  int groupVal = 0;
+  List<dynamic> groupVal = [];
 
   ///widget list item
   Widget listItem(BuildContext context, int index) {
     Widget item;
     var dicIndex = dataArray[index];
-
+    var isChecked = this.checkBoxArr[index];
     var dic = SelectorModel.forMap(dicIndex);
-    item = GestureDetector(
-      child: Container(
-        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
-        height: titleHeight(context) * 3,
-        padding: EdgeInsets.only(left: 5.0, right: 5.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child: CheckboxListTile(
-                        value: false,
-                        title: autoTextSize(dic.name, TextStyle(color: Colors.black), context),
-                        controlAffinity: ListTileControlAffinity.leading,
-                        onChanged: (bool val){},
-
-                      ),
+    item = Container(
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
+      height: titleHeight(context) * 3,
+      padding: EdgeInsets.only(left: 5.0, right: 5.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: CheckboxListTile(
+                      activeColor: Colors.blue,
+                      value: isChecked,
+                      title: autoTextSize(dic.name, TextStyle(color: Colors.black), context),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      onChanged: (bool val){
+                        updateCheckeBox(val, index);
+                      },
                     ),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.only(top: 4),
-                        alignment: Alignment.centerRight,
-                        child: autoTextSize("(${dic.priceMoney}/月)", TextStyle(color: Colors.blue), context),
-                      )
-                    ),
-                    
-                  ],
-                ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.only(top: 4),
+                      alignment: Alignment.centerRight,
+                      child: autoTextSize("(${dic.priceMoney}/月)", TextStyle(color: Colors.blue), context),
+                    )
+                  ),
+                  
+                ],
               ),
             ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Flexible(
-                      child: Radio(
-                        value: 0,
-                        groupValue: groupVal,
-                        activeColor: Colors.red,
-                        onChanged: (T) {
-                          updataGroupVal(T);
-                        },
-                      ),
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Flexible(
+                    child: _myRadioButton(
+                      value: isChecked ? '1' : '',
+                      index: index,
+                      onChanged: (newVal) {
+                        setState(() {
+                          if (isChecked) {
+                            groupVal[index] = newVal;
+                          }
+                          else {
+                            groupVal[index] = "";
+                          }
+                          analyzePickData();
+                        });
+                      }
+                    )
+                  ),
+                  Flexible(
+                    child: autoTextSize('月繳', TextStyle(color: Colors.black), context),
+                  ),
+                  Flexible(
+                    child: _myRadioButton(
+                      value: isChecked ? '3' : '',
+                      index: index,
+                      onChanged: (newVal) {
+                        setState(() {
+                          if (isChecked) {
+                            groupVal[index] = newVal;
+                          }
+                          else {
+                            groupVal[index] = "";
+                          }
+                          analyzePickData();
+                        });
+                      }
                     ),
-                    Flexible(
-                      child: autoTextSize('月繳', TextStyle(color: Colors.black), context),
+                  ),
+                  Flexible(
+                    child: autoTextSize('季繳', TextStyle(color: Colors.black), context),
+                  ),
+                  Flexible(
+                    child: _myRadioButton(
+                      value: isChecked ? '6' : '',
+                      index: index,
+                      onChanged: (newVal) {
+                        setState(() {
+                          if (isChecked) {
+                            groupVal[index] = newVal;
+                          }
+                          else {
+                            groupVal[index] = "";
+                          }
+                          analyzePickData();
+                        });
+                      }
                     ),
-                    Flexible(
-                      child: Radio(
-                        value: 1,
-                        groupValue: groupVal,
-                        activeColor: Colors.red,
-                        onChanged: (T) {
-                          updataGroupVal(T);
-                        },
-                      ),
+                  ),
+                  Flexible(
+                    child: autoTextSize('半年', TextStyle(color: Colors.black), context),
+                  ),
+                  Flexible(
+                    child: _myRadioButton(
+                      value: isChecked ? '12' : '',
+                      index: index,
+                      onChanged: (newVal) {
+                        setState(() {
+                          if (isChecked) {
+                            groupVal[index] = newVal;
+                          }
+                          else {
+                            groupVal[index] = "";
+                          }
+                          analyzePickData();
+                          
+                        });
+                      }
                     ),
-                    Flexible(
-                      child: autoTextSize('季繳', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      child: Radio(
-                        value: 2,
-                        groupValue: groupVal,
-                        activeColor: Colors.red,
-                        onChanged: (T) {
-                          updataGroupVal(T);
-                        },
-                      ),
-                    ),
-                    Flexible(
-                      child: autoTextSize('半年', TextStyle(color: Colors.black), context),
-                    ),
-                    Flexible(
-                      child: Radio(
-                        value: 3,
-                        groupValue: groupVal,
-                        activeColor: Colors.red,
-                        onChanged: (T) {
-                          updataGroupVal(T);
-                        },
-                      ),
-                    ),
-                    Flexible(
-                      child: autoTextSize('年繳', TextStyle(color: Colors.black), context),
-                    ),
-                    
-                  ],
-                ),
+                  ),
+                  Flexible(
+                    child: autoTextSize('年繳', TextStyle(color: Colors.black), context),
+                  ),
+                  
+                ],
               ),
             ),
-            
-          ],
-        )
-      ),
-      onTap: () {
-        setState(() {
-          pickData = dicIndex;
-        });
-      },
+          ),
+          
+        ],
+      )
     );
-    
     return item;
   }
 
@@ -162,10 +185,66 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
     }
     return list;
   }
-
-  void updataGroupVal(v) { 
+  ///自定義radio button 更新
+  Widget _myRadioButton({String value, int index, Function onChanged}) {
+    return Radio(
+      activeColor: Colors.blue,
+      value: value,
+      groupValue: value == "" ? groupVal : groupVal[index],
+      onChanged: onChanged,
+    );
+  }
+ 
+  ///check box 更新
+  void updateCheckeBox(v, index) {
     setState(() {
-      groupVal = v;
+      this.checkBoxArr[index] = v;
+    });
+  }
+
+  ///選擇資料存入array裡
+  void analyzePickData() {
+    setState(() {
+      List<dynamic> list = [];
+      Map<String,dynamic> map = Map<String,dynamic>();
+      var k = 0;
+      for (var oData in this.originArray) {
+        var oDic = SelectorModel.forMap(oData);
+        for (var i = 0; i < this.dataArray.length; i++) {
+          var dic = SelectorModel.forMap(dataArray[i]);
+          if (this.checkBoxArr[i] == true) {
+            var subOname = oDic.name;
+            var subDname = dic.name;
+            ///確保字串可以抓取(前的字
+            if (oDic.name.indexOf('(') != -1 && dic.name.indexOf('(') != -1) {
+              subOname = oDic.name.substring(0, oDic.name.indexOf('('));
+              subDname = dic.name.substring(0, dic.name.indexOf('('));
+            }
+
+            if (subOname.contains(subDname)) {
+              if (this.pickData.containsKey(oDic.code)) {
+                this.pickData.clear();
+                
+              }
+              map["code"] = oDic.code;
+              map["month"] = this.groupVal[i];
+              map["name"] = oDic.name;
+              list.add(map);
+              map = Map<String,dynamic>();
+              k++;
+              if (k == 3) {
+                map[list[0]['code']] = list;
+                this.pickData.addAll(map);
+                list = [];
+                map = Map<String,dynamic>();
+                k = 0;
+              }
+            }
+          }
+        }
+        
+
+      }
     });
   }
 
@@ -174,6 +253,10 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
     for (var dic in originArray) {
       if (dic["priceMoney"] != "0") {
         dataArray.add(dic);
+        ///初始化規定arr大小
+        this.checkBoxArr.add(false);
+        ///初始化規定arr大小
+        this.groupVal.add("");
       }
     }
   }
@@ -186,6 +269,8 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
 
   @override
   void dispose() {
+    this.checkBoxArr.clear();
+    this.groupVal.clear();
     super.dispose();
   }
 
@@ -231,15 +316,8 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                       color: Color(MyColors.hexFromStr('#40b89e')),
                       child: autoTextSize('確定', TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)), context),
                       onPressed: () {
-                        if (pickData.length > 0) {
-                          widget.selectFunc(pickData);
-                          Navigator.pop(context, 'ok');
-                        }
-                        else {
-                          
-                          return;
-                        }
-                        
+                        print(this.pickData.toString());
+                        print(this.pickData['TWSonsee']);
                       },
                     ),
                   )

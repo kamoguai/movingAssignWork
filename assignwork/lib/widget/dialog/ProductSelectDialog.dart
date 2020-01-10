@@ -90,7 +90,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                           else {
                             groupVal[index] = "";
                           }
-                          analyzePickData();
+                          analyzePickData(index);
                         });
                       }
                     )
@@ -110,7 +110,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                           else {
                             groupVal[index] = "";
                           }
-                          analyzePickData();
+                          analyzePickData(index);
                         });
                       }
                     ),
@@ -130,7 +130,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                           else {
                             groupVal[index] = "";
                           }
-                          analyzePickData();
+                          analyzePickData(index);
                         });
                       }
                     ),
@@ -150,7 +150,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                           else {
                             groupVal[index] = "";
                           }
-                          analyzePickData();
+                          analyzePickData(index);
                           
                         });
                       }
@@ -199,11 +199,18 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
   void updateCheckeBox(v, index) {
     setState(() {
       this.checkBoxArr[index] = v;
+      ///取消選擇時
+      if (!v) {
+        ///移除該index資料
+        this.pickData.remove('$index');
+        ///設該index資料為空
+        this.groupVal[index] = "";
+      }
     });
   }
 
   ///選擇資料存入array裡
-  void analyzePickData() {
+  void analyzePickData(int index) {
     setState(() {
       List<dynamic> list = [];
       Map<String,dynamic> map = Map<String,dynamic>();
@@ -233,7 +240,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
               map = Map<String,dynamic>();
               k++;
               if (k == 3) {
-                map[list[0]['code']] = list;
+                map['$index'] = list;
                 this.pickData.addAll(map);
                 list = [];
                 map = Map<String,dynamic>();
@@ -317,7 +324,13 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                       child: autoTextSize('確定', TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)), context),
                       onPressed: () {
                         print(this.pickData.toString());
-                        print(this.pickData['TWSonsee']);
+                        print(this.groupVal.toString());
+                        this.pickData.forEach((k,v) {
+                          List<dynamic> list = [];
+                          list.add(v);
+                          print('value: $list');
+                          
+                        });
                       },
                     ),
                   )

@@ -1,6 +1,7 @@
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 ///
 ///加購產品選擇器
@@ -248,9 +249,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
               }
             }
           }
-        }
-        
-
+        }        
       }
     });
   }
@@ -280,9 +279,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
     this.groupVal.clear();
     super.dispose();
   }
-
-
-
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -322,15 +319,19 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                     child: FlatButton(
                       color: Color(MyColors.hexFromStr('#40b89e')),
                       child: autoTextSize('確定', TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)), context),
-                      onPressed: () {
-                        print(this.pickData.toString());
-                        print(this.groupVal.toString());
-                        this.pickData.forEach((k,v) {
-                          List<dynamic> list = [];
-                          list.add(v);
-                          print('value: $list');
-                          
-                        });
+                      onPressed: () {                    
+                        if (this.pickData.length > 0) {
+                          this.pickData.forEach((k,v) {                        
+                            for (var dic in v) {
+                              if (dic["month"] == "") {
+                                Fluttertoast.showToast(msg: '${dic['name']}尚未選擇繳費月數！');
+                                return;
+                              }
+                            }
+                          });
+                          widget.selectFunc(this.pickData);
+                          // Navigator.pop(context);
+                        }
                       },
                     ),
                   )

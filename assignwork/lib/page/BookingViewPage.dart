@@ -49,6 +49,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   String dtvPaySelected = "";
   ///記錄加購產品下拉
   List<dynamic> dtvAddProdArr = [];
+  Map<String, dynamic> dtvAddProdSelected = {};
   ///記錄分機數量下拉
   List<dynamic> slaveArr = [];
   String slaveSelected = "";
@@ -225,6 +226,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     setState(() {
       this.bookingDateSelected = date;
       print('新約日期 -> ${this.bookingDateSelected}');
+    });
+  }
+
+  ///加購產品用function
+  void _getAddProductSelectFunc(pickData) {
+    print('callback -> $pickData');
+    print('callback -> ${pickData.length}');
+    setState(() {
+      this.dtvAddProdSelected = pickData;
     });
   }
   
@@ -478,7 +488,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                                   child: Text('加購', style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),),
                                 ),
                                 Expanded(
-                                  child: Text('請選擇▿', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
+                                  child: Text(this.dtvAddProdSelected.length == 0 ? '請選擇▿' : '${this.dtvAddProdSelected.length}種', style: TextStyle(color: Colors.blue, fontSize: MyScreen.homePageFontSize(context)),),
                                 ),
                               ],
                             ),
@@ -1106,7 +1116,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
         ),
         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Scaffold(
-          body: ProductSelectDialog(dataList: this.dtvAddProdArr)
+          body: ProductSelectDialog(dataList: this.dtvAddProdArr, selectFunc: this._getAddProductSelectFunc,)
         ),
       )
     );

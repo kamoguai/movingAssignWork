@@ -637,7 +637,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
               ),
               onTap: () {
                 FocusScope.of(context).unfocus();
-                if (!isLoading)
+                if (!isLoading && this.roadAddressArr.length > 0)
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => roadSelectorDialot(context)

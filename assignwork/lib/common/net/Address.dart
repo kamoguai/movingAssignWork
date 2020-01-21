@@ -244,6 +244,20 @@ class Address {
     return "$workInstallDomainName" + "getGiftsMonth?";
    }
 
+   ///取得派修下拉選單
+   ///param: none
+   static getBossPhenData() {
+    changeEnterTest();
+    return "$workInstallDomainName" + "bossPhenData";
+   }
+
+   ///報修派單
+   ///param: customerCode, operatorCode, phenomenonTypeCode, phenomenonCode, bookingDate, description
+   static postOrderReportFault() {
+    changeEnterTest();
+    return "$workInstallDomainName" + "orderReportFault";
+   }
+
   ///切換測/正式機路徑
   static changeEnterTest() async {
     if (isEnterTest) {

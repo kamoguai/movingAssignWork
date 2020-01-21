@@ -74,6 +74,8 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
   bool _isValid = false;
   ///是否通過匹配
   bool _isGetAddressPK = false;
+  ///第一次call地址，避免反覆呼叫
+  bool _isFirstCallAddress = true;
 
   ///鍵盤config
   KeyboardActionsConfig _buildConfig(BuildContext context) {
@@ -173,6 +175,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
       setState(() {
         isLoading = false;
         this.roadAddressArr = res.data;
+        this._isFirstCallAddress = false;
       });
       
     }
@@ -236,13 +239,13 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
         fullAddr += "${this.logFullAddress["unit"]}號";
       }
       if (this.logFullAddress["ofUnit"] != "") {
-        fullAddr += "${this.logFullAddress["ofUnit"]}之號";
+        fullAddr += "之${this.logFullAddress["ofUnit"]}號";
       }
       if (this.logFullAddress["floor"] != "") {
         fullAddr += "${this.logFullAddress["floor"]}樓";
       }
       if (this.logFullAddress["floorOf"] != "") {
-        fullAddr += "${this.logFullAddress["floorOf"]}之樓";
+        fullAddr += "之${this.logFullAddress["floorOf"]}樓";
       }
       this.logFullAddress["fullAddress"] = fullAddr;
   }
@@ -329,7 +332,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
   void didChangeDependencies() {
     ///初次進入
     if (widget.logMatchAddr.length == 0) {
-      if (this.roadAddressArr.length == 0) {
+      if (this.roadAddressArr.length == 0 && this._isFirstCallAddress) {
         var currentSection = json.decode(areaAddressJson);
         this.areaAddressArr = currentSection;
         isLoading = true;
@@ -339,13 +342,15 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
     }
     ///callback 進入
     else {
-      var currentSection = json.decode(areaAddressJson);
-      this.areaAddressArr = currentSection;
-      for (var dic in this.areaAddressArr) {
-        if (dic["name"].toString().contains(this.logFullAddress["area"])) {
-          if(mounted)
-          isLoading = true;
-          _getAddressData(dic["code"]);
+      if (this._isFirstCallAddress) {
+        var currentSection = json.decode(areaAddressJson);
+        this.areaAddressArr = currentSection;
+        for (var dic in this.areaAddressArr) {
+          if (dic["name"].toString().contains(this.logFullAddress["area"])) {
+            if(mounted)
+            isLoading = true;
+            _getAddressData(dic["code"]);
+          }
         }
       }
     }

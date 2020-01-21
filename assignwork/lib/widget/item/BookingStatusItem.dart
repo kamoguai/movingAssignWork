@@ -179,7 +179,8 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
       bookingDate = dft.parse(model.bookingDate);
       dft = new DateFormat('yy-MM-dd (HH:mm)');
       bookingDate = dft.format(bookingDate);
-    }
+    }    
+
     ///通用欄位畫面
     List<Widget> commonList(context) {
       List<Widget> list = [
@@ -298,7 +299,8 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                         style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                       ),
                       TextSpan(
-                        text: model.installAddress,
+                        text: addressEncode(model.installAddress),
+                        // text: model.installAddress,
                         style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize_span(context))
                       ),
                     ]

@@ -270,4 +270,57 @@ mixin BaseWidget{
       textAlign: TextAlign.left,
     );
   }
+
+  ///地址隱碼
+  addressEncode(String addr) {
+    final fullLength = addr.length;
+    final rex = addr.indexOf(new RegExp(r'[0-9]'));
+    var sub1 = addr.substring(0,rex);
+    var sub2 = addr.substring(rex, fullLength);
+    var sub3 = '';
+    if (sub2.indexOf('巷') > 1) {
+      sub3 = sub2.substring(0, sub2.indexOf('巷'));
+      for (var i=0; i<sub3.length; i++ ) {
+        sub1 += '*';
+      }
+      sub1 += '巷';
+      sub3 = '';
+    }
+    if (sub2.indexOf('弄') > 1) {
+      if (sub2.indexOf('巷') > 1) {
+        sub3 = sub2.substring(sub2.indexOf('巷') + 1, sub2.indexOf('弄'));
+      }
+      else {
+        sub3 = sub2.substring(0, sub2.indexOf('弄'));
+      }
+      for (var i=0; i<sub3.length; i++ ) {
+        sub1 += '*';
+      }
+      sub1 += '弄';
+      sub3 = '';
+    }
+    if (sub2.indexOf('號') > 1) {
+      if (sub2.indexOf('弄') > 1) {
+        sub3 = sub2.substring(sub2.indexOf('弄') + 1, sub2.indexOf('號'));
+        print('弄號 -> $sub3');
+      }
+      else if (sub2.indexOf('巷') > 1) {
+        sub3 = sub2.substring(sub2.indexOf('巷') + 1, sub2.indexOf('號'));
+        print('號巷 -> $sub3');
+      }
+      else {
+        sub3 = sub2.substring(0, sub2.indexOf('號')); 
+      }
+      for (var i=0; i<sub3.length; i++ ) {
+        sub1 += '*';
+      }
+      sub1 += '號';
+      sub3 = '';
+    }
+    if (sub2.indexOf('樓') > 1) {
+      
+      sub1 += '**樓';
+    }
+    return sub1;
+  }
 }

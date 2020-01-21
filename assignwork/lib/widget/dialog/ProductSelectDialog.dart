@@ -12,9 +12,11 @@ class ProductSelectDialog extends StatefulWidget {
   final List<dynamic> dataList;
   ///由上頁傳入func，此頁選定後把值帶回前頁
   final Function selectFunc;
+  ///由上頁傳入callbackData，將值返還這頁
+  final Map<String, dynamic> callBackData;
   
 
-  ProductSelectDialog({this.dataList, this.selectFunc});
+  ProductSelectDialog({this.dataList, this.selectFunc, this.callBackData});
 
   @override
   _ProductSelectDialogState createState() => _ProductSelectDialogState();
@@ -216,11 +218,24 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
       List<dynamic> list = [];
       Map<String,dynamic> map = Map<String,dynamic>();
       var k = 0;
+      var isSame = false;
       for (var oData in this.originArray) {
         var oDic = SelectorModel.forMap(oData);
         for (var i = 0; i < this.dataArray.length; i++) {
           var dic = SelectorModel.forMap(dataArray[i]);
           if (this.checkBoxArr[i] == true) {
+            // if (this.pickData.length > 0) {
+            //   for (var indx in this.pickData.keys) {
+            //       if (index == int.parse(indx)) {
+            //         isSame = true;
+            //       }
+            //     }
+            //   if (isSame) {
+            //     continue;
+            //   }
+            // }
+
+
             var subOname = oDic.name;
             var subDname = dic.name;
             ///確保字串可以抓取(前的字
@@ -234,6 +249,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                 this.pickData.clear();
                 
               }
+              
               map["code"] = oDic.code;
               map["month"] = this.groupVal[i];
               map["name"] = oDic.name;
@@ -263,6 +279,13 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
         this.checkBoxArr.add(false);
         ///初始化規定arr大小
         this.groupVal.add("");
+      }
+    }
+    if (widget.callBackData.length > 0) {
+      this.pickData = widget.callBackData;
+      for (var indx in this.pickData.keys) {
+        final i = int.parse(indx);
+        this.checkBoxArr[i] = true;
       }
     }
   }
@@ -319,7 +342,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                     child: FlatButton(
                       color: Color(MyColors.hexFromStr('#40b89e')),
                       child: autoTextSize('確定', TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)), context),
-                      onPressed: () {                    
+                      onPressed: () {              
                         if (this.pickData.length > 0) {
                           this.pickData.forEach((k,v) {                        
                             for (var dic in v) {
@@ -330,7 +353,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                             }
                           });
                           widget.selectFunc(this.pickData);
-                          // Navigator.pop(context);
+                          Navigator.pop(context);
                         }
                       },
                     ),

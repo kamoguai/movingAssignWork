@@ -75,6 +75,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   ///發展人下拉
   List<dynamic> salesArr = [];
   String salesSelected = "";
+  bool isCalledSales = false;
   ///記錄匹配完資料
   Map<String, dynamic> logMatchArr = {};
   ///記錄套餐資料
@@ -147,9 +148,16 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
       final data = res.data["networkCableNumberList"];
       
       setState(() {
+        this.isCalledSales = true;
         this.salesArr = data;
       });
     }
+    else {
+      setState(() {
+        this.isCalledSales = true;
+      });
+    }
+
   }
 
   ///取得地區產品資料
@@ -1116,7 +1124,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
         ),
         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Scaffold(
-          body: ProductSelectDialog(dataList: this.dtvAddProdArr, selectFunc: this._getAddProductSelectFunc,)
+          body: ProductSelectDialog(dataList: this.dtvAddProdArr, selectFunc: this._getAddProductSelectFunc, callBackData: this.dtvAddProdSelected,)
         ),
       )
     );
@@ -1170,7 +1178,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     if (this.netCableArr.length == 0) {
       _getBaseData();
     }
-    if (this.salesArr.length == 0) {
+    if (this.salesArr.length == 0 && !this.isCalledSales) {
       _getSalesData();
     }
     super.didChangeDependencies();

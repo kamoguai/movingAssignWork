@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 
+import '../common/utils/NavigatorUtils.dart';
+
 ///
 ///左側sider menu
 ///Date: 2019-10-14
@@ -84,6 +86,14 @@ class HomeDrawer extends StatelessWidget with BaseWidget {
                   ),
                   onTap: () {
 
+                  },
+                ),
+                 GestureDetector(
+                  child: ListTile(
+                    title:autoTextSizeLeft('<4> 報修派單', TextStyle(color: Colors.black), context)
+                  ),
+                  onTap: () {
+                    NavigatorUtils.goMaintainReportView(context);
                   },
                 ),
                 Divider(),///分隔線

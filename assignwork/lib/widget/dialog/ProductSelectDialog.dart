@@ -281,11 +281,15 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
         this.groupVal.add("");
       }
     }
+    ///如果是callback資料
     if (widget.callBackData.length > 0) {
       this.pickData = widget.callBackData;
       for (var indx in this.pickData.keys) {
         final i = int.parse(indx);
         this.checkBoxArr[i] = true;
+        var dic = this.pickData[indx];
+        this.groupVal[i] = dic[0]["month"];
+
       }
     }
   }
@@ -353,6 +357,9 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                             }
                           });
                           widget.selectFunc(this.pickData);
+                          Navigator.pop(context);
+                        }
+                        else {
                           Navigator.pop(context);
                         }
                       },

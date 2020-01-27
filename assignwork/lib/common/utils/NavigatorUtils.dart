@@ -1,6 +1,7 @@
 
 
 import 'package:assignwork/page/BookingViewPage.dart';
+import 'package:assignwork/page/MaintainReportPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:assignwork/page/HomePage.dart';
@@ -48,6 +49,10 @@ class NavigatorUtils {
   ///新戶約裝
   static goBookingView(BuildContext context) {
     Navigator.pushReplacementNamed(context, BookingViewPage.sName);
+  }
+  ///維護派單
+  static goMaintainReportView(BuildContext context) {
+    navigatorRouter(context, MaintainReportPage());
   }
   
   

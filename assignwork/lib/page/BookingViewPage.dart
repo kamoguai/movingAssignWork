@@ -144,12 +144,10 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     paramMap["accNo"] = _getStore().state.userInfo?.accNo;
     paramMap["deptCD"] = _getStore().state.userInfo?.deptCD;
     var res = await BaseDao.getSalesListInfo(paramMap);
-    if (res.result) {
-      final data = res.data["networkCableNumberList"];
-      
+    if (res.result) {   
       setState(() {
         this.isCalledSales = true;
-        this.salesArr = data;
+        this.salesArr = res.data;
       });
     }
     else {
@@ -192,7 +190,19 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     paramMap["slaveNumber"] = this.slaveSelected == "" ? "0" : this.slaveSelected;
     paramMap["crossFloorNumber"] = this.crossFloorSelected == "" ? "0" : this.crossFloorSelected;
     paramMap["networkCableNumber"] = this.netCableSelected == "" ? "0" : this.netCableSelected;
-    paramMap["additionalInfos"] = [];
+    ///加購頻道不為0時
+    if (this.dtvAddProdSelected.length > 0) {
+      List<dynamic> prodDatas = [];
+      for (var indx in this.dtvAddProdSelected.values) {
+        for (var dic in indx) {
+          prodDatas.add(dic);
+        }
+      }
+      paramMap["additionalInfos"] = prodDatas;
+    }
+    else {
+      paramMap["additionalInfos"] = [];
+    }
     var res = await BookingSendDao.postTrail(paramMap);
     if(res.result) {
       if (res.data["RtnCD"] == "00") {
@@ -1131,7 +1141,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   }
 
   ///發展人dialog
-  Widget roadSelectorDialot(BuildContext context) {
+  Widget salesSelectorDialot(BuildContext context) {
     var salesData = this.salesArr;
     return Material(
       type: MaterialType.transparency,
@@ -1166,6 +1176,15 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   void dispose() {
     this._scrollController.dispose();
     this._editingController.dispose();
+    this.dtvAddProdSelected.clear();
+    this.dtvArr.clear();
+    this.dtvPayArr.clear();
+    this.industyArr.clear();
+    this.logMatchArr.clear();
+    this.logProdInfo.clear();
+    this.logTrialArr.clear();
+    this.netCableArr.clear();
+    this.salesArr.clear();
     super.dispose();
 
   }
@@ -1234,6 +1253,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                       this.dtvNameSelected = dic["name"];
                       if (this.dtvSelected == "") {
                         this.dtvPaySelected = "";
+                        this.dtvAddProdSelected.clear();
                         this.slaveSelected = "";
                         this.crossFloorSelected = "";
                       }
@@ -1332,5 +1352,6 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     }
 
   }
+
 
 }

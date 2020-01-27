@@ -14,12 +14,12 @@ class MaintainDao {
   ///取得派修下拉選單，無傳入參數
   static getBossPhenData() async {
     Map<String, dynamic> mainDataArray = {};
-    var res = await HttpManager.netFetch(Address.getBossPhenData(), null, null, new Options(method: "get"));
+    var res = await HttpManager.netFetch(Address.getBossPhenData(), null, null, null);
     if (res != null && res.result) {
       if (Config.DEBUG) {
         print("派修下拉選單resp => " + res.data.toString());
       }
-      if (res.data['RtnCD'] == "00") {
+      if (res.data['retCode'] == "00") {
         mainDataArray = res.data['data'];
       }
       if (mainDataArray.length > 0) {

@@ -589,7 +589,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
                       ///改約
                       if (widget.wkNoStr != null) {
                         var res = await _postModifyBookingDate(timePeriodArr[0], inputText);
-                        if (res) {
+                        if (res.result) {
                           Navigator.pop(context);
                           showDialog(
                             context: context, 

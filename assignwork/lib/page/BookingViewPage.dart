@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:assignwork/common/dao/BaseDao.dart';
@@ -175,6 +176,8 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
 
   ///試算
   _postTrailData() async {
+    print(this.logMatchArr);
+    CommonUtils.showLoadingDialog(context);
     validTrialParam();
     Map<String, dynamic> paramMap = new Map<String, dynamic>();
     paramMap["function"] = "trial";
@@ -206,6 +209,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     var res = await BookingSendDao.postTrail(paramMap);
     if(res.result) {
       if (res.data["RtnCD"] == "00") {
+        Navigator.pop(context);
         Fluttertoast.showToast(msg: '試算成功!');
         setState(() {
           this.logTrialArr["dtvMoney"] = res.data["dtvMoney"];
@@ -216,6 +220,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
           this.logTrialArr["additionalMoney"] = res.data["additionalMoney"];
           this.logTrialArr["networkCableMoney"] = res.data["networkCableMoney"];
           this.logTrialArr["sumMoney"] = res.data["sumMoney"];
+          this._isPkSend = true;
         });
       }
       else {
@@ -223,6 +228,74 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
         return;
       }
     }
+  }
+
+  ///約裝
+  _postOpenPurchase() async {
+    CommonUtils.showLoadingDialog(context);
+    Map<String, dynamic> paramMap = new Map<String, dynamic>();
+    Map<String, dynamic> jsonMap = new Map<String, dynamic>();
+    paramMap["name"] = this.logMatchArr["custName"];
+    paramMap["mobile"] = this.logMatchArr["mobile"];
+    paramMap["telphone"] = this.logMatchArr["telPhone"];
+    paramMap["installAddress"] = this.logMatchArr["fullAddressCode"];
+    paramMap["postAddress"] = this.logMatchArr["fullAddressCode"];
+    paramMap["partyIdentification"] = "A123456789";
+    paramMap["gender"] = "201";
+    paramMap["customerType"] = "1";
+    jsonMap["customerInfo"] = paramMap;
+    paramMap = new Map<String, dynamic>();
+    paramMap["dtvCode"] = this.dtvSelected;
+    paramMap["dtvMonth"] = CommonUtils.filterMonthNm(this.dtvPaySelected);
+    paramMap["cmCode"] = this.cmSelected;
+    paramMap["cmMonth"] = CommonUtils.filterMonthNm(this.cmPaySelected);
+    paramMap["allowanceMonth"] = "0";
+    paramMap["slaveNumber"] = this.slaveSelected == "" ? "0" : this.slaveSelected;
+    paramMap["crossFloorNumber"] = this.crossFloorSelected == "" ? "0" : this.crossFloorSelected;
+    paramMap["networkCableNumber"] = this.netCableSelected == "" ? "0" : this.netCableSelected;
+    ///加購頻道不為0時
+    if (this.dtvAddProdSelected.length > 0) {
+      List<dynamic> prodDatas = [];
+      for (var indx in this.dtvAddProdSelected.values) {
+        for (var dic in indx) {
+          prodDatas.add(dic);
+        }
+      }
+      paramMap["additionalInfos"] = prodDatas;
+    }
+    else {
+      paramMap["additionalInfos"] = [];
+    }
+    paramMap["sumMoney"] = this.logTrialArr["sumMoney"];
+    jsonMap["purchaseInfo"] = paramMap;
+    paramMap = new Map<String, dynamic>();
+    paramMap["bookingDate"] = this.bookingDateSelected;
+    paramMap["saleManCode"] = _getStore().state.userInfo.accNo;
+    paramMap["operator"] = _getStore().state.userInfo.accNo;
+    paramMap["description"] = _editingController.text;
+    jsonMap["orderInfo"] = paramMap;
+    paramMap = new Map<String, dynamic>();
+    jsonMap["function"] = "openPurchase";
+    jsonMap["accNo"] = _getStore().state.userInfo?.accNo;
+    var res = await BookingSendDao.postOpenPurchase(jsonMap);
+    Navigator.pop(context);
+    if(res.result) {
+      if (res.data["RtnCD"] == "00") {
+        Fluttertoast.showToast(msg: '立案成功！');
+        Future.delayed(const Duration(milliseconds: 500),() {
+          NavigatorUtils.goHome(context);
+          return true;
+        });
+      }
+      else {
+        Fluttertoast.showToast(msg: res.data["RtnMsg"]);
+        return;
+      }
+      // res.data["customerCode"];
+      // res.data["workorderCode"];
+    }
+
+
   }
   
   ///給客戶詳情輸入用function
@@ -1034,7 +1107,8 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
               child: Text('送出', style: TextStyle(color: Colors.white, fontSize: MyScreen.homePageFontSize(context)),),
               onPressed: () async {
-
+                if(this._isPkSend)
+                _postOpenPurchase();
               },
             ),
           ),

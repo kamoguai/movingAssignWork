@@ -253,9 +253,9 @@ class Address {
 
    ///報修派單
    ///param: customerCode, operatorCode, phenomenonTypeCode, phenomenonCode, bookingDate, description
-   static postOrderReportFault() {
+   static postOrderReportFault({customerCode, operatorCode, phenomenonTypeCode, phenomenonCode, bookingDate, description}) {
     changeEnterTest();
-    return "$workInstallDomainName" + "orderReportFault";
+    return "$workInstallDomainName" + "orderReportFault?customerCode=$customerCode&operatorCode=$operatorCode&phenomenonTypeCode=$phenomenonTypeCode&phenomenonCode=$phenomenonCode&bookingDate=$bookingDate&description=$description";
    }
 
   ///切換測/正式機路徑

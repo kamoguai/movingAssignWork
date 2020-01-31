@@ -1,5 +1,6 @@
 
 
+import 'package:assignwork/page/AddBookingViewPage.dart';
 import 'package:assignwork/page/BookingViewPage.dart';
 import 'package:assignwork/page/MaintainReportPage.dart';
 import 'package:flutter/cupertino.dart';
@@ -53,6 +54,10 @@ class NavigatorUtils {
   ///維護派單
   static goMaintainReportView(BuildContext context) {
     navigatorRouter(context, MaintainReportPage());
+  }
+  ///加裝頁面
+  static goAddBookingView(BuildContext context) {
+    navigatorRouter(context, AddBookingViewPage());
   }
   
   

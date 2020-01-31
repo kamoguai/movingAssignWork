@@ -13,7 +13,6 @@ import 'package:intl/intl.dart';
 import '../common/dao/MaintainDao.dart';
 import '../common/redux/SysState.dart';
 import '../common/style/MyStyle.dart';
-import '../common/style/MyStyle.dart';
 import '../common/utils/NavigatorUtils.dart';
 import '../widget/BaseWidget.dart';
 import 'package:redux/redux.dart';
@@ -138,22 +137,6 @@ class _MaintainReportPageState extends State<MaintainReportPage> with BaseWidget
       print('新約日期 -> ${this.bookingDateSelected}');
     });
   }
-  
-  @override
-  void initState() {
-    super.initState();
-    _getDropDownList();
-  }
-
-  @override
-  void dispose() {
-    this.dropCodeList.clear();
-    this.dropTypeList.clear();
-    this.originCodeList.clear();
-    this.custCodeController.dispose();
-    this.descriptController.dispose();
-    super.dispose();
-  }
 
   ///Scaffold body
   _bodyView() {
@@ -193,6 +176,7 @@ class _MaintainReportPageState extends State<MaintainReportPage> with BaseWidget
           keyboardType: TextInputType.number,
           focusNode: custNode,
           maxLines: 1,
+          maxLength: 10,
           style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),
           decoration: InputDecoration(
             filled: true,
@@ -307,7 +291,6 @@ class _MaintainReportPageState extends State<MaintainReportPage> with BaseWidget
         child: TextFormField(
           controller: descriptController,
           textInputAction: TextInputAction.done,
-          keyboardType: TextInputType.number,
           focusNode: descriptNode,
           maxLines: 4,
           style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context)),
@@ -415,10 +398,26 @@ class _MaintainReportPageState extends State<MaintainReportPage> with BaseWidget
         ),
         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Scaffold(
-          body: CalendarSelectorDialog(bookingDate: this.bookingDateSelected, areaStr: CommonUtils.filterAreaCN('板橋區'), getBookingDate: _getBookingDateSelectFunc,)
+          body: CalendarSelectorDialog(bookingDate: this.bookingDateSelected, areaStr: CommonUtils.filterAreaCN('板橋區'), getBookingDate: _getBookingDateSelectFunc, fromFunc: 'maintain',)
         ),
       )
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getDropDownList();
+  }
+
+  @override
+  void dispose() {
+    this.dropCodeList.clear();
+    this.dropTypeList.clear();
+    this.originCodeList.clear();
+    this.custCodeController.dispose();
+    this.descriptController.dispose();
+    super.dispose();
   }
 
   @override

@@ -120,5 +120,32 @@ class BookingStatusDao {
     }
   }
 
+  ///查詢可加裝客戶訊息
+  static queryAddPurchaseCustomerInfos(Map<String, dynamic> jsonMap) async {
+    Map<String, dynamic> mainDataArray = {};
+    List<dynamic> dataList = [];
+    ///map轉json
+    String str = json.encode(jsonMap);
+    if (Config.DEBUG) {
+      print("可加裝客戶訊息request => " + str);
+    }
+    ///aesEncode
+    var aesData = AesUtils.aes128Encrypt(str);
+    Map paramsData = {"data": aesData};
+    var res = await HttpManager.netFetch(Address.queryAddPurchaseCustomerInfos(), paramsData, null, new Options(method: "post"));
+    if (res != null && res.result) {
+      if (Config.DEBUG) {
+        print("可加裝客戶訊息resp => " + res.data.toString());
+      }
+      if (res.data['RtnCD'] == "00") {
+        dataList = res.data['customerPurchasedInfos'];
+        return new DataResult(dataList, true);
+      }
+      else {
+        Fluttertoast.showToast(msg: res.data["RtnMsg"]);
+        return new DataResult(null, false);
+      }
+    }
+  }
 
 }

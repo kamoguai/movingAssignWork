@@ -1191,7 +1191,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
         ),
         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Scaffold(
-          body: CalendarSelectorDialog(bookingDate: this.bookingDateSelected, areaStr: CommonUtils.filterAreaCN('板橋區'), getBookingDate: _getBookingDateSelectFunc,)
+          body: CalendarSelectorDialog(bookingDate: this.bookingDateSelected, areaStr: CommonUtils.filterAreaCN('板橋區'), getBookingDate: _getBookingDateSelectFunc, fromFunc: 'book',)
         ),
       )
     );

@@ -148,7 +148,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
         ),
         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Scaffold(
-          body: CalendarSelectorDialog(bookingDate: model.bookingDate, areaStr: CommonUtils.filterAreaCN(model.installAddress.substring(3,6)), wkNoStr: model.workorderCode, custNoStr: model.code,)
+          body: CalendarSelectorDialog(bookingDate: model.bookingDate, areaStr: CommonUtils.filterAreaCN(model.installAddress.substring(3,6)), wkNoStr: model.workorderCode, custNoStr: model.code, fromFunc: 'list',)
         ),
       )
     );

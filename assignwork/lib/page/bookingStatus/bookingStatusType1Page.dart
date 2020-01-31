@@ -97,7 +97,7 @@ class BookingStatusType1PageState extends State<BookingStatusType1Page> with Aut
     }
     super.didChangeDependencies();
   }
-
+  
   @override
   void dispose() {
     bloc.dispose();

@@ -85,7 +85,7 @@ class HomeDrawer extends StatelessWidget with BaseWidget {
                     title:autoTextSizeLeft('<3> 加裝立案', TextStyle(color: Colors.black), context)
                   ),
                   onTap: () {
-
+                    NavigatorUtils.goAddBookingView(context);
                   },
                 ),
                  GestureDetector(

@@ -2,7 +2,6 @@ import 'package:assignwork/common/dao/BookingStatusDao.dart';
 import 'package:assignwork/common/dao/ManageSectionDao.dart';
 import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
-import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/dialog/BookingResultDialog.dart';
 import 'package:assignwork/widget/item/TimePeriodItem.dart';
@@ -27,8 +26,9 @@ class CalendarSelectorDialog extends StatefulWidget {
   final String custNoStr;
   ///由前頁傳入的func，供新約使用
   final Function getBookingDate;
-
-  CalendarSelectorDialog({this.bookingDate, this.areaStr, this.wkNoStr, this.custNoStr, this.getBookingDate});
+  ///來自功能
+  final String fromFunc;
+  CalendarSelectorDialog({this.bookingDate, this.areaStr, this.wkNoStr, this.custNoStr, this.getBookingDate, this.fromFunc});
 
   @override
   _CalendarSelectorDialogState createState() => _CalendarSelectorDialogState();
@@ -536,9 +536,9 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
         child: TabBarView(
           controller: _tabController,
           children: <Widget>[
-            TimePeriodItem(key: ValueKey('class1'), classStr: "早", modelList: class1List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay,),
-            TimePeriodItem(key: ValueKey('class2'), classStr: "中", modelList: class2List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay,),
-            TimePeriodItem(key: ValueKey('class3'), classStr: "晚", modelList: class3List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay,),
+            TimePeriodItem(key: ValueKey('class1'), classStr: "早", modelList: class1List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay, fromFunc: widget.fromFunc,),
+            TimePeriodItem(key: ValueKey('class2'), classStr: "中", modelList: class2List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay, fromFunc: widget.fromFunc,),
+            TimePeriodItem(key: ValueKey('class3'), classStr: "晚", modelList: class3List, addTransform: _addTransform, timePeriodArr: timePeriodArr, selectDate: _selectedDay, fromFunc: widget.fromFunc,),
           ],
         ),
       )

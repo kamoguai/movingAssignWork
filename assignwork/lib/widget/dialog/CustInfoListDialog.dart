@@ -22,12 +22,13 @@ class CustInoListDialog extends StatelessWidget with BaseWidget {
     item = InkWell(
       child: Container(
         alignment: Alignment.centerLeft,
-        height: titleHeight(context) * 2.5,
+        height: titleHeight(context) * 3,
         padding: EdgeInsets.only(left: 5.0, right: 5.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Flexible(
+              flex: 2,
               child: Container(
                 alignment: Alignment.centerLeft,
                 decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, style: BorderStyle.solid, color: Colors.grey))),
@@ -48,6 +49,7 @@ class CustInoListDialog extends StatelessWidget with BaseWidget {
               ),      
             ),
             Flexible(
+              flex: 3,
               child: Container(
                 alignment: Alignment.centerLeft,
                 decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, style: BorderStyle.solid, color: Colors.red))),
@@ -59,7 +61,7 @@ class CustInoListDialog extends StatelessWidget with BaseWidget {
                         style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context))
                       ),
                       TextSpan(
-                        text: dic.customerIofo.installAddress,
+                        text: addressEncode(dic.customerIofo.installAddress),
                         style: TextStyle(color: Colors.black, fontSize: MyScreen.defaultTableCellFontSize(context))
                       )
                     ]

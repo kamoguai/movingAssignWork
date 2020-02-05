@@ -89,7 +89,7 @@ class BookingStatusType1PageState extends State<BookingStatusType1Page> with Aut
       ///先讀數據
       bloc.requestRefresh(jsonMap, doNextFlag: false).then((_) {
 
-      //   showRefreshLoading();
+        showRefreshLoading();
       });
     }
     else {

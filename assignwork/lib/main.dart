@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:assignwork/page/AddBookingViewPage.dart';
 import 'package:assignwork/page/BookingViewPage.dart';
+import 'package:assignwork/page/MaintainReportPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -66,6 +68,16 @@ class MyApp extends StatelessWidget {
             BookingViewPage.sName: (context) {
               return MyHomePage(
                 child: BookingViewPage(),
+              );
+            },
+            AddBookingViewPage.sName: (context) {
+              return MyHomePage(
+                child: AddBookingViewPage(),
+              );
+            },
+            MaintainReportPage.sName: (context) {
+              return MyHomePage(
+                child: MaintainReportPage(),
               );
             },
           },

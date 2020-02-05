@@ -33,13 +33,15 @@ class HttpManager {
       headers.addAll(header);
     }
 
-    if (option != null) {
+    if (option != null && option.contentType == null) {
       option = new Options(method: "post", responseType: ResponseType.plain);
-      if (url.contains("getAccPermissions")) {
-        option.contentType =  ContentType.parse(CONTENT_TYPE_FORM);
-        option.headers = headers;
-      }
-    } else{
+    }
+    else if (option != null && option.contentType != null){
+      option = new Options(method: "post", responseType: ResponseType.plain);
+      option.contentType =  ContentType.parse(CONTENT_TYPE_FORM);
+      option.headers = headers;
+    }
+    else{
       option = new Options(method: "get", responseType: ResponseType.plain);
       option.headers = headers;
     }

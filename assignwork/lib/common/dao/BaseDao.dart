@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:assignwork/common/config/Config.dart';
 import 'package:assignwork/common/dao/DaoResult.dart';
@@ -16,6 +17,7 @@ class BaseDao {
   ///取得贈送月份
   static getGiftMonth(Map jsonMap,) async {
     Map<String, dynamic> resDataArray = {};
+    List<dynamic> mList = new List<dynamic>();
     ///map轉json
     String str = json.encode(jsonMap);
     if (Config.DEBUG) {
@@ -24,16 +26,16 @@ class BaseDao {
     ///aesEncode
     var aesData = AesUtils.aes128Encrypt(str);
     Map paramsData = {"data": aesData};
-    var res = await HttpManager.netFetch(Address.getIndustryWithWkno(), paramsData, null, new Options(method: "post"));
+    var res = await HttpManager.netFetch(Address.getGiftsMonth(), paramsData, null, new Options(method: "post", contentType: ContentType.parse('application/x-www-form-urlencoded')));
     if (res != null && res.result) {
       if (Config.DEBUG) {
         print("取得贈送月份resp => " + res.data.toString());
       }
-      if (res.data['RtnCD'] == "00") {
-        resDataArray = res.data;
+      if (res.data['retCode'] == "00") {
+        mList = res.data['data'];
       }
-      if (resDataArray.length > 0) {
-        return new DataResult(resDataArray, true);
+      if (mList.length > 0) {
+        return new DataResult(mList, true);
       }
       else {
         return new DataResult(null, false);
@@ -140,7 +142,7 @@ class BaseDao {
       if (Config.DEBUG) {
         print("取得發展人選單列表resp => " + res.data.toString());
       }
-      if (res.data['RtnCD'] == "00") {
+      if (res.data['retCode'] == "00") {
         mList = res.data['data'];
       }
       if (mList.length > 0) {

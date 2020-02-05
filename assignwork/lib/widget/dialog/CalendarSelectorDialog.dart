@@ -2,6 +2,7 @@ import 'package:assignwork/common/dao/BookingStatusDao.dart';
 import 'package:assignwork/common/dao/ManageSectionDao.dart';
 import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
+import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/dialog/BookingResultDialog.dart';
 import 'package:assignwork/widget/item/TimePeriodItem.dart';
@@ -588,7 +589,9 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
                     if (isValid) {
                       ///改約
                       if (widget.wkNoStr != null) {
+                        CommonUtils.showLoadingDialog(context);
                         var res = await _postModifyBookingDate(timePeriodArr[0], inputText);
+                        Navigator.pop(context);
                         if (res.result) {
                           Navigator.pop(context);
                           showDialog(

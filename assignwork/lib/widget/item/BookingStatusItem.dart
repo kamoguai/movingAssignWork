@@ -96,7 +96,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
               margin: EdgeInsets.symmetric(horizontal: 20.0),
               child: Container(
                 width: double.maxFinite,
-                height: 75,
+                height: titleHeight(context) * 2,
                 child: Column(
                   children: <Widget>[
                     autoTextSize('撤銷後不得再派裝，請小心使用', TextStyle(color: Colors.red), context),
@@ -299,7 +299,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                         style: TextStyle(color: Colors.black, fontSize: MyScreen.normalPageFontSize_span(context))
                       ),
                       TextSpan(
-                        text: addressEncode(model.installAddress),
+                        text: model.installAddress,
                         // text: model.installAddress,
                         style: TextStyle(color: Colors.grey[700], fontSize: MyScreen.normalPageFontSize_span(context))
                       ),

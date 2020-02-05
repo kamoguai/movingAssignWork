@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
       if(mounted) {
         switch (index) {
           case 0:
-
+          NavigatorUtils.goHome(context);
           break;
           case 1:
             NavigatorUtils.goLogin(context);

@@ -63,7 +63,7 @@ class BookingResultDialog extends StatelessWidget with BaseWidget{
 
     wList.add(
       Container(  
-        height: titleHeight(context),      
+        height: titleHeight(context) * 1.5,      
         decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey, style: BorderStyle.solid))),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 5),

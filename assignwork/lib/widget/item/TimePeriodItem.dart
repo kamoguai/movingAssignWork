@@ -194,8 +194,10 @@ class _TimePeriodItemState extends State<TimePeriodItem> with BaseWidget{
 
       ///同日期
       if (i == 0) {
-        
-        if (nowHour >= 9 && nowHour < 11) {
+        if (nowHour < 9) {
+          widget.addTransform(timeP);
+        }
+        else if (nowHour >= 9 && nowHour < 11) {
           var hStr = model.timePeriod.substring(0,2);
           var intH = int.parse(hStr);
           if (intH < 13) {

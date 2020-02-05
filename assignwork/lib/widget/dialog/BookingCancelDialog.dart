@@ -1,5 +1,6 @@
 import 'package:assignwork/common/dao/BookingStatusDao.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
+import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:flutter/cupertino.dart';
@@ -87,7 +88,9 @@ class _BookingCancelDialogState extends State<BookingCancelDialog> with BaseWidg
     paramsMap["workorderCode"] = widget.wkNo;
     paramsMap["description"] = inputField;
     paramsMap["reasonCode"] = reasonCode;
+    CommonUtils.showLoadingDialog(context);
     var res = await BookingStatusDao.cancelWorkOrder(paramsMap);
+    Navigator.pop(context);
     if (res.result) {
       Future.delayed(const Duration(seconds: 1),() {
         NavigatorUtils.goHome(context);

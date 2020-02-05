@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:assignwork/common/config/Config.dart';
 import 'package:assignwork/common/dao/DaoResult.dart';
@@ -54,6 +55,27 @@ class BookingSendDao {
       return new DataResult(mainDataArray, true);
     }
   }
+
+  ///加裝
+  static postAddPurchase(Map<String, dynamic> jsonMap) async {
+    Map<String, dynamic> mainDataArray = {};
+    ///map轉json
+    String str = json.encode(jsonMap);
+    if (Config.DEBUG) {
+      print("加裝request => " + str);
+    }
+    ///aesEncode
+    var aesData = AesUtils.aes128Encrypt(str);
+    Map paramsData = {"data": aesData};
+    var res = await HttpManager.netFetch(Address.addPurchase(), paramsData, null, new Options(method: "post"));
+    if (res != null && res.result) {
+      if (Config.DEBUG) {
+        print("加裝resp => " + res.data.toString());
+      }
+      mainDataArray = res.data;
+      return new DataResult(mainDataArray, true);
+    }
+  }
   
   ///維修派單
   static postOrderReportFault(Map<String, dynamic> jsonMap) async {
@@ -85,4 +107,26 @@ class BookingSendDao {
       }
     }
   }
+
+   ///競業save
+  static postIndustryData(Map<String, dynamic> jsonMap) async {
+    Map<String, dynamic> mainDataArray = {};
+    ///map轉json
+    String str = json.encode(jsonMap);
+    if (Config.DEBUG) {
+      print("競業request => " + str);
+    }
+    ///aesEncode
+    var aesData = AesUtils.aes128Encrypt(str);
+    Map paramsData = {"data": aesData};
+    var res = await HttpManager.netFetch(Address.addPurchase(), paramsData, null, new Options(method: "post"));
+    if (res != null && res.result) {
+      if (Config.DEBUG) {
+        print("競業resp => " + res.data.toString());
+      }
+      mainDataArray = res.data;
+      return new DataResult(mainDataArray, true);
+    }
+  }
+ 
 }

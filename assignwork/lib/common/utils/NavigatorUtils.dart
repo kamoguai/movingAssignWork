@@ -53,11 +53,11 @@ class NavigatorUtils {
   }
   ///維護派單
   static goMaintainReportView(BuildContext context) {
-    navigatorRouter(context, MaintainReportPage());
+    Navigator.pushReplacementNamed(context, MaintainReportPage.sName);
   }
   ///加裝頁面
   static goAddBookingView(BuildContext context) {
-    navigatorRouter(context, AddBookingViewPage());
+    Navigator.pushReplacementNamed(context, AddBookingViewPage.sName);
   }
   
   

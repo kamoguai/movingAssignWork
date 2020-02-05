@@ -12,7 +12,6 @@ import 'package:assignwork/common/dao/UserInfoDao.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 ///
 ///登入頁面
@@ -56,6 +55,7 @@ class _LoginPageState extends State<LoginPage> {
   ///切換server site
   void _changeTaped() {
     setState(() {
+      LocalStorage.remove(Config.SERVERMODE);
       if (_serverMode == null || _serverMode == "prod") {
         Fluttertoast.showToast(msg: '切換成測試機');
         _serverMode = "test";

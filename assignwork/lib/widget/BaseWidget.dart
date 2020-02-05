@@ -318,9 +318,26 @@ mixin BaseWidget{
       sub3 = '';
     }
     if (sub2.indexOf('樓') > 1) {
-      
+      String lastStr = sub2.substring(sub2.indexOf('樓') + 1, sub2.length);
+      print('final addr -> $lastStr');
       sub1 += '**樓';
+      sub1 += lastStr;
+    }
+    else {
+       String lastStr = sub2.substring(sub2.indexOf('號') + 1, sub2.length);
+       sub1 += lastStr;
     }
     return sub1;
+  }
+
+  ///客編隱碼
+  custCodeEncode(String str) {
+    String showStr = "";
+    String sub1 = str.substring(0,3);
+    showStr += sub1;
+    showStr += "*****";
+    String sub2 = str.substring(8,10);
+    showStr += sub2;
+    return showStr;  
   }
 }

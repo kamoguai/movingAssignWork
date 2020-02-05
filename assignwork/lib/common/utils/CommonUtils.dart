@@ -522,4 +522,37 @@ class CommonUtils {
         return str;
     }
   }
+
+  static filterGiftMonthCN(String str) {
+    switch (str) {
+      case "0":
+          return "0個月";
+      case "1":
+          return "1個月";
+      case "2":
+          return "2個月";
+      case "3":
+          return "3個月";
+      case "4":
+          return "4個月";
+      default:
+          return str;
+    }
+  }
+  static filterGiftMonthNm(String str) {
+    switch (str) {
+      case "0個月":
+          return "0";
+      case "1個月":
+          return "1";
+      case "2個月":
+          return "2";
+      case "3個月":
+          return "3";
+      case "4個月":
+          return "4";
+      default:
+          return str;
+    }
+  }
 }

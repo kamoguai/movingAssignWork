@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:assignwork/common/dao/ManageSectionDao.dart';
 import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
+import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/dialog/SelectorDialog.dart';
 import 'package:flutter/cupertino.dart';
@@ -198,8 +199,9 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
     paramMap["accNo"] = _getStore().state.userInfo?.accNo;
     paramMap["installAddress"] = paramMap2;
     paramMap["postAddress"] = paramMap2;
-    
+    CommonUtils.showLoadingDialog(context);
     var res = await ManageSectionDao.postMatchAddress(paramMap);
+    Navigator.pop(context);
     if (res.result) {
       setState(() {
         this._isGetAddressPK = true;

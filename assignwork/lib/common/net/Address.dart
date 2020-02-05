@@ -12,9 +12,9 @@ class Address {
   static const String kSNRHostPingName = "http://snr.dctv.tw:8989/";
   static const String getSsoKey = "SSO/json/login.do?";
   static const String getVersion = "ValidataVersion/json/index!checkVersion.action?";
-  static const String bundleID = "com.dctv.MovingAssignmen";
-  static const String sysName = "movingAssignment";
-  static const String packageName = "com.dctv.MovingAssignmen";
+  static const String bundleID = "com.dctv.assignwork";
+  static const String sysName = "assignwork";
+  static const String packageName = "com.dctv.assignwork";
   static String workInstallDomainName = "http://wos.dctv.net.tw:8083/WorkInstall/";
   static String domainNameAES = "http://wos.dctv.net.tw:8083/WorkInstall/interfaceJsonAES";
   ///是否進入測試機

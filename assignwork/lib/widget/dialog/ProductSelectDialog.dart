@@ -360,6 +360,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                           Navigator.pop(context);
                         }
                         else {
+                          widget.selectFunc(this.pickData);
                           Navigator.pop(context);
                         }
                       },

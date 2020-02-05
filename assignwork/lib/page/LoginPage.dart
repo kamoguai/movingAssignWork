@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
             jsonMap["ssoKey"] = res.data.ssoKey;
             jsonMap["accNo"] = _account;
             jsonMap["passWord"] = _password;
-            jsonMap["sysName"] = "movingAssignment";
+            jsonMap["sysName"] = "assignwork";
             UserInfoDao.getUserInfo(res.data.serverURL ,jsonMap, store).then((res) {
               Navigator.pop(context);
               if (res != null && res.result) {

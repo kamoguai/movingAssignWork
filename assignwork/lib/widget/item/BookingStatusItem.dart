@@ -99,17 +99,21 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
                 height: titleHeight(context) * 2,
                 child: Column(
                   children: <Widget>[
-                    autoTextSize('撤銷後不得再派裝，請小心使用', TextStyle(color: Colors.red), context),
-                    FlatButton(
-                      color: Colors.red[300],
-                      onPressed: (){
-                        Navigator.pop(context);
-                        showDialog(
-                          context: context, 
-                          builder: (BuildContext context)=> _bookingCancelDialog(context,)
-                        );
-                      },
-                      child: autoTextSize('撤銷', TextStyle(color: Colors.white), context),
+                    Flexible(
+                      child: autoTextSize('撤銷後不得再派裝，請小心使用', TextStyle(color: Colors.red), context),
+                    ),
+                    Flexible(
+                      child: FlatButton(
+                        color: Colors.red[300],
+                        onPressed: (){
+                          Navigator.pop(context);
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context)=> _bookingCancelDialog(context,)
+                          );
+                        },
+                        child: autoTextSize('撤銷', TextStyle(color: Colors.white), context),
+                      ),
                     ),
                   ],
                 ),

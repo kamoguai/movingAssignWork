@@ -92,7 +92,7 @@ class UserInfoDao {
     Map paramsData = {"data": aesData};
     var reqUrl = "$serverUrl";
     var res = await HttpManager.netFetch(
-        reqUrl, paramsData, null, new Options(method: "post"));
+        reqUrl, paramsData, null, new Options(method: "post", contentType: ContentType.parse("application/x-www-form-urlencoded")));
     if (res != null && res.result) {
       if (Config.DEBUG) {
         print("派裝系統使用者信息resp => " + res.data.toString());

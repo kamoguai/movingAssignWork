@@ -29,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   var _account = "";
   var _password = "";
   var _fcmToken = "123abc";
+  var tapCount = 0;
   final TextEditingController accountController = new TextEditingController();
   final TextEditingController pwController = new TextEditingController();
   String _serverMode = "prod";
@@ -54,15 +55,18 @@ class _LoginPageState extends State<LoginPage> {
   }
   ///切換server site
   void _changeTaped() {
+    tapCount++;
+    if (tapCount % 3 == 0 )
     setState(() {
-      LocalStorage.remove(Config.SERVERMODE);
       if (_serverMode == null || _serverMode == "prod") {
         Fluttertoast.showToast(msg: '切換成測試機');
         _serverMode = "test";
+        Address.isEnterTest = true;
       }
       else {
         Fluttertoast.showToast(msg: '切換成正式機');
         _serverMode = "prod";
+        Address.isEnterTest = false;
       }
       LocalStorage.save(Config.SERVERMODE, _serverMode);
     });
@@ -93,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
             jsonMap["ssoKey"] = res.data.ssoKey;
             jsonMap["accNo"] = _account;
             jsonMap["passWord"] = _password;
-            jsonMap["sysName"] = "assignwork";
+            jsonMap["sysName"] = "movingAssignment";
             UserInfoDao.getUserInfo(res.data.serverURL ,jsonMap, store).then((res) {
               Navigator.pop(context);
               if (res != null && res.result) {
@@ -134,26 +138,25 @@ class _LoginPageState extends State<LoginPage> {
                 child: SingleChildScrollView(
                   child: new Column(
                     children: <Widget>[
-                      new Padding(
-                        padding: new EdgeInsets.only(
-                            left: 30.0, top: 0.0, right: 30.0, bottom: 0.0),
-                        child: new Image(
-                            image: new AssetImage('static/images/logo.png')),
-                      ),
-                      new Padding(padding: new EdgeInsets.all(10.0)),
                       GestureDetector(
-                        child: new Text(
-                          '派裝系統3.0',
-                          style: TextStyle(
-                            fontSize: MyScreen.loginTextFieldFontSize(context)
-                          ),  
+                        child: new Padding(
+                          padding: new EdgeInsets.only(
+                              left: 30.0, top: 0.0, right: 30.0, bottom: 0.0),
+                          child: new Image(
+                              image: new AssetImage('static/images/logo.png')),
                         ),
                         onTap: () {
                           _changeTaped();
                           
                         },
                       ),
-                      
+                      new Padding(padding: new EdgeInsets.all(10.0)),
+                      new Text(
+                        '派裝系統3.0',
+                        style: TextStyle(
+                          fontSize: MyScreen.loginTextFieldFontSize(context)
+                        ),  
+                      ),
                       new Padding(padding: new EdgeInsets.all(10.0)),
                       new Card(
                         elevation: 5.0,
@@ -180,6 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                               new Padding(padding: new EdgeInsets.all(10.0)),
                               new MyInputWidget(
                                 textStyle: TextStyle(fontSize: MyScreen.loginTextFieldFontSize(context)),
+                                obscureText: true,
                                 hintText: '請輸入密碼',
                                 textTitle: '密碼',
                                 onChanged: (String value) {

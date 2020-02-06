@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:assignwork/common/utils/AesUtils.dart';
+import 'package:device_info/device_info.dart';
 import 'package:redux/redux.dart';
 import 'package:assignwork/common/local/LocalStorage.dart';
 import 'package:assignwork/common/config/Config.dart';
@@ -21,8 +23,17 @@ class UserInfoDao {
   static login(account, password, tokenId, context) async {
     // 先儲存account至手機內存
     await LocalStorage.save(Config.USER_NAME_KEY, account);
-    var res = await HttpManager.netFetch(
-        Address.ssoLoginAPI(account, password), null, null, null);
+    String serialStr = "";
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      serialStr = androidInfo.androidId;
+    }
+    else if  (Platform.isIOS){
+      IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
+      serialStr = iosDeviceInfo.identifierForVendor;
+    }
+    var res = await HttpManager.netFetch(Address.ssoLoginAPI(account, password, serialStr), null, null, null);
 
     if (res != null && res.result) {
       if (Config.DEBUG) {
@@ -75,6 +86,7 @@ class UserInfoDao {
     Map<String, dynamic> mainDataArray = {};
     ///map轉json
     String str = json.encode(jsonMap);
+    print("派裝系統使用者信息req => " + str);
     ///aesEncode
     var aesData = AesUtils.aes128Encrypt(str);
     Map paramsData = {"data": aesData};

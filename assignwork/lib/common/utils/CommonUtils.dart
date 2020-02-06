@@ -9,7 +9,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_statusbar/flutter_statusbar.dart';
 import 'package:assignwork/common/redux/ThemeRedux.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/MyFlexButton.dart';
@@ -32,7 +31,8 @@ class CommonUtils {
   static double sStaticBarHeight = 0.0;
 
   static void initStatusBarHeight(context) async {
-    sStaticBarHeight =await FlutterStatusbar.height / MediaQuery.of(context).devicePixelRatio;
+    final double _statusBarHeight = MediaQuery.of(context).padding.top;
+    sStaticBarHeight = _statusBarHeight;
   }
 
   static String getDateStr(DateTime date) {

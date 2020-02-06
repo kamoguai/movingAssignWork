@@ -12,16 +12,16 @@ class Address {
   static const String kSNRHostPingName = "http://snr.dctv.tw:8989/";
   static const String getSsoKey = "SSO/json/login.do?";
   static const String getVersion = "ValidataVersion/json/index!checkVersion.action?";
-  static const String bundleID = "com.dctv.assignwork";
-  static const String sysName = "assignwork";
-  static const String packageName = "com.dctv.assignwork";
+  static const String bundleID = "com.dctv.MovingAssignmen";
+  static const String sysName = "MovingAssignmen";
+  static const String packageName = "com.dctv.MovingAssignmen";
   static String workInstallDomainName = "http://wos.dctv.net.tw:8083/WorkInstall/";
   static String domainNameAES = "http://wos.dctv.net.tw:8083/WorkInstall/interfaceJsonAES";
   ///是否進入測試機
   static bool isEnterTest = false;
   
   ///app版本設在這裡
-  static final String verNo = "3.0.0715";
+  static final String verNo = "3.20.0205";
 
 
   ///檢查是否有更新app
@@ -41,7 +41,7 @@ class Address {
   }
 
   ///登入SSO
-  static ssoLoginAPI(account, password) {
+  static ssoLoginAPI(account, password, serialID) {
     String deviceType = "";
     try {
       if (Platform.isAndroid) {
@@ -53,7 +53,7 @@ class Address {
     } on PlatformException {
       
     }
-    return "$ssoDomain${getSsoKey}function=login&accNo=$account&passWord=$password&uniqueCode=12343234&sysName=$sysName&tokenType=$deviceType&tokenID=slg;ksl;dc123&packageName=$packageName&type=$deviceType";
+    return "$ssoDomain${getSsoKey}function=login&accNo=$account&passWord=$password&uniqueCode=$serialID&sysName=$sysName&tokenType=$deviceType&tokenID=slg;ksl;dc123&packageName=$packageName&type=$deviceType";
   }
   ///登入取得使用者資訊
   ///

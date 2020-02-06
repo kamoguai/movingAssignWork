@@ -33,7 +33,6 @@ dependencies:
   url_launcher: ^5.0.2 #啟動外部瀏覽器
   flutter_spinkit: ^3.1.0 #loading框樣式
   flutter_webview_plugin: ^0.3.5 #全屏web view
-  flutter_statusbar: ^0.0.1 #狀態欄
   path_provider: ^1.1.0 #本地路徑
   permission_handler: ^3.1.0 #權限
   scoped_model: ^1.0.1 #狀態管理和共享

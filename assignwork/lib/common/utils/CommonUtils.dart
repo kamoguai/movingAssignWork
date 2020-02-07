@@ -13,6 +13,7 @@ import 'package:assignwork/common/redux/ThemeRedux.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/MyFlexButton.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 ///
 ///通用邏輯
 ///Date: 2019-03-11
@@ -243,15 +244,15 @@ class CommonUtils {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text('版本更新', style: TextStyle(fontSize: ScreenUtil().setSp(20)),),
-            content: new Text(contentMsg, style: TextStyle(fontSize: ScreenUtil().setSp(18)),),
+            title: new Text('版本更新', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
+            content: new Text(contentMsg, style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
             actions: <Widget>[
               new FlatButton(
                   onPressed: () {
                     launch(updateUrl);
                     Navigator.pop(context);
                   },
-                  child: new Text('確定', style: TextStyle(fontSize: ScreenUtil().setSp(20)),)),
+                  child: new Text('確定', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),)),
             ],
           );
         }
@@ -264,20 +265,20 @@ class CommonUtils {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text('版本更新', style: TextStyle(fontSize: ScreenUtil().setSp(20)),),
+            title: new Text('版本更新', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
             content: new Text(contentMsg),
             actions: <Widget>[
               new FlatButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: new Text('取消', style: TextStyle(fontSize: ScreenUtil().setSp(20)),)),
+                  child: new Text('取消', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),)),
               new FlatButton(
                   onPressed: () {
                     launch(updateUrl);
                     Navigator.pop(context);
                   },
-                  child: new Text('確定', style: TextStyle(fontSize: ScreenUtil().setSp(20)),)),
+                  child: new Text('確定', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),)),
             ],
           );
         }
@@ -290,14 +291,14 @@ class CommonUtils {
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: new Text(titleStr, style: TextStyle(fontSize: ScreenUtil().setSp(20)),),
+          title: new Text(titleStr, style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
           content: new Text(contentStr),
           actions: <Widget>[
             CupertinoButton(
                 onPressed: (){
                   Navigator.pop(context);
                 },
-                child: Text('確定', style: TextStyle(color: Colors.blue, fontSize: ScreenUtil().setSp(20)),),
+                child: Text('確定', style: TextStyle(color: Colors.blue, fontSize: MyScreen.appBarFontSize(context)),),
             ),
           ],
         );
@@ -311,20 +312,20 @@ class CommonUtils {
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: new Text(titleStr, style: TextStyle(fontSize: ScreenUtil().setSp(20)),),
+          title: new Text(titleStr, style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
           content: new Text(contentStr),
           actions: <Widget>[
             CupertinoButton(
                 onPressed: (){
                   Fluttertoast.showToast(msg: contentStr);
                 },
-                child: Text('確定', style: TextStyle(color: Colors.blue, fontSize: ScreenUtil().setSp(20)),),
+                child: Text('確定', style: TextStyle(color: Colors.blue, fontSize: MyScreen.appBarFontSize(context)),),
             ),
             CupertinoButton(
                 onPressed: (){
                   Navigator.pop(context);
                 },
-                child: Text('取消', style: TextStyle(color: Colors.red, fontSize: ScreenUtil().setSp(20)),),
+                child: Text('取消', style: TextStyle(color: Colors.red, fontSize: MyScreen.appBarFontSize(context)),),
             ),
           ],
         );

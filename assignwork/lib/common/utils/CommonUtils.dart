@@ -14,6 +14,7 @@ import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/MyFlexButton.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+
 ///
 ///通用邏輯
 ///Date: 2019-03-11
@@ -349,6 +350,16 @@ class CommonUtils {
         ],
       ),
     );
+  }
+
+  ///flutter toast自定義
+  static showToast(context,{String msg, String align}) {
+    if (align == null) {
+      Fluttertoast.showToast(msg: msg, fontSize: MyScreen.homePageFontSize(context), timeInSecForIos: 2, textColor: Colors.white, backgroundColor: Colors.black);
+    }
+    else {
+      Fluttertoast.showToast(msg: msg, fontSize: MyScreen.homePageFontSize(context), timeInSecForIos: 2, textColor: Colors.white, backgroundColor: Colors.black, gravity: ToastGravity.CENTER);
+    }
   }
   
 

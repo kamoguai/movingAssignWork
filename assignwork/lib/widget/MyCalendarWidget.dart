@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+import 'package:assignwork/common/utils/CommonUtils.dart';
 ///
 ///日期選擇widget
 ///Date: 2019-07-24
@@ -38,7 +39,7 @@ class _MyCalendarWidgetState extends State<MyCalendarWidget> with TickerProvider
   void _onDaySelected(DateTime day, List events) {
     setState(() {
       _selectedDay = day;
-      Fluttertoast.showToast(msg: "$_selectedDay");
+      CommonUtils.showToast(context, msg: "$_selectedDay");
     });
   }
 

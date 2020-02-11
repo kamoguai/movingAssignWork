@@ -1,7 +1,8 @@
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:assignwork/common/utils/CommonUtils.dart';
 
 ///
 ///街道路選擇器
@@ -173,7 +174,7 @@ class _RoadSelectDialogState extends State<RoadSelectDialog> with BaseWidget {
                             Navigator.pop(context, 'ok');
                           }
                           else {
-                            Fluttertoast.showToast(msg: '尚未選擇路段！');
+                            CommonUtils.showToast(context, msg: '尚未選擇路段！');
                             return;
                           }
                           

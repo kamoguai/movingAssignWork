@@ -15,7 +15,11 @@ class BookingResultDialog extends StatelessWidget with BaseWidget{
   final String changeDate;
   ///由前頁傳入呼叫此頁面的function
   final String funcType;
-  BookingResultDialog({this.custNo, this.originDate, this.changeDate, this.funcType});
+  ///由前頁傳入dataModel
+  final dynamic dataModel;
+  ///callbackfunc
+  final Function callBackFunc;
+  BookingResultDialog({this.custNo, this.originDate, this.changeDate, this.funcType, this.dataModel, this.callBackFunc});
 
   @override
   autoTextSize(text, style, context) {
@@ -133,6 +137,8 @@ class BookingResultDialog extends StatelessWidget with BaseWidget{
         ),
       ),
       onTap: () {
+        this.dataModel.bookingDate = changeDate;
+        this.callBackFunc(this.dataModel);
         Navigator.pop(context);
       },
     );

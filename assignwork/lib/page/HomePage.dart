@@ -15,8 +15,9 @@ import 'package:assignwork/widget/HomeDrawer.dart';
 import 'package:assignwork/widget/MyTabBarWidget.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scoped_model/scoped_model.dart';
+
+import 'package:assignwork/common/utils/CommonUtils.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -78,7 +79,7 @@ class _HomePageState extends State<HomePage> with BaseWidget, SingleTickerProvid
       if(mounted) {
         setState(() {
           Address.isEnterTest = true;
-          Fluttertoast.showToast(msg: '歡迎使用測試機');
+          CommonUtils.showToast(context, msg: '歡迎使用測試機');
         });
       }
     }

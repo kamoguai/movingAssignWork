@@ -458,7 +458,7 @@ class _BookingStatusDetailDialogState extends State<BookingStatusDetailDialog> w
           list.addAll(type1List());
           break;
         case "2":
-          list.addAll(type2List());
+          list.addAll(type1List());
           break;
         case "3":
           list.addAll(type1List());

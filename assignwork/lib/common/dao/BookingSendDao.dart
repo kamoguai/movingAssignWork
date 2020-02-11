@@ -1,13 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:assignwork/common/config/Config.dart';
 import 'package:assignwork/common/dao/DaoResult.dart';
 import 'package:assignwork/common/net/Address.dart';
 import 'package:assignwork/common/net/Api.dart';
 import 'package:assignwork/common/utils/AesUtils.dart';
+import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
 
 ///
 ///處理約裝送出相關
@@ -78,7 +79,7 @@ class BookingSendDao {
   }
   
   ///維修派單
-  static postOrderReportFault(Map<String, dynamic> jsonMap) async {
+  static postOrderReportFault(Map<String, dynamic> jsonMap, context) async {
     Map<String, dynamic> mainDataArray = {};
     ///map轉json
     String str = json.encode(jsonMap);
@@ -102,7 +103,7 @@ class BookingSendDao {
         return new DataResult(mainDataArray, true);
       }
       else {
-        Fluttertoast.showToast(msg: res.data["retName"]);
+        CommonUtils.showToast(context, msg: res.data["retName"], align: 'center');
         return new DataResult(null, false);
       }
     }

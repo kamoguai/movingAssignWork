@@ -9,16 +9,15 @@ import 'package:assignwork/widget/dialog/CustInfoListDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
-import '../common/dao/MaintainDao.dart';
-import '../common/redux/SysState.dart';
-import '../common/style/MyStyle.dart';
-import '../common/utils/NavigatorUtils.dart';
-import '../widget/BaseWidget.dart';
+import 'package:assignwork/common/dao/MaintainDao.dart';
+import 'package:assignwork/common/redux/SysState.dart';
+import 'package:assignwork/common/style/MyStyle.dart';
+import 'package:assignwork/common/utils/NavigatorUtils.dart';
+import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:redux/redux.dart';
-import '../widget/HomeDrawer.dart';
+import 'package:assignwork/widget/HomeDrawer.dart';
 ///
 /// 維修報修頁面
 /// Date: 2020/01/27
@@ -114,18 +113,18 @@ class _MaintainReportPageState extends State<MaintainReportPage> with BaseWidget
     jsonMap["phenomenonCode"] = this.selectedCode;
     jsonMap["bookingDate"] = this.bookingDateSelected;
     jsonMap["description"] =  this.descriptController.text;
-    var res = await BookingSendDao.postOrderReportFault(jsonMap);
+    var res = await BookingSendDao.postOrderReportFault(jsonMap, context);
     Navigator.pop(context);
     if (res.result) {
       if (res.data["rtnCD"] == "00") {
-        Fluttertoast.showToast(msg: '派單成功！');
+        CommonUtils.showToast(context, msg: '派單成功！');
         Future.delayed(const Duration(milliseconds: 500),() {
           NavigatorUtils.goHome(context);
           return true;
         });
       }
       else {
-        Fluttertoast.showToast(msg: res.data["rtnMsg"]);
+        CommonUtils.showToast(context, msg: res.data["rtnMsg"]);
         setState(() {
           this.sendResStr = res.data["rtnMsg"];
         });
@@ -142,7 +141,7 @@ class _MaintainReportPageState extends State<MaintainReportPage> with BaseWidget
     paramMap["accNo"] = _getStore().state.userInfo?.accNo;
     paramMap["type"] = this.custTypeCode;
     paramMap["value"] = this.custController.text;
-    var res = await BookingStatusDao.queryAddPurchaseCustomerInfos(paramMap);
+    var res = await BookingStatusDao.queryAddPurchaseCustomerInfos(paramMap, context);
     Navigator.pop(context);
     if (res.result) {
       setState(() {
@@ -288,7 +287,7 @@ class _MaintainReportPageState extends State<MaintainReportPage> with BaseWidget
                 _getCustDetailApi();
               }
               else {
-                Fluttertoast.showToast(msg: '尚未輸入欲查詢資料');
+                CommonUtils.showToast(context, msg: '尚未輸入欲查詢資料');
                 return;
               }
             },
@@ -794,23 +793,23 @@ class _MaintainReportPageState extends State<MaintainReportPage> with BaseWidget
   _isValidParam() {
     bool v = false;
     if (this.custController.text.length == 0) {
-      Fluttertoast.showToast(msg: '尚未輸入查詢條件！');
+      CommonUtils.showToast(context, msg: '尚未輸入查詢條件！');
       v = false;
     }
     else if (this.descriptController.text.length == 0) {
-      Fluttertoast.showToast(msg: '尚未輸入備註！');
+      CommonUtils.showToast(context, msg: '尚未輸入備註！');
       v = false;
     }
     else if (this.selectedType == "") {
-      Fluttertoast.showToast(msg: '問題類型尚未選擇！');
+      CommonUtils.showToast(context, msg: '問題類型尚未選擇！');
       v = false;
     }
     else if (this.selectedCode == "") {
-      Fluttertoast.showToast(msg: '問題狀態尚未選擇！');
+      CommonUtils.showToast(context, msg: '問題狀態尚未選擇！');
       v = false;
     }
     else if (this.bookingDateSelected == "") {
-       Fluttertoast.showToast(msg: '預約日期尚未選擇！');
+       CommonUtils.showToast(context, msg: '預約日期尚未選擇！');
       v = false;
     }
     else {

@@ -2,7 +2,6 @@ import 'package:assignwork/bloc/bookingStatusType1_bloc.dart';
 import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
 import 'package:assignwork/common/redux/SysState.dart';
 import 'package:assignwork/common/style/MyStyle.dart';
-import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/widget/MyNewPullLoadWidget.dart';
 import 'package:assignwork/widget/item/BookingStatusItem.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +26,8 @@ class BookingStatusType1PageState extends State<BookingStatusType1Page> with Aut
 
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
+
+  BookingItemModel model = new BookingItemModel();
   
   showRefreshLoading() {
     new Future.delayed(const Duration(seconds: 0), () {
@@ -61,9 +62,13 @@ class BookingStatusType1PageState extends State<BookingStatusType1Page> with Aut
 
   ///渲染item list
   _renderItem(prefix0.CustomerWorkOrderInfos c) {
+    
+    this.model = BookingItemModel.forMap(c);
+    return BookingStatusItem(model: model, bookingType: "1", accNo: _getStore().state.userInfo?.accNo, accName: _getStore().state.userInfo?.empName, deptId: _getStore().state.userInfo?.deptCD, callBackFunc: this.callBackFunc,);
+  }
 
-    BookingItemModel model = BookingItemModel.forMap(c);
-    return BookingStatusItem(model: model, bookingType: "1", accNo: _getStore().state.userInfo?.accNo, accName: _getStore().state.userInfo?.empName, deptId: _getStore().state.userInfo?.deptCD,);
+  void callBackFunc(dataModel) {
+    showRefreshLoading();
   }
  
   @override

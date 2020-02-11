@@ -18,7 +18,6 @@ import 'package:assignwork/widget/item/TrialResWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 ///
@@ -234,7 +233,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     if(res.result) {
       if (res.data["RtnCD"] == "00") {
         Navigator.pop(context);
-        Fluttertoast.showToast(msg: '試算成功!');
+        CommonUtils.showToast(context, msg: '試算成功!');
         setState(() {
           if (this.dtvGiftSelected != "" || this.cmGiftSelected != "") {
             this.resTrialStr = '試算成功，業務贈送需要自行繳費！';
@@ -255,7 +254,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
       }
       else {
         Navigator.pop(context);
-        Fluttertoast.showToast(msg: res.data["RtnMsg"]);
+        CommonUtils.showToast(context, msg: res.data["RtnMsg"]);
         setState(() {
           this.resTrialStr = res.data["RtnMsg"];
         });
@@ -351,7 +350,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
     Navigator.pop(context);
     if(res.result) {
       if (res.data["RtnCD"] == "00") {
-        Fluttertoast.showToast(msg: '立案成功！');
+        CommonUtils.showToast(context, msg: '立案成功！');
         ///呼叫save競業api
         _postIndustryData(res.data["workorderCode"]);
         Future.delayed(const Duration(milliseconds: 500),() {
@@ -360,7 +359,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
         });
       }
       else {
-        Fluttertoast.showToast(msg: res.data["RtnMsg"]);
+        CommonUtils.showToast(context, msg: res.data["RtnMsg"]);
         return;
       }
       // res.data["customerCode"];
@@ -868,7 +867,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                     ],
                   ),
                 ),
-                Container(
+                /*Container(
                   padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
                   decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid)), color: Colors.amber[100]),
                   child: Row(
@@ -922,7 +921,7 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
                       ),
                     ],
                   ),
-                ),
+                ),*/
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
                   decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey, style: BorderStyle.solid))),
@@ -1312,23 +1311,23 @@ class _BookingViewPageState extends State<BookingViewPage> with BaseWidget{
   ///檢核欄位- 試算(trial)
   validTrialParam() {
     if (this.dtvSelected == "" && this.cmSelected == "") {
-      Fluttertoast.showToast(msg: "請選擇欲約裝之產品！");
+      CommonUtils.showToast(context, msg: "請選擇欲約裝之產品！");
       return false;
     }
     if (this.dtvSelected != "") {
       if (this.dtvPaySelected == "") {
-        Fluttertoast.showToast(msg: "請選擇基本頻道繳別！");
+        CommonUtils.showToast(context, msg: "請選擇基本頻道繳別！");
         return false;
       }
     }
     if (this.cmSelected != "") {
       if(this.cmPaySelected == "") {
-        Fluttertoast.showToast(msg: "請選擇寬頻繳別！");
+        CommonUtils.showToast(context, msg: "請選擇寬頻繳別！");
         return false;
       }
     }
     if (this.bookingDateSelected == "") {
-      Fluttertoast.showToast(msg: "尚未選擇裝機日期！");
+      CommonUtils.showToast(context, msg: "尚未選擇裝機日期！");
       return false;
     }
     return true;

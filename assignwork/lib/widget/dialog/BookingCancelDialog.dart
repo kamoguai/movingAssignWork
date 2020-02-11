@@ -5,7 +5,6 @@ import 'package:assignwork/common/utils/NavigatorUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 ///
 ///約裝撤銷popup
 ///Date: 2019-10-22
@@ -74,11 +73,11 @@ class _BookingCancelDialogState extends State<BookingCancelDialog> with BaseWidg
   ///送出撤銷action
   _sendAction(inputField, reasonCode) async {
     if (inputField == '') {
-      Fluttertoast.showToast(msg: '撤銷原因必填！');
+      CommonUtils.showToast(context, msg: '撤銷原因必填！');
       return ;
     }
     if (reasonCode == "" || reasonCode == "原因▼") {
-      Fluttertoast.showToast(msg: '尚未選擇原因！');
+      CommonUtils.showToast(context, msg: '尚未選擇原因！');
       return ;
     }
     Map<String, dynamic> paramsMap = new Map<String, dynamic>();
@@ -89,7 +88,7 @@ class _BookingCancelDialogState extends State<BookingCancelDialog> with BaseWidg
     paramsMap["description"] = inputField;
     paramsMap["reasonCode"] = reasonCode;
     CommonUtils.showLoadingDialog(context);
-    var res = await BookingStatusDao.cancelWorkOrder(paramsMap);
+    var res = await BookingStatusDao.cancelWorkOrder(paramsMap, context);
     Navigator.pop(context);
     if (res.result) {
       Future.delayed(const Duration(seconds: 1),() {
@@ -311,11 +310,11 @@ class _BookingCancelDialogState extends State<BookingCancelDialog> with BaseWidg
             child: autoTextSize('送出', TextStyle(fontSize: MyScreen.homePageFontSize(context)),context),
             onPressed: () {
               if (reasonTypeName == '原因類型▼') {
-                Fluttertoast.showToast(msg: '請選擇原因類型');
+                CommonUtils.showToast(context, msg: '請選擇原因類型');
                 return;
               }
               if (reasonInfoName == '原因▼') {
-                Fluttertoast.showToast(msg: '請選擇原因');
+                CommonUtils.showToast(context, msg: '請選擇原因');
                 return;
               }
               _sendAction(inputText, this.reasonInfoCode);

@@ -2,6 +2,7 @@ import 'package:assignwork/common/config/Config.dart';
 import 'package:assignwork/common/dao/DaoResult.dart';
 import 'package:assignwork/common/net/Address.dart';
 import 'package:assignwork/common/net/Api.dart';
+import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -32,18 +33,18 @@ class MaintainDao {
   }
 
   ///報修派單
-  static postOrderReportFault(Map<String, dynamic> jsonMap) async {
+  static postOrderReportFault(Map<String, dynamic> jsonMap, context) async {
     var res = await HttpManager.netFetch(Address.postOrderReportFault(), jsonMap, null, new Options(method: "get"));
     if (res != null && res.result) {
       if (Config.DEBUG) {
         print("報修派單resp => " + res.data.toString());
       }
       if (res.data['retCode'] == "00") {
-        Fluttertoast.showToast(msg: res.data['retCode']);
+        CommonUtils.showToast(context, msg: res.data['retCode'], align: 'center');
         return new DataResult(null, true);
       }
       else {
-        Fluttertoast.showToast(msg: res.data['retMSG']);
+        CommonUtils.showToast(context, msg: res.data['retMSG'], align: 'center');
         return new DataResult(null, false);
       }
     }

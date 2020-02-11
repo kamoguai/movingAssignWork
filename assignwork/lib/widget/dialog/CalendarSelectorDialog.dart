@@ -8,7 +8,6 @@ import 'package:assignwork/widget/dialog/BookingResultDialog.dart';
 import 'package:assignwork/widget/item/TimePeriodItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:redux/redux.dart';
@@ -27,9 +26,13 @@ class CalendarSelectorDialog extends StatefulWidget {
   final String custNoStr;
   ///由前頁傳入的func，供新約使用
   final Function getBookingDate;
+  ///由前頁傳入的dataModel
+  final dynamic dataModel;
   ///來自功能
   final String fromFunc;
-  CalendarSelectorDialog({this.bookingDate, this.areaStr, this.wkNoStr, this.custNoStr, this.getBookingDate, this.fromFunc});
+  ///callbackfunc
+  final Function callBackFunc;
+  CalendarSelectorDialog({this.bookingDate, this.areaStr, this.wkNoStr, this.custNoStr, this.getBookingDate, this.fromFunc, this.dataModel , this.callBackFunc});
 
   @override
   _CalendarSelectorDialogState createState() => _CalendarSelectorDialogState();
@@ -103,7 +106,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     ///如果日期小於或等於
     if (i == 0 || i == 1) {
       if (y > 30) {
-        Fluttertoast.showToast(msg: '所選日期不能超過30天');
+        CommonUtils.showToast(context, msg: '所選日期不能超過30天');
         setState(() {
           modelList.clear();
           class1List.clear();
@@ -331,7 +334,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
   }
 
    ///約裝撤銷dialog
-  Widget _bookingResultDialog(BuildContext context, ) {
+  Widget _bookingResultDialog(BuildContext context, dynamic dataModel) {
     return Material(
       type: MaterialType.transparency,
       child: Column(
@@ -339,7 +342,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
         children: <Widget>[
           Card(
             margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-            child: BookingResultDialog(custNo: widget.custNoStr, originDate: widget.bookingDate, changeDate: timePeriodArr[0],),
+            child: BookingResultDialog(custNo: widget.custNoStr, originDate: widget.bookingDate, changeDate: timePeriodArr[0], dataModel: dataModel, callBackFunc: widget.callBackFunc,),
           ),
         ],
       )
@@ -355,7 +358,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
     jsonMap["workorderCode"] = widget.wkNoStr;
     jsonMap["bookingDate"] = bookingDate;
     jsonMap["description"] = desc;
-    var res = await BookingStatusDao.modifyBookingDate(jsonMap);
+    var res = await BookingStatusDao.modifyBookingDate(jsonMap, context);
     return res;
   }
 
@@ -516,20 +519,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
         ),
       ),
     );
-    // columnList2.add(
-    //   Container(
-    //     height: (listHeight(context) * 1.4) * 4,
-    //     decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.red,))),
-    //     child: PageView(
-    //       controller: _pageViewController,
-    //       children: _tabBarView(),
-    //       onPageChanged: (index) {
-    //         print("pageView index => $index");
-    //         _tabController.animateTo(index);
-    //       },
-    //     ),
-    //   )
-    // );
+   
     columnList2.add(
       Container(
         height: (listHeight(context) * 1.4) * 4,
@@ -596,7 +586,7 @@ class _CalendarSelectorDialogState extends State<CalendarSelectorDialog> with Ba
                           Navigator.pop(context);
                           showDialog(
                             context: context, 
-                            builder: (BuildContext context)=> _bookingResultDialog(context)
+                            builder: (BuildContext context)=> _bookingResultDialog(context, widget.dataModel, )
                           );
                         }
                       }

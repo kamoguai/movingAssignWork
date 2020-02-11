@@ -5,6 +5,7 @@ import 'package:assignwork/common/dao/DaoResult.dart';
 import 'package:assignwork/common/net/Address.dart';
 import 'package:assignwork/common/net/Api.dart';
 import 'package:assignwork/common/utils/AesUtils.dart';
+import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -70,7 +71,7 @@ class BookingStatusDao {
   }
 
   ///執行約裝撤銷
-  static cancelWorkOrder(Map<String, dynamic> jsonMap) async {
+  static cancelWorkOrder(Map<String, dynamic> jsonMap, context) async {
     ///map轉json
     String str = json.encode(jsonMap);
     if (Config.DEBUG) {
@@ -85,7 +86,7 @@ class BookingStatusDao {
         print("約裝撤銷resp => " + res.data.toString());
       }
       if (res.data['RtnCD'] == "00") {
-        Fluttertoast.showToast(msg: '撤銷成功');
+        CommonUtils.showToast(context, msg: '撤銷成功', align: 'center');
         return new DataResult(null, true);
       }
       else {
@@ -95,7 +96,7 @@ class BookingStatusDao {
   }
 
   ///執行改約
-  static modifyBookingDate(Map<String, dynamic> jsonMap) async {
+  static modifyBookingDate(Map<String, dynamic> jsonMap, context) async {
     ///map轉json
     String str = json.encode(jsonMap);
     if (Config.DEBUG) {
@@ -114,15 +115,14 @@ class BookingStatusDao {
         return new DataResult(null, true);
       }
       else {
-        Fluttertoast.showToast(msg: '${res.data['RtnMsg']}');
+        CommonUtils.showToast(context, msg: '${res.data['RtnMsg']}', align: 'center');
         return new DataResult(null, false);
       }
     }
   }
 
   ///查詢可加裝客戶訊息
-  static queryAddPurchaseCustomerInfos(Map<String, dynamic> jsonMap) async {
-    Map<String, dynamic> mainDataArray = {};
+  static queryAddPurchaseCustomerInfos(Map<String, dynamic> jsonMap, context) async {
     List<dynamic> dataList = [];
     ///map轉json
     String str = json.encode(jsonMap);
@@ -142,7 +142,7 @@ class BookingStatusDao {
         return new DataResult(dataList, true);
       }
       else {
-        Fluttertoast.showToast(msg: res.data["RtnMsg"]);
+        CommonUtils.showToast(context, msg: res.data["RtnMsg"], align: 'center');
         return new DataResult(null, false);
       }
     }

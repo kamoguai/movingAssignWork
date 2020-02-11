@@ -1,7 +1,8 @@
 import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:assignwork/common/utils/CommonUtils.dart';
 
 ///
 ///加購產品選擇器
@@ -351,7 +352,7 @@ class _ProductSelectDialogState extends State<ProductSelectDialog> with BaseWidg
                           this.pickData.forEach((k,v) {                        
                             for (var dic in v) {
                               if (dic["month"] == "") {
-                                Fluttertoast.showToast(msg: '${dic['name']}尚未選擇繳費月數！');
+                                CommonUtils.showToast(context, msg: '${dic['name']}尚未選擇繳費月數！');
                                 return;
                               }
                             }

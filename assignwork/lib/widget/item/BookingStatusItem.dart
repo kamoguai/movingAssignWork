@@ -10,7 +10,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 
@@ -33,8 +32,11 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
   final Function detailEvent;
   ///由前頁呼叫的function
   final Function getIndustry;
+  ///callbackfunc
+  final Function callBackFunc;
 
-  BookingStatusItem({this.accName, this.accNo, this.deptId, this.bookingType, this.model, this.detailEvent, this.getIndustry});
+  BookingStatusItem({this.accName, this.accNo, this.deptId, this.bookingType, this.model, this.detailEvent, this.getIndustry, this.callBackFunc});
+
   
   @override
   autoTextSize(text, style, context) {
@@ -59,7 +61,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
           actions: <Widget>[
             CupertinoButton(
                 onPressed: (){
-                  Fluttertoast.showToast(msg: contentStr);
+                  CommonUtils.showToast(context, msg: contentStr);
                 },
                 child: Text('確定', style: TextStyle(color: Colors.blue, fontSize: ScreenUtil().setSp(20)),),
             ),
@@ -142,7 +144,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
   }
 
   ///show日期選擇器
-  Widget _calendarSelectorDialog(BuildContext context,) {
+  Widget _calendarSelectorDialog(BuildContext context, dynamic dataModel) {
     return Material(
       type: MaterialType.transparency,
       child: Container(
@@ -152,7 +154,7 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
         ),
         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: Scaffold(
-          body: CalendarSelectorDialog(bookingDate: model.bookingDate, areaStr: CommonUtils.filterAreaCN(model.installAddress.substring(3,6)), wkNoStr: model.workorderCode, custNoStr: model.code, fromFunc: 'list',)
+          body: CalendarSelectorDialog(bookingDate: model.bookingDate, areaStr: CommonUtils.filterAreaCN(model.installAddress.substring(3,6)), wkNoStr: model.workorderCode, custNoStr: model.code, fromFunc: 'list', dataModel: dataModel, callBackFunc: this.callBackFunc,)
         ),
       )
     );
@@ -430,10 +432,10 @@ class BookingStatusItem extends StatelessWidget with BaseWidget{
             ),
           ),
           onTap: () {
-            if (bookingType != "4")
+            if (bookingType == "1")
             showDialog(
               context: context, 
-              builder: (BuildContext context)=> _calendarSelectorDialog(context)
+              builder: (BuildContext context)=> _calendarSelectorDialog(context, model)
             );
           },
         ),

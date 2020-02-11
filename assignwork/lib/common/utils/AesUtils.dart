@@ -84,7 +84,7 @@ class AesUtils {
       ///將結果轉回字串
       decyptedResult = utf8.decode(cipherProcess);
     } catch (e) {
-      Fluttertoast.showToast(msg: "AES解析失敗");
+      Fluttertoast.showToast(msg: "AES解析失敗", timeInSecForIos: 2, fontSize: 20);
       decyptedResult = "";
     }
     ///回傳明碼字串

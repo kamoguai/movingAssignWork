@@ -3,7 +3,6 @@ import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/widget/BaseWidget.dart';
 import 'package:assignwork/widget/dialog/CalendarSelectorDialog.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 ///
 ///選擇班表頁面
@@ -142,37 +141,38 @@ class _TimePeriodItemState extends State<TimePeriodItem> with BaseWidget{
     final diffDate = widget.selectDate.difference(today);
     ///取得差異天數
     final i = diffDate.inDays;
-    if (widget.fromFunc != 'maintain') {
-      ///同日期
-      if (i == 0) {
-        
-        if (nowHour >= 9 && nowHour < 11) {
-          var hStr = model.timePeriod.substring(0,2);
-          var intH = int.parse(hStr);
-          if (intH < 13) {
-            _bkColor = Colors.grey[300];
-          }
-        }
-        else if (nowHour >= 11 && nowHour < 16) {
-          var hStr = model.timePeriod.substring(0,2);
-          var intH = int.parse(hStr);
-          if (intH < 18) {
-            _bkColor = Colors.grey[300];
-          }
-        }
-        else if (nowHour >=16) {
-          var hStr = model.timePeriod.substring(0,2);
-          var intH = int.parse(hStr);
-          if (intH < 22) {
-            _bkColor = Colors.grey[300];
-          }
-        }
-        else {
-          _bkColor = Colors.white;
+    ///同日期
+    if (i == 0) {
+      
+      if (nowHour >= 9 && nowHour < 11) {
+        var hStr = model.timePeriod.substring(0,2);
+        var intH = int.parse(hStr);
+        if (intH < 13) {
+          _bkColor = Colors.grey[300];
         }
       }
-      ///大於日期
-      else if (i == 1) {
+      else if (nowHour >= 11 && nowHour < 16) {
+        var hStr = model.timePeriod.substring(0,2);
+        var intH = int.parse(hStr);
+        if (intH < 18) {
+          _bkColor = Colors.grey[300];
+        }
+      }
+      else if (nowHour >=16) {
+        var hStr = model.timePeriod.substring(0,2);
+        var intH = int.parse(hStr);
+        if (intH < 22) {
+          _bkColor = Colors.grey[300];
+        }
+      }
+      else {
+        _bkColor = Colors.white;
+      }
+    }
+    ///大於日期
+    else if (i == 1) {
+      if (widget.fromFunc != 'maintain') {
+
         if (nowHour >= 20) {
           var hStr = model.timePeriod.substring(0,2);
           var intH = int.parse(hStr);
@@ -190,57 +190,57 @@ class _TimePeriodItemState extends State<TimePeriodItem> with BaseWidget{
     final diffDate = widget.selectDate.difference(today);
     ///取得差異天數
     final i = diffDate.inDays;
-    if (widget.fromFunc != 'maintain') {
 
-      ///同日期
-      if (i == 0) {
-        if (nowHour < 9) {
-          widget.addTransform(timeP);
-        }
-        else if (nowHour >= 9 && nowHour < 11) {
-          var hStr = model.timePeriod.substring(0,2);
-          var intH = int.parse(hStr);
-          if (intH < 13) {
-            Fluttertoast.showToast(msg: '此班別已無法指派，請派其他班別。');
-            return;
-          }
-          else {
-            widget.addTransform(timeP);
-          }
-        }
-        ///區間無法派中班
-        else if (nowHour >= 11 && nowHour < 16) {
-          var hStr = model.timePeriod.substring(0,2);
-          var intH = int.parse(hStr);
-          if (intH < 18) {
-            Fluttertoast.showToast(msg: '此班別已無法指派，請派其他班別。');
-            return;
-          }
-          else {
-            widget.addTransform(timeP);
-          }
-        }
-        ///大於16點無法派晚班
-        else if (nowHour >= 16 ) {
-          var hStr = model.timePeriod.substring(0,2);
-          var intH = int.parse(hStr);
-          if (intH < 22) {
-            Fluttertoast.showToast(msg: '今日已無法指派，請派其他日期。');
-            return;
-          }
+    ///同日期
+    if (i == 0) {
+      if (nowHour < 9) {
+        widget.addTransform(timeP);
+      }
+      else if (nowHour >= 9 && nowHour < 11) {
+        var hStr = model.timePeriod.substring(0,2);
+        var intH = int.parse(hStr);
+        if (intH < 13) {
+          CommonUtils.showToast(context, msg: '此班別已無法指派，請派其他班別。');
+          return;
         }
         else {
           widget.addTransform(timeP);
         }
       }
-      ///大於日期
-      else if (i == 1) {
+      ///區間無法派中班
+      else if (nowHour >= 11 && nowHour < 16) {
+        var hStr = model.timePeriod.substring(0,2);
+        var intH = int.parse(hStr);
+        if (intH < 18) {
+          CommonUtils.showToast(context, msg: '此班別已無法指派，請派其他班別。');
+          return;
+        }
+        else {
+          widget.addTransform(timeP);
+        }
+      }
+      ///大於16點無法派晚班
+      else if (nowHour >= 16 ) {
+        var hStr = model.timePeriod.substring(0,2);
+        var intH = int.parse(hStr);
+        if (intH < 22) {
+          CommonUtils.showToast(context, msg: '今日已無法指派，請派其他日期。');
+          return;
+        }
+      }
+      else {
+        widget.addTransform(timeP);
+      }
+    }
+    ///大於日期
+    else if (i == 1) {
+      if (widget.fromFunc != 'maintain') {
         ///當天晚上20點
         if (nowHour >= 20) {
           var hStr = model.timePeriod.substring(0,2);
           var intH = int.parse(hStr);
           if (intH < 13) {
-            Fluttertoast.showToast(msg: '晚上8點後無法派隔日早班，請派隔日其他班別。');
+            CommonUtils.showToast(context, msg: '晚上8點後無法派隔日早班，請派隔日其他班別。');
             return;
           }
           else {
@@ -254,11 +254,12 @@ class _TimePeriodItemState extends State<TimePeriodItem> with BaseWidget{
       else {
         widget.addTransform(timeP);
       }
-      print("所選時間 -> $timeP");
     }
     else {
-        widget.addTransform(timeP);
+      widget.addTransform(timeP);
     }
+    print("所選時間 -> $timeP");
+    
   }
   @override
   Widget build(BuildContext context) {

@@ -11,7 +11,6 @@ import 'package:dio/dio.dart';
 import 'package:assignwork/common/redux/UserInfoRedux.dart';
 import 'package:assignwork/common/dao/DaoResult.dart';
 import 'package:assignwork/common/model/UserInfo.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:assignwork/common/utils/CommonUtils.dart';
 import 'package:assignwork/common/model/SsoLogin.dart';
 
@@ -135,7 +134,7 @@ class UserInfoDao {
         CommonUtils.showUpdateAppDialog(
             context, res.data['MSG'], res.data['UpdateUrl']);
       } else {
-        Fluttertoast.showToast(msg: res.data['MSG']);
+        CommonUtils.showToast(context, msg: res.data['MSG']);
       }
     }
   }

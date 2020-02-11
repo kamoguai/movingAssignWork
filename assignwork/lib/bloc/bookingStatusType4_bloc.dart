@@ -1,8 +1,10 @@
 
 import 'package:assignwork/common/config/Config.dart';
 import 'package:assignwork/common/dao/BookingStatusDao.dart';
+import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/MyNewPullLoadWidget.dart';
 import 'package:assignwork/common/model/BookingStatusTableCell.dart' as prefix0;
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 ///
@@ -20,7 +22,7 @@ class BookingStatusType4Bloc {
     jsonMap["pageSize"] = Config.PAGE_SIZE;
     var res = await BookingStatusDao.getQueryCustomerWorkOrderInfos(jsonMap);
     if(res.data == null || res.result == false) {
-      Fluttertoast.showToast(msg: 'API數據返回異常');
+      Fluttertoast.showToast(msg: 'API數據返回異常', timeInSecForIos: 2, fontSize: 20, textColor: Color(MyColors.hexFromStr('FFFFFF')), backgroundColor: Color(MyColors.hexFromStr('000000')));
       return null;
     }
     var custInfo = res.data["customerWorkOrderInfos"];

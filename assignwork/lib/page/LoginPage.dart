@@ -10,8 +10,8 @@ import 'package:assignwork/common//utils/CommonUtils.dart';
 import 'package:assignwork/widget/MyFlexButton.dart';
 import 'package:assignwork/common/dao/UserInfoDao.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:assignwork/common/utils/NavigatorUtils.dart';
+
 
 ///
 ///登入頁面
@@ -59,12 +59,12 @@ class _LoginPageState extends State<LoginPage> {
     if (tapCount % 3 == 0 )
     setState(() {
       if (_serverMode == null || _serverMode == "prod") {
-        Fluttertoast.showToast(msg: '切換成測試機');
+        CommonUtils.showToast(context, msg: '切換成測試機');
         _serverMode = "test";
         Address.isEnterTest = true;
       }
       else {
-        Fluttertoast.showToast(msg: '切換成正式機');
+        CommonUtils.showToast(context, msg: '切換成正式機');
         _serverMode = "prod";
         Address.isEnterTest = false;
       }
@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
             });
         }
         else {
-          Fluttertoast.showToast(msg: res.data.retMSG);
+          CommonUtils.showToast(context, msg: res.data.retMSG);
         }                                     
       } else {
         print("holy 喵喵喵");

@@ -10,7 +10,6 @@ import 'package:assignwork/widget/dialog/SelectorDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:redux/redux.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 ///
@@ -209,11 +208,11 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
         this.logFullAddress["fullAddressCode"] = res.data["installAddressCode"];
         this.logFullAddress["buildingName"] = res.data["InstallAddressBuildingName"];
         _appendFullData();
-        Fluttertoast.showToast(msg: '匹配成功！');
+        CommonUtils.showToast(context, msg: '匹配成功！');
       });
     }
     else {
-      Fluttertoast.showToast(msg: res.data);
+      CommonUtils.showToast(context, msg: res.data);
       return ;
     }
   }
@@ -241,13 +240,13 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
         fullAddr += "${this.logFullAddress["unit"]}號";
       }
       if (this.logFullAddress["ofUnit"] != "") {
-        fullAddr += "之${this.logFullAddress["ofUnit"]}號";
+        fullAddr += "之${this.logFullAddress["ofUnit"]}";
       }
       if (this.logFullAddress["floor"] != "") {
         fullAddr += "${this.logFullAddress["floor"]}樓";
       }
       if (this.logFullAddress["floorOf"] != "") {
-        fullAddr += "之${this.logFullAddress["floorOf"]}樓";
+        fullAddr += "之${this.logFullAddress["floorOf"]}";
       }
       this.logFullAddress["fullAddress"] = fullAddr;
   }
@@ -481,13 +480,13 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                 ),
                 onFieldSubmitted: (val) {
                   if (val.length < 10) {
-                    Fluttertoast.showToast(msg: '請輸入完整手機號！');
+                    CommonUtils.showToast(context, msg: '請輸入完整手機號！');
                     return;
                   }
                   else {
                     var subStr = val.substring(0,2);
                     if (!subStr.contains("09")) {
-                      Fluttertoast.showToast(msg: '請輸入正確的手機號碼！');
+                      CommonUtils.showToast(context, msg: '請輸入正確的手機號碼！');
                       return;
                     } 
                     _fieldFoucusChange(context, _mobileFocus, _telAreaCodeFocus);
@@ -933,7 +932,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
                       widget.getMatchDataFunc(this.logFullAddress);
                     }
                     else {
-                      Fluttertoast.showToast(msg: "請先匹配地址！");
+                      CommonUtils.showToast(context, msg: "請先匹配地址！");
                       return;
                     }
                   },
@@ -980,49 +979,49 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
   ///欄位檢核
   bool _validateSubmit() {
     if (_nameController.text.length == 0) {
-      Fluttertoast.showToast(msg: '請填妥顧客姓名。');
+      CommonUtils.showToast(context, msg: '請填妥顧客姓名。');
       return false;
     }
     if ((_mobileController.text.length == 0) && (_telPhoneController.text.length == 0)) {
-      Fluttertoast.showToast(msg: '市話或手機請至少填入一項。');
+      CommonUtils.showToast(context, msg: '市話或手機請至少填入一項。');
       return false;
     }
     if (_telPhoneController.text.length > 0) {
       if (_telAreaCodeController.text.length == 0) {
-        Fluttertoast.showToast(msg: '請輸入市話區碼。');
+        CommonUtils.showToast(context, msg: '請輸入市話區碼。');
       return false;
       }
     }
     if (this.logFullAddress["road"] == "" ) {
-      Fluttertoast.showToast(msg: '路段尚未選擇');
+      CommonUtils.showToast(context, msg: '路段尚未選擇');
       return false;
     }
     if (this.logFullAddress["community"] == "" && this.logFullAddress["lane"] != "") {
-      Fluttertoast.showToast(msg: '您沒有輸入『巷』，『弄』不能輸入。');
+      CommonUtils.showToast(context, msg: '您沒有輸入『巷』，『弄』不能輸入。');
       return false;
     }
     if (this.logFullAddress["unit"] == "" && this.logFullAddress["ofUnit"] != "") {
-      Fluttertoast.showToast(msg: '您沒有輸入『號』，『之號』不能輸入。');
+      CommonUtils.showToast(context, msg: '您沒有輸入『號』，『之號』不能輸入。');
       return false;
     }
     if (this.logFullAddress["floor"] == "" && this.logFullAddress["floorOf"] != "") {
-      Fluttertoast.showToast(msg: '您沒有輸入『樓』，『之樓』不能輸入。');
+      CommonUtils.showToast(context, msg: '您沒有輸入『樓』，『之樓』不能輸入。');
       return false;
     }
     if (this.logFullAddress["unit"] == "" && this.logFullAddress["floor"] != "") {
-      Fluttertoast.showToast(msg: '您沒有輸入『號』，『樓』不能輸入。');
+      CommonUtils.showToast(context, msg: '您沒有輸入『號』，『樓』不能輸入。');
       return false;
     }
     if (this.logFullAddress["floor"] != "" ) {
       int i = int.parse(this.logFullAddress["floor"]);
       if (i >= 100)
-      Fluttertoast.showToast(msg: '請勿輸入不合理樓層。');
+      CommonUtils.showToast(context, msg: '請勿輸入不合理樓層。');
       return false;
     }
     if (this.logFullAddress["floorOf"] != "" ) {
       int i = int.parse(this.logFullAddress["floorOf"]);
       if (i >= 100)
-      Fluttertoast.showToast(msg: '請勿輸入不合理樓層之幾。');
+      CommonUtils.showToast(context, msg: '請勿輸入不合理樓層之幾。');
       return false;
     }
 

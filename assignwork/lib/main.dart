@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:assignwork/common/event/HttpErrorEvent.dart';
 import 'package:assignwork/common/model/UserInfo.dart';
@@ -130,27 +129,27 @@ class _MyHomePageState extends State<MyHomePage> {
   errorHandleFunction(int code, message) {
     switch (code) {
       case Code.NETWORK_ERROR:
-        Fluttertoast.showToast(msg: '網路錯誤');
+        CommonUtils.showToast(context, msg: '網路錯誤');
         break;
       case 401:
-        Fluttertoast.showToast(msg: '[401錯誤可能: 未授權 \\ 授權登入失敗 \\ 登入過期]');
+        CommonUtils.showToast(context, msg: '[401錯誤可能: 未授權 \\ 授權登入失敗 \\ 登入過期]');
         break;
       case 403:
-        Fluttertoast.showToast(msg: '403權限錯誤');
+        CommonUtils.showToast(context, msg: '403權限錯誤');
         break;
       case 404:
-        Fluttertoast.showToast(msg: '404錯誤');
+        CommonUtils.showToast(context, msg: '404錯誤');
         break;
       case Code.NETWORK_TIMEOUT:
         //超时
-        Fluttertoast.showToast(msg: '請求超時');
+        CommonUtils.showToast(context, msg: '請求超時');
         break;
       default:
         if (message.toString().contains('Socket')) {
-          Fluttertoast.showToast(msg: '網路請求異常，請更換網路試試。' + " " + message);
+          CommonUtils.showToast(context, msg: '網路請求異常，請更換網路試試。' + " " + message);
         }
         else {
-          Fluttertoast.showToast(msg: '請求異常' + " " + message);
+          CommonUtils.showToast(context, msg: '請求異常' + " " + message);
         }
         
         break;

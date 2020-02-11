@@ -16,7 +16,6 @@ class BaseDao {
 
   ///取得贈送月份
   static getGiftMonth(Map jsonMap,) async {
-    Map<String, dynamic> resDataArray = {};
     List<dynamic> mList = new List<dynamic>();
     ///map轉json
     String str = json.encode(jsonMap);

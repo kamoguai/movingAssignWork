@@ -86,66 +86,130 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog> with Ba
       actions: [
         KeyboardAction(
           focusNode: _mobileFocus,
-          closeWidget: Padding(
-            padding: EdgeInsets.all(5),
-            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _mobileFocus, _telAreaCodeFocus);},)
-          ),
+          toolbarButtons: [
+            (node) {
+              return InkWell(
+                onTap: () { _fieldFoucusChange(context, _mobileFocus, _telAreaCodeFocus);},
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: autoTextSize('完成', TextStyle(color: Colors.black), context),
+                ),
+              );
+            }
+          ],
         ),
+        
         KeyboardAction(
           focusNode: _telAreaCodeFocus,
-          closeWidget: Padding(
-            padding: EdgeInsets.all(5),
-            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _telAreaCodeFocus, _telPhoneFocus);},)
-          ),
+          toolbarButtons: [
+            (node) {
+              return InkWell(
+                onTap: () { _fieldFoucusChange(context, _telAreaCodeFocus, _telPhoneFocus);},
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: autoTextSize('完成', TextStyle(color: Colors.black), context),
+                ),
+              );
+            }
+          ],
         ),
         KeyboardAction(
           focusNode: _telPhoneFocus,
-          closeWidget: Padding(
-            padding: EdgeInsets.all(5),
-            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
-          ),
+          toolbarButtons: [
+            (node) {
+              return InkWell(
+                onTap: () { },
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: autoTextSize('完成', TextStyle(color: Colors.black), context),
+                ),
+              );
+            }
+          ],
         ),
         KeyboardAction(
           focusNode: _communityFocus,
-          closeWidget: Padding(
-            padding: EdgeInsets.all(5),
-            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _communityFocus, _laneFocus);},)
-          ),
+          toolbarButtons: [
+            (node) {
+              return InkWell(
+                onTap: () { _fieldFoucusChange(context, _communityFocus, _laneFocus);},
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: autoTextSize('完成', TextStyle(color: Colors.black), context),
+                ),
+              );
+            }
+          ],
         ),
         KeyboardAction(
           focusNode: _laneFocus,
-          closeWidget: Padding(
-            padding: EdgeInsets.all(5),
-            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
-          ),
+          toolbarButtons: [
+            (node) {
+              return InkWell(
+                onTap: () { },
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: autoTextSize('完成', TextStyle(color: Colors.black), context),
+                ),
+              );
+            }
+          ],
         ),
         KeyboardAction(
           focusNode: _unitFocus,
-          closeWidget: Padding(
-            padding: EdgeInsets.all(5),
-            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _unitFocus, _ofUnitFocus);},)
-          ),
+          toolbarButtons: [
+            (node) {
+              return InkWell(
+                onTap: () { _fieldFoucusChange(context, _unitFocus, _ofUnitFocus);},
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: autoTextSize('完成', TextStyle(color: Colors.black), context),
+                ),
+              );
+            }
+          ],
         ),
         KeyboardAction(
           focusNode: _ofUnitFocus,
-          closeWidget: Padding(
-            padding: EdgeInsets.all(5),
-            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
-          ),
+          toolbarButtons: [
+            (node) {
+              return InkWell(
+                onTap: () { },
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: autoTextSize('完成', TextStyle(color: Colors.black), context),
+                ),
+              );
+            }
+          ],
         ),
         KeyboardAction(
           focusNode: _floorFocus,
-          closeWidget: Padding(
-            padding: EdgeInsets.all(5),
-            child: InkWell(child: autoTextSize('完成', TextStyle(color: Colors.black), context), onTap: (){_fieldFoucusChange(context, _floorFocus, _floorOfFocus);},)
-          ),
+          toolbarButtons: [
+            (node) {
+              return InkWell(
+                onTap: () { _fieldFoucusChange(context, _floorFocus, _floorOfFocus);},
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: autoTextSize('完成', TextStyle(color: Colors.black), context),
+                ),
+              );
+            }
+          ],
         ),
         KeyboardAction(
           focusNode: _floorOfFocus,
-          closeWidget: Padding(
-            padding: EdgeInsets.all(5),
-            child: autoTextSize('完成', TextStyle(color: Colors.black), context)
-          ),
+          toolbarButtons: [
+            (node) {
+              return InkWell(
+                onTap: () { },
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: autoTextSize('完成', TextStyle(color: Colors.black), context),
+                ),
+              );
+            }
+          ],
         ),
       ]
     );

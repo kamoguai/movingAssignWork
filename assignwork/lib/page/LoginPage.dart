@@ -51,6 +51,13 @@ class _LoginPageState extends State<LoginPage> {
   
     accountController.value = new TextEditingValue(text: _account ?? "");
     pwController.value = new TextEditingValue(text: _password ?? "");
+    if (widget.isAutoLogin != null && widget.isAutoLogin != false) {
+      Future.delayed(const Duration(seconds: 1),() {
+
+        NavigatorUtils.goHome(context); 
+
+      });
+    }
     
   }
   ///切換server site

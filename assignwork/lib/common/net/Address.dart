@@ -21,7 +21,7 @@ class Address {
   static bool isEnterTest = false;
   
   ///app版本設在這裡
-  static final String verNo = "3.20.0205";
+  static final String verNo = "3.20.0210";
 
 
   ///檢查是否有更新app

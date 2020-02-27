@@ -293,7 +293,7 @@ class CommonUtils {
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: new Text(titleStr, style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
-          content: new Text(contentStr),
+          content: new Text(contentStr, style: TextStyle(fontSize: MyScreen.defaultTableCellFontSize(context))),
           actions: <Widget>[
             CupertinoButton(
                 onPressed: (){

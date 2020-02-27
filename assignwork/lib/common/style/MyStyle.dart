@@ -338,7 +338,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setSp(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
 
 
@@ -357,7 +357,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setSp(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
   
 
@@ -376,7 +376,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setSp(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
 
   ///通用detailList字體大小
@@ -394,7 +394,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setSp(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
  
   
@@ -413,7 +413,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setSp(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
 
   ///登入textFiled大小_span
@@ -431,7 +431,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setWidth(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
 
 
@@ -450,7 +450,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setWidth(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
   
 
@@ -469,7 +469,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setWidth(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
 
   ///通用detailList字體大小_span
@@ -487,7 +487,7 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setWidth(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
  
   
@@ -506,6 +506,6 @@ class MyScreen {
     } else {
       fontSize = MyConstant.textSize_30;
     }
-    return ScreenUtil.getInstance().setWidth(fontSize);
+    return ScreenUtil().setSp(fontSize);
   }
 }

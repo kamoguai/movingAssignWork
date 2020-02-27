@@ -467,7 +467,12 @@ class _AddBookingViewPageState extends State<AddBookingViewPage> with BaseWidget
         this.dtvNameSelected = '----';
         this.dtvPaySelected = '----';
       }
-      
+    }
+    else {
+      this.cmNameSelected = '';
+      this.cmPaySelected = '';
+      this.dtvNameSelected = '';
+      this.dtvPaySelected = '';
     }
     ///主要view包在scrollview裡面
     columnList.add(
@@ -543,6 +548,7 @@ class _AddBookingViewPageState extends State<AddBookingViewPage> with BaseWidget
               FocusScope.of(context).unfocus();
               
               if (this.custController.text.length > 0) {
+                cpModel = null;
                 _getCustDetailApi();
               }
               else {

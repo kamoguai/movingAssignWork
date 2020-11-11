@@ -27,12 +27,12 @@ class UserInfoDao {
     if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       serialStr = androidInfo.androidId;
-    }
-    else if  (Platform.isIOS){
+    } else if (Platform.isIOS) {
       IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
       serialStr = iosDeviceInfo.identifierForVendor;
     }
-    var res = await HttpManager.netFetch(Address.ssoLoginAPI(account, password, serialStr), null, null, null);
+    var res = await HttpManager.netFetch(
+        Address.ssoLoginAPI(account, password, serialStr), null, null, null);
 
     if (res != null && res.result) {
       if (Config.DEBUG) {
@@ -83,15 +83,21 @@ class UserInfoDao {
   static getUserInfo(String serverUrl, Map jsonMap, store) async {
     await LocalStorage.save(Config.PW_KEY, jsonMap["passWord"]);
     Map<String, dynamic> mainDataArray = {};
+
     ///map轉json
     String str = json.encode(jsonMap);
     print("派裝系統使用者信息req => " + str);
+
     ///aesEncode
     var aesData = AesUtils.aes128Encrypt(str);
     Map paramsData = {"data": aesData};
     var reqUrl = "$serverUrl";
     var res = await HttpManager.netFetch(
-        reqUrl, paramsData, null, new Options(method: "post", contentType: ContentType.parse("application/x-www-form-urlencoded")));
+        reqUrl,
+        paramsData,
+        null,
+        new Options(
+            method: "post", contentType: "application/x-www-form-urlencoded"));
     if (res != null && res.result) {
       if (Config.DEBUG) {
         print("派裝系統使用者信息resp => " + res.data.toString());

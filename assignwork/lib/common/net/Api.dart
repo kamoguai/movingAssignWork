@@ -21,11 +21,16 @@ class HttpManager {
     "authorizationCode": null,
   };
 
-  static netFetch(String url, params, Map<String, String> header, Options option, {noTip = false}) async {
+  static netFetch(
+      String url, params, Map<String, String> header, Options option,
+      {noTip = false}) async {
     //沒有網路時
     var conntectivityResult = await (new Connectivity().checkConnectivity());
-    if (conntectivityResult ==ConnectivityResult.none) {
-      return new ResultData(Code.errorHandleFunction(Code.NETWORK_ERROR, "", noTip), false, Code.NETWORK_ERROR);
+    if (conntectivityResult == ConnectivityResult.none) {
+      return new ResultData(
+          Code.errorHandleFunction(Code.NETWORK_ERROR, "", noTip),
+          false,
+          Code.NETWORK_ERROR);
     }
 
     Map<String, String> headers = new HashMap();
@@ -35,84 +40,95 @@ class HttpManager {
 
     if (option != null && option.contentType == null) {
       option = new Options(method: "post", responseType: ResponseType.plain);
-    }
-    else if (option != null && option.contentType != null){
+    } else if (option != null && option.contentType != null) {
       option = new Options(method: "post", responseType: ResponseType.plain);
-      option.contentType =  ContentType.parse(CONTENT_TYPE_FORM);
+      option.contentType = CONTENT_TYPE_FORM;
       option.headers = headers;
-    }
-    else{
+    } else {
       option = new Options(method: "get", responseType: ResponseType.plain);
       option.headers = headers;
     }
 
     ///超時
-    option.connectTimeout = 15000;
+    // option.connectTimeout = 15000;
 
     Dio dio = new Dio();
     Response response;
     try {
+      dio.options.connectTimeout = 60000;
       response = await dio.request(url, data: params, options: option);
     } on DioError catch (e) {
       Response errorResponse;
       if (e.response != null) {
         //如果有錯誤信息回填
         errorResponse = e.response;
-      }
-      else {
+      } else {
         //沒有錯誤信息帶666
         errorResponse = new Response(statusCode: 666);
       }
-      if (e.type ==DioErrorType.CONNECT_TIMEOUT) {
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
         //如果是timeout
         errorResponse.statusCode = Code.NETWORK_TIMEOUT;
       }
-      if (Config.DEBUG) {// debug模式才會進入
-        print("請求異常 => "+e.toString());
-        print("請求異常url => "+ url);
+      if (Config.DEBUG) {
+        // debug模式才會進入
+        print("請求異常 => " + e.toString());
+        print("請求異常url => " + url);
       }
-      return new ResultData(Code.errorHandleFunction(errorResponse.statusCode, e.message, noTip), false, errorResponse.statusCode);
+      return new ResultData(
+          Code.errorHandleFunction(errorResponse.statusCode, e.message, noTip),
+          false,
+          errorResponse.statusCode);
     }
 
     if (Config.DEBUG) {
-      print("請求 url => "+ url);
-      print("請求頭 => "+ option.toString().toString());
+      print("請求 url => " + url);
+      print("請求頭 => " + option.toString().toString());
       if (params != null) {
-        print("請求參數 => "+ params.toString());
+        print("請求參數 => " + params.toString());
       }
       if (response != null) {
-        print("返回參數 => "+ response.toString());
+        print("返回參數 => " + response.toString());
       }
     }
     try {
-     
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (option.method == "post") {
           var result = AesUtils.aes128Decrypt(response.toString());
           var jsonStr = jsonDecode(result);
           Map<String, dynamic> map = jsonStr;
-          return new ResultData(map, true, Code.SUCCESS, headers: response.headers);
+          return new ResultData(map, true, Code.SUCCESS,
+              headers: response.headers);
         }
-        if (response.request.path.contains("http://wos.dctv.net.tw:8083/WorkInstall/getAccPermissions")) {
+        if (response.request.path.contains(
+            "http://wos.dctv.net.tw:8083/WorkInstall/getAccPermissions")) {
           var result = AesUtils.aes128Decrypt(response.toString());
           var jsonStr = jsonDecode(result);
           Map<String, dynamic> map = jsonStr;
-          return new ResultData(map, true, Code.SUCCESS, headers: response.headers);
+          return new ResultData(map, true, Code.SUCCESS,
+              headers: response.headers);
         }
         var jsonStr = jsonDecode(response.toString());
         Map<String, dynamic> map = jsonStr;
-        return new ResultData(map, true, Code.SUCCESS, headers: response.headers);
+        return new ResultData(map, true, Code.SUCCESS,
+            headers: response.headers);
       }
     } catch (e) {
       print(e.toString() + url);
-      String respData = response.data.toString().replaceAll("\r", "").replaceAll("\n", "");
+      String respData =
+          response.data.toString().replaceAll("\r", "").replaceAll("\n", "");
       if (respData.length < 1) {
-        return new ResultData(null, false, response.statusCode, headers: response.headers);
+        return new ResultData(null, false, response.statusCode,
+            headers: response.headers);
       }
       Map<String, dynamic> jsonStr = jsonDecode(response.data);
-      return new ResultData(jsonStr, false, response.statusCode, headers: response.headers);
+      return new ResultData(jsonStr, false, response.statusCode,
+          headers: response.headers);
     }
-    return new ResultData(Code.errorHandleFunction(response.statusCode, "", noTip), false, response.statusCode);
+    return new ResultData(
+        Code.errorHandleFunction(response.statusCode, "", noTip),
+        false,
+        response.statusCode);
   }
 
   ///清除授權
@@ -137,5 +153,4 @@ class HttpManager {
       return token;
     }
   }
-
 }

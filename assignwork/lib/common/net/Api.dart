@@ -41,9 +41,10 @@ class HttpManager {
     if (option != null && option.contentType == null) {
       option = new Options(method: "post", responseType: ResponseType.plain);
     } else if (option != null && option.contentType != null) {
-      option = new Options(method: "post", responseType: ResponseType.plain);
-      option.contentType = CONTENT_TYPE_FORM;
-      option.headers = headers;
+      option = new Options(
+          method: "post",
+          responseType: ResponseType.plain,
+          contentType: CONTENT_TYPE_FORM);
     } else {
       option = new Options(method: "get", responseType: ResponseType.plain);
       option.headers = headers;

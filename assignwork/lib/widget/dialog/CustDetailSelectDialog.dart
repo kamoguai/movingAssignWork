@@ -119,7 +119,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog>
         keyboardBarColor: Colors.grey[200],
         nextFocus: true,
         actions: [
-          KeyboardAction(
+          KeyboardActionsItem(
             focusNode: _mobileFocus,
             toolbarButtons: [
               (node) {
@@ -137,7 +137,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog>
               }
             ],
           ),
-          KeyboardAction(
+          KeyboardActionsItem(
             focusNode: _telAreaCodeFocus,
             toolbarButtons: [
               (node) {
@@ -155,7 +155,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog>
               }
             ],
           ),
-          KeyboardAction(
+          KeyboardActionsItem(
             focusNode: _telPhoneFocus,
             toolbarButtons: [
               (node) {
@@ -172,7 +172,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog>
               }
             ],
           ),
-          KeyboardAction(
+          KeyboardActionsItem(
             focusNode: _communityFocus,
             toolbarButtons: [
               (node) {
@@ -189,7 +189,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog>
               }
             ],
           ),
-          KeyboardAction(
+          KeyboardActionsItem(
             focusNode: _laneFocus,
             toolbarButtons: [
               (node) {
@@ -206,7 +206,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog>
               }
             ],
           ),
-          KeyboardAction(
+          KeyboardActionsItem(
             focusNode: _unitFocus,
             toolbarButtons: [
               (node) {
@@ -223,7 +223,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog>
               }
             ],
           ),
-          KeyboardAction(
+          KeyboardActionsItem(
             focusNode: _ofUnitFocus,
             toolbarButtons: [
               (node) {
@@ -240,7 +240,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog>
               }
             ],
           ),
-          KeyboardAction(
+          KeyboardActionsItem(
             focusNode: _floorFocus,
             toolbarButtons: [
               (node) {
@@ -257,7 +257,7 @@ class _CustDetailSelectDialogState extends State<CustDetailSelectDialog>
               }
             ],
           ),
-          KeyboardAction(
+          KeyboardActionsItem(
             focusNode: _floorOfFocus,
             toolbarButtons: [
               (node) {

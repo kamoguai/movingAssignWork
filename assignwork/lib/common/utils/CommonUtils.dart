@@ -14,7 +14,6 @@ import 'package:assignwork/common/style/MyStyle.dart';
 import 'package:assignwork/widget/MyFlexButton.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
 ///
 ///通用邏輯
 ///Date: 2019-03-11
@@ -40,33 +39,28 @@ class CommonUtils {
   static String getDateStr(DateTime date) {
     if (date == null || date.toString() == null) {
       return "";
-    }
-    else if (date.toString().length < 10) {
+    } else if (date.toString().length < 10) {
       return date.toString();
     }
-    return date.toString().substring(0,10);
+    return date.toString().substring(0, 10);
   }
 
   ///日期格式轉換
   static String getNewsTimeStr(DateTime date) {
-    int subTime = DateTime.now().millisecondsSinceEpoch - date.millisecondsSinceEpoch;
+    int subTime =
+        DateTime.now().millisecondsSinceEpoch - date.millisecondsSinceEpoch;
 
     if (subTime < MILLIS_LIMIT) {
       return "剛剛";
-    }
-    else if (subTime < SECONDS_LIMIT) {
+    } else if (subTime < SECONDS_LIMIT) {
       return (subTime / MILLIS_LIMIT).round().toString() + " 秒前";
-    }
-    else if (subTime < MINUTES_LIMIT) {
+    } else if (subTime < MINUTES_LIMIT) {
       return (subTime / SECONDS_LIMIT).round().toString() + " 分鐘前";
-    }
-    else if (subTime < HOURS_LIMIT) {
+    } else if (subTime < HOURS_LIMIT) {
       return (subTime / MINUTES_LIMIT).round().toString() + " 小時前";
-    }
-    else if (subTime < DAYS_LIMIT) {
+    } else if (subTime < DAYS_LIMIT) {
       return (subTime / HOURS_LIMIT).round().toString() + " 天前";
-    }
-    else {
+    } else {
       return getDateStr(date);
     }
   }
@@ -78,9 +72,12 @@ class CommonUtils {
     } else {
       appDir = await getExternalStorageDirectory();
     }
-    PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.storage);
     if (permission != PermissionStatus.granted) {
-      Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+      Map<PermissionGroup, PermissionStatus> permissions =
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.storage]);
       if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
         return null;
       }
@@ -94,7 +91,6 @@ class CommonUtils {
   static splitFileNameByPath(String path) {
     return path.substring(path.lastIndexOf("/"));
   }
-
 
   static pushTheme(Store store, int index) {
     ThemeData themeData;
@@ -149,9 +145,15 @@ class CommonUtils {
                     child: new Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        new Container(child: SpinKitCubeGrid(color: Color(MyColors.white))),
+                        new Container(
+                            child:
+                                SpinKitCubeGrid(color: Color(MyColors.white))),
                         new Container(height: 10.0),
-                        new Container(child: new Text('資料讀取中..', style: TextStyle(color: Colors.white,fontSize: ScreenUtil().setSp(20.0)))),
+                        new Container(
+                            child: new Text('資料讀取中..',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: ScreenUtil().setSp(20.0)))),
                       ],
                     ),
                   ),
@@ -181,15 +183,20 @@ class CommonUtils {
                     child: new Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        new Container(child: SpinKitCubeGrid(color: Color(MyColors.white))),
+                        new Container(
+                            child:
+                                SpinKitCubeGrid(color: Color(MyColors.white))),
                         new Container(height: 10.0),
-                        new Container(child: new Text('資料讀取中..', style: TextStyle(fontSize: ScreenUtil().setSp(20.0)))),
+                        new Container(
+                            child: new Text('資料讀取中..',
+                                style: TextStyle(
+                                    fontSize: ScreenUtil().setSp(20.0)))),
                       ],
                     ),
                   ),
                 ),
               ));
-    });
+        });
     // new Future.delayed(new Duration(seconds: 3), () {
     //   Navigator.pop(context);
     // });
@@ -225,7 +232,9 @@ class CommonUtils {
                       maxLines: 2,
                       mainAxisAlignment: MainAxisAlignment.start,
                       fontSize: 14.0,
-                      color: colorList != null ? colorList[index] : Theme.of(context).primaryColor,
+                      color: colorList != null
+                          ? colorList[index]
+                          : Theme.of(context).primaryColor,
                       text: commitMaps[index],
                       textColor: Color(MyColors.white),
                       onPress: () {
@@ -240,98 +249,142 @@ class CommonUtils {
   }
 
   ///版本更新
-  static Future<Null> showUpdateAppDialog(BuildContext context, String contentMsg, String updateUrl) {
+  static Future<Null> showUpdateAppDialog(
+      BuildContext context, String contentMsg, String updateUrl) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text('版本更新', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
-            content: new Text(contentMsg, style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
+            title: new Text(
+              '版本更新',
+              style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),
+            ),
+            content: new Text(
+              contentMsg,
+              style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),
+            ),
             actions: <Widget>[
               new FlatButton(
                   onPressed: () {
                     launch(updateUrl);
                     Navigator.pop(context);
                   },
-                  child: new Text('確定', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),)),
+                  child: new Text(
+                    '確定',
+                    style:
+                        TextStyle(fontSize: MyScreen.appBarFontSize(context)),
+                  )),
             ],
           );
-        }
-    );
+        });
   }
 
   ///更新為不能使的app
-  static Future<Null> showDummuAppDialog(BuildContext context, String contentMsg, String updateUrl) {
+  static Future<Null> showDummuAppDialog(
+      BuildContext context, String contentMsg, String updateUrl) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text('版本更新', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
+            title: new Text(
+              '版本更新',
+              style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),
+            ),
             content: new Text(contentMsg),
             actions: <Widget>[
               new FlatButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: new Text('取消', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),)),
+                  child: new Text(
+                    '取消',
+                    style:
+                        TextStyle(fontSize: MyScreen.appBarFontSize(context)),
+                  )),
               new FlatButton(
                   onPressed: () {
                     launch(updateUrl);
                     Navigator.pop(context);
                   },
-                  child: new Text('確定', style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),)),
+                  child: new Text(
+                    '確定',
+                    style:
+                        TextStyle(fontSize: MyScreen.appBarFontSize(context)),
+                  )),
             ],
           );
-        }
-    );
+        });
   }
 
   ///一般需要點取消的alert
-  static Future<Null> showMessageDialog(BuildContext context, String titleStr, String contentStr) {
+  static Future<Null> showMessageDialog(
+      BuildContext context, String titleStr, String contentStr) {
     return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: new Text(titleStr, style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
-          content: new Text(contentStr, style: TextStyle(fontSize: MyScreen.defaultTableCellFontSize(context))),
-          actions: <Widget>[
-            CupertinoButton(
-                onPressed: (){
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: new Text(
+              titleStr,
+              style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),
+            ),
+            content: new Text(contentStr,
+                style: TextStyle(
+                    fontSize: MyScreen.defaultTableCellFontSize(context))),
+            actions: <Widget>[
+              CupertinoButton(
+                onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('確定', style: TextStyle(color: Colors.blue, fontSize: MyScreen.appBarFontSize(context)),),
-            ),
-          ],
-        );
-      }
-    );
+                child: Text(
+                  '確定',
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: MyScreen.appBarFontSize(context)),
+                ),
+              ),
+            ],
+          );
+        });
   }
 
   ///confirm功能
-  static Future<Null> showConfirmDialog(BuildContext context, String titleStr, String contentStr) {
+  static Future<Null> showConfirmDialog(
+      BuildContext context, String titleStr, String contentStr) {
     return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: new Text(titleStr, style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),),
-          content: new Text(contentStr),
-          actions: <Widget>[
-            CupertinoButton(
-                onPressed: (){
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: new Text(
+              titleStr,
+              style: TextStyle(fontSize: MyScreen.appBarFontSize(context)),
+            ),
+            content: new Text(contentStr),
+            actions: <Widget>[
+              CupertinoButton(
+                onPressed: () {
                   Fluttertoast.showToast(msg: contentStr);
                 },
-                child: Text('確定', style: TextStyle(color: Colors.blue, fontSize: MyScreen.appBarFontSize(context)),),
-            ),
-            CupertinoButton(
-                onPressed: (){
+                child: Text(
+                  '確定',
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: MyScreen.appBarFontSize(context)),
+                ),
+              ),
+              CupertinoButton(
+                onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('取消', style: TextStyle(color: Colors.red, fontSize: MyScreen.appBarFontSize(context)),),
-            ),
-          ],
-        );
-      }
-    );
+                child: Text(
+                  '取消',
+                  style: TextStyle(
+                      color: Colors.red,
+                      fontSize: MyScreen.appBarFontSize(context)),
+                ),
+              ),
+            ],
+          );
+        });
   }
 
   ///空页面
@@ -342,10 +395,14 @@ class CommonUtils {
         children: <Widget>[
           FlatButton(
             onPressed: () {},
-            child: new Image(image: new AssetImage(MyICons.DEFAULT_USER_ICON), width: 70.0, height: 70.0),
+            child: new Image(
+                image: new AssetImage(MyICons.DEFAULT_USER_ICON),
+                width: 70.0,
+                height: 70.0),
           ),
           Container(
-            child: Text('目前沒有資料', style: TextStyle(fontSize: ScreenUtil().setSp(20))),
+            child: Text('目前沒有資料',
+                style: TextStyle(fontSize: ScreenUtil().setSp(20))),
           ),
         ],
       ),
@@ -353,27 +410,37 @@ class CommonUtils {
   }
 
   ///flutter toast自定義
-  static showToast(context,{String msg, String align}) {
+  static showToast(context, {String msg, String align}) {
     if (align == null) {
-      Fluttertoast.showToast(msg: msg, fontSize: MyScreen.homePageFontSize(context), timeInSecForIos: 2, textColor: Colors.white, backgroundColor: Colors.black);
-    }
-    else {
-      Fluttertoast.showToast(msg: msg, fontSize: MyScreen.homePageFontSize(context), timeInSecForIos: 2, textColor: Colors.white, backgroundColor: Colors.black, gravity: ToastGravity.CENTER);
+      Fluttertoast.showToast(
+          msg: msg,
+          fontSize: MyScreen.homePageFontSize(context),
+          timeInSecForIos: 2,
+          textColor: Colors.white,
+          backgroundColor: Colors.black);
+    } else {
+      Fluttertoast.showToast(
+          msg: msg,
+          fontSize: MyScreen.homePageFontSize(context),
+          timeInSecForIos: 2,
+          textColor: Colors.white,
+          backgroundColor: Colors.black,
+          gravity: ToastGravity.CENTER);
     }
   }
-  
 
   ///snr設定檔決定顏色
-  static checkSnrConfigureValueColor(String data, String name, String netType, dynamic configData) {
+  static checkSnrConfigureValueColor(
+      String data, String name, String netType, dynamic configData) {
     if (data == "" || data == "---") {
       return MyColors.hexFromStr("#000000");
     }
     final dic = configData;
     // dp最小
-    final strDOWNDBMIN =  dic["DSDB_MIN"];
+    final strDOWNDBMIN = dic["DSDB_MIN"];
     // dp最大
     final strDOWNDBMAX = dic["DSDB_MAX"];
-    
+
     final strUSSNRMIN = dic["USSNR_MIN"];
     // ds
     final strDSSNRMIN = dic["DSSNR_MIN"];
@@ -382,83 +449,150 @@ class CommonUtils {
     // 內網 snr,pwr
     final strUPDBMAX_INT = dic["USDB_MAX_INT"];
     // 上snr
-    if (name == "US0" || name == "US1" || name == "US2" || name == "US3" || name == "SNR_U0" || name == "SNR_U1" || name == "SNR_U2" || name == "SNR_U3" || name == "U0_SNR" || name == "U1_SNR" || name == "U2_SNR" || name == "U3_SNR") {
+    if (name == "US0" ||
+        name == "US1" ||
+        name == "US2" ||
+        name == "US3" ||
+        name == "SNR_U0" ||
+        name == "SNR_U1" ||
+        name == "SNR_U2" ||
+        name == "SNR_U3" ||
+        name == "U0_SNR" ||
+        name == "U1_SNR" ||
+        name == "U2_SNR" ||
+        name == "U3_SNR") {
       if (double.parse(data) == null) {
         return MyColors.hexFromStr("#FF0000");
-      }
-      else if (double.parse(data) < 1) {
+      } else if (double.parse(data) < 1) {
         return MyColors.hexFromStr("#0000FF");
-      }
-      else {
-        return (double.parse(data) >= double.parse(strUSSNRMIN) ? MyColors.hexFromStr("#0000FF") : MyColors.hexFromStr("#FF0000"));
+      } else {
+        return (double.parse(data) >= double.parse(strUSSNRMIN)
+            ? MyColors.hexFromStr("#0000FF")
+            : MyColors.hexFromStr("#FF0000"));
       }
     }
     // 下pwr
-    if (name == "UP0" || name == "UP1" || name == "UP2" || name == "UP3" || name == "POW_U0" || name == "POW_U1" || name == "POW_U2" || name == "POW_U3" || name == "U0_PWR" || name == "U1_PWR" || name == "U2_PWR" || name == "U3_PWR" ) {
+    if (name == "UP0" ||
+        name == "UP1" ||
+        name == "UP2" ||
+        name == "UP3" ||
+        name == "POW_U0" ||
+        name == "POW_U1" ||
+        name == "POW_U2" ||
+        name == "POW_U3" ||
+        name == "U0_PWR" ||
+        name == "U1_PWR" ||
+        name == "U2_PWR" ||
+        name == "U3_PWR") {
       if (double.parse(data) == null) {
         return MyColors.hexFromStr("#FF0000");
-      }
-      else if (double.parse(data) < 1) {
+      } else if (double.parse(data) < 1) {
         return MyColors.hexFromStr("#0000FF");
       }
       if (netType == "EXT") {
-        return (double.parse(data) >= double.parse(strUPDBMAX_EXT) ? MyColors.hexFromStr("#FF0000") : MyColors.hexFromStr("#0000FF"));
-      }
-      else {
-        return (double.parse(data) >= double.parse(strUPDBMAX_INT) ? MyColors.hexFromStr("#FF0000") : MyColors.hexFromStr("#0000FF"));
+        return (double.parse(data) >= double.parse(strUPDBMAX_EXT)
+            ? MyColors.hexFromStr("#FF0000")
+            : MyColors.hexFromStr("#0000FF"));
+      } else {
+        return (double.parse(data) >= double.parse(strUPDBMAX_INT)
+            ? MyColors.hexFromStr("#FF0000")
+            : MyColors.hexFromStr("#0000FF"));
       }
     }
     // 下pwr
-    if (name == "U0_PWR_PING" || name == "U1_PWR_PING" || name == "U2_PWR_PING" || name == "U3_PWR_PING" ) {
+    if (name == "U0_PWR_PING" ||
+        name == "U1_PWR_PING" ||
+        name == "U2_PWR_PING" ||
+        name == "U3_PWR_PING") {
       if (double.parse(data) == null) {
         return MyColors.hexFromStr("#FF0000");
-      }
-      else {
+      } else {
         if (netType == "EXT") {
-          return (double.parse(data) >= double.parse(strUPDBMAX_EXT) ? MyColors.hexFromStr("#FF0000") : MyColors.hexFromStr("#0000FF"));
-        }
-        else {
-          return (double.parse(data) >= double.parse(strUPDBMAX_INT) ? MyColors.hexFromStr("#FF0000") : MyColors.hexFromStr("#0000FF"));
+          return (double.parse(data) >= double.parse(strUPDBMAX_EXT)
+              ? MyColors.hexFromStr("#FF0000")
+              : MyColors.hexFromStr("#0000FF"));
+        } else {
+          return (double.parse(data) >= double.parse(strUPDBMAX_INT)
+              ? MyColors.hexFromStr("#FF0000")
+              : MyColors.hexFromStr("#0000FF"));
         }
       }
     }
     // ping ds
-    if(name == "DSMER_PING" || name == "DS0_PING" || name == "DS1_PING" || name == "DS2_PING" || name == "DS3_PING" || name == "DS4_PING" || name == "DS5_PING" || name == "DS6_PING" || name == "DS7_PING" ) {
+    if (name == "DSMER_PING" ||
+        name == "DS0_PING" ||
+        name == "DS1_PING" ||
+        name == "DS2_PING" ||
+        name == "DS3_PING" ||
+        name == "DS4_PING" ||
+        name == "DS5_PING" ||
+        name == "DS6_PING" ||
+        name == "DS7_PING") {
       if (double.parse(data) == null) {
         return MyColors.hexFromStr("#FF0000");
       }
-       if (netType == "EXT") {
-          return (double.parse(data) >= double.parse(strUPDBMAX_EXT) ? MyColors.hexFromStr("#FF0000") : MyColors.hexFromStr("#0000FF"));
-       }
-       else {
-          return (double.parse(data) >= double.parse(strUPDBMAX_INT) ? MyColors.hexFromStr("#FF0000") : MyColors.hexFromStr("#0000FF"));
-       }
+      if (netType == "EXT") {
+        return (double.parse(data) >= double.parse(strUPDBMAX_EXT)
+            ? MyColors.hexFromStr("#FF0000")
+            : MyColors.hexFromStr("#0000FF"));
+      } else {
+        return (double.parse(data) >= double.parse(strUPDBMAX_INT)
+            ? MyColors.hexFromStr("#FF0000")
+            : MyColors.hexFromStr("#0000FF"));
+      }
     }
     // ping dp
-    if(name == "DSDB_PING" || name == "DP0_PING" || name == "DP1_PING" || name == "DP2_PING" || name == "DP3_PING" || name == "DP4_PING" || name == "DP5_PING" || name == "DP6_PING" || name == "DP7_PING" ) {
+    if (name == "DSDB_PING" ||
+        name == "DP0_PING" ||
+        name == "DP1_PING" ||
+        name == "DP2_PING" ||
+        name == "DP3_PING" ||
+        name == "DP4_PING" ||
+        name == "DP5_PING" ||
+        name == "DP6_PING" ||
+        name == "DP7_PING") {
       if (double.parse(data) == null) {
         return MyColors.hexFromStr("#FF0000");
-      }
-      else {
-        return (double.parse(data) >= double.parse(strDOWNDBMIN) && double.parse(data) <= double.parse(strDOWNDBMAX) ? MyColors.hexFromStr("#000000") : MyColors.hexFromStr("#FF0000"));
+      } else {
+        return (double.parse(data) >= double.parse(strDOWNDBMIN) &&
+                double.parse(data) <= double.parse(strDOWNDBMAX)
+            ? MyColors.hexFromStr("#000000")
+            : MyColors.hexFromStr("#FF0000"));
       }
     }
     // 上DS
-    if (name == "DS0" || name == "DS1" || name == "DS2" || name == "DS3" || name == "DS4" || name == "DS5" || name == "DS6" || name == "DS7" ) {
+    if (name == "DS0" ||
+        name == "DS1" ||
+        name == "DS2" ||
+        name == "DS3" ||
+        name == "DS4" ||
+        name == "DS5" ||
+        name == "DS6" ||
+        name == "DS7") {
       if (double.parse(data) == null) {
         return MyColors.hexFromStr("#FD5AD5");
-      }
-      else {
-        return (double.parse(data) >= double.parse(strDSSNRMIN)) ? MyColors.hexFromStr('#5F605E') : MyColors.hexFromStr('#FD5AD5');
+      } else {
+        return (double.parse(data) >= double.parse(strDSSNRMIN))
+            ? MyColors.hexFromStr('#5F605E')
+            : MyColors.hexFromStr('#FD5AD5');
       }
     }
     // 下DP
-    if (name == "DP0" || name == "DP1" || name == "DP2" || name == "DP3" || name == "DP4" || name == "DP5" || name == "DP6" || name == "DP7" ) {
+    if (name == "DP0" ||
+        name == "DP1" ||
+        name == "DP2" ||
+        name == "DP3" ||
+        name == "DP4" ||
+        name == "DP5" ||
+        name == "DP6" ||
+        name == "DP7") {
       if (double.parse(data) == null) {
         return MyColors.hexFromStr("#5F605E");
-      }
-      else {
-        return (double.parse(data) >= double.parse(strDOWNDBMIN)) && (double.parse(data) <= double.parse(strDOWNDBMAX)) ? MyColors.hexFromStr('#5F605E') : MyColors.hexFromStr('#FD5AD5');
+      } else {
+        return (double.parse(data) >= double.parse(strDOWNDBMIN)) &&
+                (double.parse(data) <= double.parse(strDOWNDBMAX))
+            ? MyColors.hexFromStr('#5F605E')
+            : MyColors.hexFromStr('#FD5AD5');
       }
     }
     return MyColors.hexFromStr("#000000");
@@ -467,34 +601,42 @@ class CommonUtils {
   static filterMonthCN(String str) {
     switch (str) {
       case "0":
-          return "----";
+        return "----";
       case "1":
-          return "月繳";
+        return "月繳";
+      case "2":
+        return "雙月繳";
       case "3":
-          return "季繳";
+        return "季繳";
       case "6":
-          return "半年繳";
+        return "半年繳";
       case "12":
-          return "年繳";
+        return "年繳";
+      case "24":
+        return "雙年繳";
       default:
-          return str;
+        return str;
     }
   }
-  
+
   static filterMonthCN2(String str) {
     switch (str) {
       case "0":
-          return "";
+        return "";
       case "1":
-          return "月繳";
+        return "月繳";
+      case "2":
+        return "雙月繳";
       case "3":
-          return "季繳";
+        return "季繳";
       case "6":
-          return "半年繳";
+        return "半年繳";
       case "12":
-          return "年繳";
+        return "年繳";
+      case "24":
+        return "雙年繳";
       default:
-          return str;
+        return str;
     }
   }
 
@@ -502,24 +644,26 @@ class CommonUtils {
     switch (str) {
       case "----":
       case "":
-          return "0";
+        return "0";
       case "月繳":
-          return "1";
+        return "1";
+      case "雙月繳":
+        return "2";
       case "季繳":
-          return "3";
+        return "3";
       case "半年繳":
-          return "6";
+        return "6";
       case "年繳":
-          return "12";
+        return "12";
+      case "雙年繳":
+        return "24";
       default:
-          return str;
+        return str;
     }
   }
 
   static filterAreaCN(String str) {
-
     switch (str) {
-
       case "板橋區":
         return "220/ROOT";
       case "蘆洲區":
@@ -538,33 +682,34 @@ class CommonUtils {
   static filterGiftMonthCN(String str) {
     switch (str) {
       case "0":
-          return "0個月";
+        return "0個月";
       case "1":
-          return "1個月";
+        return "1個月";
       case "2":
-          return "2個月";
+        return "2個月";
       case "3":
-          return "3個月";
+        return "3個月";
       case "4":
-          return "4個月";
+        return "4個月";
       default:
-          return str;
+        return str;
     }
   }
+
   static filterGiftMonthNm(String str) {
     switch (str) {
       case "0個月":
-          return "0";
+        return "0";
       case "1個月":
-          return "1";
+        return "1";
       case "2個月":
-          return "2";
+        return "2";
       case "3個月":
-          return "3";
+        return "3";
       case "4個月":
-          return "4";
+        return "4";
       default:
-          return str;
+        return str;
     }
   }
 }

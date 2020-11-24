@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 ///颜色
 class MyColors {
   static const String primaryValueString = "#24292E";
@@ -322,6 +323,7 @@ class MyICons {
   static const IconData PUSH_ITEM_ADD = Icons.add_box;
   static const IconData PUSH_ITEM_MIN = Icons.indeterminate_check_box;
 }
+
 class MyScreen {
   ///登入textFiled大小
   static double loginTextFieldFontSize(BuildContext context) {
@@ -341,7 +343,6 @@ class MyScreen {
     return ScreenUtil().setSp(fontSize);
   }
 
-
   ///首頁字體大小
   static double homePageFontSize(BuildContext context) {
     final deviceHeight = MediaQuery.of(context).size.height;
@@ -354,12 +355,15 @@ class MyScreen {
       fontSize = MyConstant.textSize_22;
     } else if (deviceHeight >= 800 && deviceHeight < 900) {
       fontSize = MyConstant.textSize_24;
+    } else if (deviceHeight >= 900 && deviceHeight < 950) {
+      fontSize = MyConstant.textSize_26;
+    } else if (deviceHeight >= 950 && deviceHeight < 1000) {
+      fontSize = MyConstant.textSize_28;
     } else {
       fontSize = MyConstant.textSize_30;
     }
     return ScreenUtil().setSp(fontSize);
   }
-  
 
   ///一般大小
   static double normalPageFontSize(BuildContext context) {
@@ -373,6 +377,10 @@ class MyScreen {
       fontSize = MyConstant.textSize_20;
     } else if (deviceHeight >= 800 && deviceHeight < 900) {
       fontSize = MyConstant.textSize_20;
+    } else if (deviceHeight >= 900 && deviceHeight < 950) {
+      fontSize = MyConstant.textSize_22;
+    } else if (deviceHeight >= 950 && deviceHeight < 1000) {
+      fontSize = MyConstant.textSize_22;
     } else {
       fontSize = MyConstant.textSize_30;
     }
@@ -391,13 +399,16 @@ class MyScreen {
       fontSize = MyConstant.textSize_20;
     } else if (deviceHeight >= 800 && deviceHeight < 900) {
       fontSize = MyConstant.textSize_22;
+    } else if (deviceHeight >= 900 && deviceHeight < 950) {
+      fontSize = MyConstant.textSize_24;
+    } else if (deviceHeight >= 950 && deviceHeight < 1000) {
+      fontSize = MyConstant.textSize_26;
     } else {
       fontSize = MyConstant.textSize_30;
     }
     return ScreenUtil().setSp(fontSize);
   }
- 
-  
+
   ///appbar button size
   static double appBarFontSize(BuildContext context) {
     final deviceHeight = MediaQuery.of(context).size.height;
@@ -410,6 +421,10 @@ class MyScreen {
       fontSize = MyConstant.textSize_18;
     } else if (deviceHeight >= 800 && deviceHeight < 900) {
       fontSize = MyConstant.textSize_20;
+    } else if (deviceHeight >= 900 && deviceHeight < 950) {
+      fontSize = MyConstant.textSize_22;
+    } else if (deviceHeight >= 950 && deviceHeight < 1000) {
+      fontSize = MyConstant.textSize_24;
     } else {
       fontSize = MyConstant.textSize_30;
     }
@@ -428,12 +443,15 @@ class MyScreen {
       fontSize = MyConstant.textSize_20;
     } else if (deviceHeight >= 800 && deviceHeight < 900) {
       fontSize = MyConstant.textSize_22;
+    } else if (deviceHeight >= 900 && deviceHeight < 950) {
+      fontSize = MyConstant.textSize_24;
+    } else if (deviceHeight >= 950 && deviceHeight < 1000) {
+      fontSize = MyConstant.textSize_26;
     } else {
       fontSize = MyConstant.textSize_30;
     }
     return ScreenUtil().setSp(fontSize);
   }
-
 
   ///首頁字體大小_span
   static double homePageFontSize_span(BuildContext context) {
@@ -447,12 +465,15 @@ class MyScreen {
       fontSize = MyConstant.textSize_22;
     } else if (deviceHeight >= 800 && deviceHeight < 900) {
       fontSize = MyConstant.textSize_24;
+    } else if (deviceHeight >= 900 && deviceHeight < 950) {
+      fontSize = MyConstant.textSize_24;
+    } else if (deviceHeight >= 950 && deviceHeight < 1000) {
+      fontSize = MyConstant.textSize_26;
     } else {
       fontSize = MyConstant.textSize_30;
     }
     return ScreenUtil().setSp(fontSize);
   }
-  
 
   ///一般大小_span
   static double normalPageFontSize_span(BuildContext context) {
@@ -466,6 +487,10 @@ class MyScreen {
       fontSize = MyConstant.textSize_20;
     } else if (deviceHeight >= 800 && deviceHeight < 900) {
       fontSize = MyConstant.textSize_20;
+    } else if (deviceHeight >= 900 && deviceHeight < 950) {
+      fontSize = MyConstant.textSize_22;
+    } else if (deviceHeight >= 950 && deviceHeight < 1000) {
+      fontSize = MyConstant.textSize_24;
     } else {
       fontSize = MyConstant.textSize_30;
     }
@@ -484,13 +509,16 @@ class MyScreen {
       fontSize = MyConstant.textSize_20;
     } else if (deviceHeight >= 800 && deviceHeight < 900) {
       fontSize = MyConstant.textSize_22;
+    } else if (deviceHeight >= 900 && deviceHeight < 950) {
+      fontSize = MyConstant.textSize_24;
+    } else if (deviceHeight >= 950 && deviceHeight < 1000) {
+      fontSize = MyConstant.textSize_26;
     } else {
       fontSize = MyConstant.textSize_30;
     }
     return ScreenUtil().setSp(fontSize);
   }
- 
-  
+
   ///appbar button size_span
   static double appBarFontSize_span(BuildContext context) {
     final deviceHeight = MediaQuery.of(context).size.height;
@@ -503,6 +531,10 @@ class MyScreen {
       fontSize = MyConstant.textSize_18;
     } else if (deviceHeight >= 800 && deviceHeight < 900) {
       fontSize = MyConstant.textSize_20;
+    } else if (deviceHeight >= 900 && deviceHeight < 950) {
+      fontSize = MyConstant.textSize_22;
+    } else if (deviceHeight >= 950 && deviceHeight < 1000) {
+      fontSize = MyConstant.textSize_24;
     } else {
       fontSize = MyConstant.textSize_30;
     }
